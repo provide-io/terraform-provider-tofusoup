@@ -1,0 +1,62 @@
+site_name: Terraform Provider TofuSoup
+site_url: https://registry.terraform.io/providers/provide-io/tofusoup/latest/docs
+site_description: Terraform provider for TofuSoup registry queries and state inspection
+dev_addr: 127.0.0.1:8000
+docs_dir: docs
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.path
+    - navigation.top
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+  palette:
+    - media: '(prefers-color-scheme: light)'
+      scheme: default
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: '(prefers-color-scheme: dark)'
+      scheme: slate
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Overview: index.md
+  - Provider: provider.md
+  - Data Sources:
+      - tofusoup_provider_info: data-sources/tofusoup_provider_info.md
+      - tofusoup_provider_versions: data-sources/tofusoup_provider_versions.md
+      - tofusoup_module_info: data-sources/tofusoup_module_info.md
+      - tofusoup_module_versions: data-sources/tofusoup_module_versions.md
+      - tofusoup_module_search: data-sources/tofusoup_module_search.md
+      - tofusoup_registry_search: data-sources/tofusoup_registry_search.md
+      - tofusoup_state_info: data-sources/tofusoup_state_info.md
+      - tofusoup_state_resources: data-sources/tofusoup_state_resources.md
+      - tofusoup_state_outputs: data-sources/tofusoup_state_outputs.md

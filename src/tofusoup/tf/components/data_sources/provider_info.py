@@ -1,0 +1,167 @@
+"""TofuSoup provider_info data source implementation."""
+
+from typing import cast
+
+from attrs import define
+from provide.foundation import logger
+from provide.foundation.errors import resilient
+from pyvider.data_sources.base import BaseDataSource  # type: ignore
+from pyvider.data_sources.decorators import register_data_source  # type: ignore
+from pyvider.exceptions import DataSourceError  # type: ignore
+from pyvider.resources.context import ResourceContext  # type: ignore
+from pyvider.schema import PvsSchema, a_num, a_str, s_data_source  # type: ignore
+from tofusoup.registry.opentofu import OpenTofuRegistry  # type: ignore
+from tofusoup.registry.terraform import TerraformRegistry  # type: ignore
+
+
+@define(frozen=True)
+class ProviderInfoConfig:
+    """Configuration attributes for provider_info data source."""
+
+    namespace: str
+    name: str
+    registry: str | None = "terraform"
+
+
+@define(frozen=True)
+class ProviderInfoState:
+    """State attributes for provider_info data source."""
+
+    namespace: str | None = None
+    name: str | None = None
+    registry: str | None = None
+    latest_version: str | None = None
+    description: str | None = None
+    source_url: str | None = None
+    downloads: int | None = None
+    published_at: str | None = None
+
+
+@register_data_source("tofusoup_provider_info")
+class ProviderInfoDataSource(BaseDataSource[str, ProviderInfoState, ProviderInfoConfig]):  # type: ignore[misc]
+    """
+    Query provider details from Terraform or OpenTofu registry.
+
+    Returns detailed information about a specific provider including its latest version,
+    description, source URL, download count, and publication date.
+
+    ## Example Usage
+
+    ```terraform
+    data "tofusoup_provider_info" "aws" {
+      namespace = "hashicorp"
+      name      = "aws"
+      registry  = "terraform"
+    }
+
+    output "aws_provider_version" {
+      description = "Latest version of the AWS provider"
+      value       = data.tofusoup_provider_info.aws.latest_version
+    }
+
+    output "aws_provider_downloads" {
+      description = "Total downloads of the AWS provider"
+      value       = data.tofusoup_provider_info.aws.downloads
+    }
+    ```
+
+    ## Argument Reference
+
+    - `namespace` - (Required) Provider namespace (e.g., "hashicorp", "cloudflare")
+    - `name` - (Required) Provider name (e.g., "aws", "azurerm", "google")
+    - `registry` - (Optional) Registry to query: "terraform" or "opentofu". Default: "terraform"
+
+    ## Attribute Reference
+
+    - `latest_version` - Latest version string of the provider
+    - `description` - Provider description from the registry
+    - `source_url` - Source code repository URL
+    - `downloads` - Total number of downloads
+    - `published_at` - Publication date of the latest version
+    """
+
+    config_class = ProviderInfoConfig
+    state_class = ProviderInfoState
+
+    @classmethod
+    def get_schema(cls) -> PvsSchema:
+        """Return the data source schema."""
+        return s_data_source(
+            attributes={
+                "namespace": a_str(required=True),
+                "name": a_str(required=True),
+                "registry": a_str(optional=True, default="terraform"),
+                "latest_version": a_str(computed=True),
+                "description": a_str(computed=True),
+                "source_url": a_str(computed=True),
+                "downloads": a_num(computed=True),
+                "published_at": a_str(computed=True),
+            }
+        )
+
+    @resilient()
+    async def _validate_config(self, config: ProviderInfoConfig) -> list[str]:
+        """Validate the configuration. Returns list of error strings, or empty list if valid."""
+        errors = []
+        if not config.namespace:
+            errors.append("'namespace' is required and cannot be empty.")
+        if not config.name:
+            errors.append("'name' is required and cannot be empty.")
+        if config.registry and config.registry not in ["terraform", "opentofu"]:
+            errors.append("'registry' must be either 'terraform' or 'opentofu'.")
+        return errors
+
+    @resilient()
+    async def read(self, ctx: ResourceContext) -> ProviderInfoState:
+        """Read provider information from the registry."""
+        if not ctx.config:
+            raise DataSourceError("Configuration is required.")
+
+        config = cast(ProviderInfoConfig, ctx.config)
+
+        logger.info(
+            "Querying provider info",
+            namespace=config.namespace,
+            name=config.name,
+            registry=config.registry,
+        )
+
+        try:
+            # Select the appropriate registry
+            if config.registry == "opentofu":
+                async with OpenTofuRegistry() as registry:
+                    details = await registry.get_provider_details(
+                        namespace=config.namespace,
+                        name=config.name,
+                    )
+            else:
+                async with TerraformRegistry() as registry:
+                    details = await registry.get_provider_details(
+                        namespace=config.namespace,
+                        name=config.name,
+                    )
+
+            # Extract relevant information from the registry response
+            return ProviderInfoState(
+                namespace=config.namespace,
+                name=config.name,
+                registry=config.registry,
+                latest_version=details.get("version"),
+                description=details.get("description"),
+                source_url=details.get("source"),
+                downloads=details.get("downloads"),
+                published_at=details.get("published_at"),
+            )
+
+        except Exception as e:
+            logger.error(
+                "Failed to query provider info",
+                namespace=config.namespace,
+                name=config.name,
+                registry=config.registry,
+                error=str(e),
+            )
+            raise DataSourceError(
+                f"Failed to query provider info for {config.namespace}/{config.name} "
+                f"from {config.registry} registry: {str(e)}"
+            ) from e
