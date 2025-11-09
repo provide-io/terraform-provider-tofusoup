@@ -10,6 +10,8 @@ from pyvider.data_sources.decorators import register_data_source  # type: ignore
 from pyvider.exceptions import DataSourceError  # type: ignore
 from pyvider.resources.context import ResourceContext  # type: ignore
 from pyvider.schema import PvsSchema, a_num, a_str, s_data_source  # type: ignore
+from tofusoup.config.defaults import OPENTOFU_REGISTRY_URL, TERRAFORM_REGISTRY_URL  # type: ignore
+from tofusoup.registry.base import RegistryConfig  # type: ignore
 from tofusoup.registry.opentofu import OpenTofuRegistry  # type: ignore
 from tofusoup.registry.terraform import IBMTerraformRegistry  # type: ignore
 
@@ -73,6 +75,9 @@ class ProviderInfoDataSource(BaseDataSource[str, ProviderInfoState, ProviderInfo
 
     ## Attribute Reference
 
+    - `namespace` - The provider namespace (echoes input)
+    - `name` - The provider name (echoes input)
+    - `registry` - The registry queried (echoes input)
     - `latest_version` - Latest version string of the provider
     - `description` - Provider description from the registry
     - `source_url` - Source code repository URL
@@ -129,17 +134,25 @@ class ProviderInfoDataSource(BaseDataSource[str, ProviderInfoState, ProviderInfo
         try:
             # Select the appropriate registry
             if config.registry == "opentofu":
-                async with OpenTofuRegistry() as registry:
+                registry_config = RegistryConfig(base_url=OPENTOFU_REGISTRY_URL)
+                async with OpenTofuRegistry(registry_config) as registry:
                     details = await registry.get_provider_details(
                         namespace=config.namespace,
                         name=config.name,
                     )
             else:
-                async with IBMTerraformRegistry() as registry:
+                registry_config = RegistryConfig(base_url=TERRAFORM_REGISTRY_URL)
+                async with IBMTerraformRegistry(registry_config) as registry:
                     details = await registry.get_provider_details(
                         namespace=config.namespace,
                         name=config.name,
                     )
+
+            # Check if provider was found (empty dict means error occurred)
+            if not details:
+                raise DataSourceError(
+                    f"Provider {config.namespace}/{config.name} not found in {config.registry} registry"
+                )
 
             # Extract relevant information from the registry response
             return ProviderInfoState(
