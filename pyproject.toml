@@ -13,6 +13,12 @@ dependencies = [
     "provide-foundation[all]",
 ]
 
+[project.scripts]
+terraform-provider-tofusoup = "pyvider.cli:main"
+
+[project.entry-points.pyvider]
+terraform-provider-tofusoup = "tofusoup.tf.components"
+
 [dependency-groups]
 dev = [
     "provide-testkit[all]",
@@ -44,3 +50,8 @@ testpaths = ["tests"]
 [tool.plating]
 provider_name = "tofusoup"
 output_dir = "docs"
+
+[tool.flavor]
+entry_point = "pyvider.cli:main"
+output_path = "dist/terraform-provider-tofusoup"
+platforms = ["darwin_arm64", "linux_amd64", "linux_arm64", "windows_amd64"]

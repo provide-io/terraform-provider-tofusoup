@@ -11,7 +11,7 @@ from pyvider.exceptions import DataSourceError  # type: ignore
 from pyvider.resources.context import ResourceContext  # type: ignore
 from pyvider.schema import PvsSchema, a_num, a_str, s_data_source  # type: ignore
 from tofusoup.registry.opentofu import OpenTofuRegistry  # type: ignore
-from tofusoup.registry.terraform import TerraformRegistry  # type: ignore
+from tofusoup.registry.terraform import IBMTerraformRegistry  # type: ignore
 
 
 @define(frozen=True)
@@ -135,7 +135,7 @@ class ProviderInfoDataSource(BaseDataSource[str, ProviderInfoState, ProviderInfo
                         name=config.name,
                     )
             else:
-                async with TerraformRegistry() as registry:
+                async with IBMTerraformRegistry() as registry:
                     details = await registry.get_provider_details(
                         namespace=config.namespace,
                         name=config.name,
