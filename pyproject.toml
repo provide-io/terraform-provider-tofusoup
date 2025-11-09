@@ -1,0 +1,46 @@
+[project]
+name = "terraform-provider-tofusoup"
+version = "0.0.1108"
+description = "Terraform provider for TofuSoup registry queries and state inspection"
+requires-python = ">=3.11"
+readme = "README.md"
+license = { text = "MIT" }
+
+dependencies = [
+    "pyvider",
+    "tofusoup",
+    "flavorpack",
+    "provide-foundation[all]",
+]
+
+[dependency-groups]
+dev = [
+    "provide-testkit[all]",
+    "plating",
+]
+docs = [
+    "provide-testkit[docs]",
+]
+
+[build-system]
+requires = ["setuptools>=68.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.plating]
+provider_name = "tofusoup"
+output_dir = "docs"
