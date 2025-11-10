@@ -11,7 +11,7 @@ from typing import Any
 import pytest
 from pyvider.resources.context import ResourceContext  # type: ignore
 from tofusoup.registry.models.module import Module, ModuleVersion  # type: ignore
-from tofusoup.registry.models.provider import ProviderPlatform, ProviderVersion  # type: ignore
+from tofusoup.registry.models.provider import Provider, ProviderPlatform, ProviderVersion  # type: ignore
 
 from tofusoup.tf.components.data_sources.provider_info import ProviderInfoConfig  # type: ignore
 
@@ -177,6 +177,152 @@ def sample_module_search_results() -> list[Module]:
             registry_source=None,
         ),
     ]
+
+
+@pytest.fixture
+def sample_provider_search_results() -> list[Provider]:
+    """Sample provider search results list."""
+    return [
+        Provider(
+            id="hashicorp/aws",
+            namespace="hashicorp",
+            name="aws",
+            description="Terraform AWS provider",
+            source_url="https://github.com/hashicorp/terraform-provider-aws",
+            tier="official",
+            versions=[],
+            latest_version=None,
+            registry_source=None,
+        ),
+        Provider(
+            id="hashicorp/google",
+            namespace="hashicorp",
+            name="google",
+            description="Terraform Google Cloud Platform provider",
+            source_url="https://github.com/hashicorp/terraform-provider-google",
+            tier="official",
+            versions=[],
+            latest_version=None,
+            registry_source=None,
+        ),
+    ]
+
+
+@pytest.fixture
+def sample_empty_state(tmp_path):
+    """Create an empty state file."""
+    import json
+
+    state_file = tmp_path / "terraform.tfstate"
+    state_file.write_text(
+        json.dumps(
+            {
+                "version": 4,
+                "terraform_version": "1.10.6",
+                "serial": 1,
+                "lineage": "test-lineage-empty",
+                "outputs": {},
+                "resources": [],
+                "check_results": None,
+            }
+        )
+    )
+    return state_file
+
+
+@pytest.fixture
+def sample_state_with_resources(tmp_path):
+    """Create state file with managed and data resources."""
+    import json
+
+    state_file = tmp_path / "terraform.tfstate"
+    state_file.write_text(
+        json.dumps(
+            {
+                "version": 4,
+                "terraform_version": "1.10.2",
+                "serial": 3,
+                "lineage": "test-lineage-resources",
+                "outputs": {
+                    "vpc_id": {"value": "vpc-0123456789abcdef0", "type": "string", "sensitive": False},
+                    "instance_ids": {"value": ["i-001", "i-002"], "type": ["list", "string"], "sensitive": False},
+                    "database_endpoint": {"value": "mydb.us-east-1.rds.amazonaws.com", "type": "string", "sensitive": False},
+                },
+                "resources": [
+                    {
+                        "mode": "data",
+                        "type": "aws_ami",
+                        "name": "ubuntu",
+                        "provider": 'provider["registry.terraform.io/hashicorp/aws"]',
+                        "instances": [{"attributes": {}}],
+                    },
+                    {
+                        "mode": "managed",
+                        "type": "aws_instance",
+                        "name": "example",
+                        "provider": 'provider["registry.terraform.io/hashicorp/aws"]',
+                        "instances": [{"attributes": {}}],
+                    },
+                    {
+                        "mode": "managed",
+                        "type": "aws_s3_bucket",
+                        "name": "storage",
+                        "provider": 'provider["registry.terraform.io/hashicorp/aws"]',
+                        "instances": [{"attributes": {}}],
+                    },
+                ],
+                "check_results": None,
+            }
+        )
+    )
+    return state_file
+
+
+@pytest.fixture
+def sample_state_with_modules(tmp_path):
+    """Create state file with module resources."""
+    import json
+
+    state_file = tmp_path / "terraform.tfstate"
+    state_file.write_text(
+        json.dumps(
+            {
+                "version": 4,
+                "terraform_version": "1.10.0",
+                "serial": 5,
+                "lineage": "test-lineage-modules",
+                "outputs": {},
+                "resources": [
+                    {
+                        "mode": "managed",
+                        "type": "aws_instance",
+                        "name": "web",
+                        "module": "module.ec2_cluster",
+                        "provider": 'provider["registry.terraform.io/hashicorp/aws"]',
+                        "instances": [{"attributes": {}}],
+                    },
+                    {
+                        "mode": "managed",
+                        "type": "aws_instance",
+                        "name": "db",
+                        "module": "module.database",
+                        "provider": 'provider["registry.terraform.io/hashicorp/aws"]',
+                        "instances": [{"attributes": {}}],
+                    },
+                    {
+                        "mode": "data",
+                        "type": "aws_vpc",
+                        "name": "main",
+                        "module": "module.ec2_cluster",
+                        "provider": 'provider["registry.terraform.io/hashicorp/aws"]',
+                        "instances": [{"attributes": {}}],
+                    },
+                ],
+                "check_results": None,
+            }
+        )
+    )
+    return state_file
 
 
 # 🐍🧪🔚

@@ -45,6 +45,13 @@ markdown_extensions:
     permalink: true
 nav:
 - Overview: index.md
-- null:
-    Data Sources:
-      provider_info: data-sources/tofusoup_provider_info.md
+- Data Sources:
+  - module_info: data-sources/module_info.md
+  - module_search: data-sources/module_search.md
+  - module_versions: data-sources/module_versions.md
+  - provider_info: data-sources/provider_info.md
+  - provider_versions: data-sources/provider_versions.md
+  - registry_search: data-sources/registry_search.md
+  - state_info: data-sources/state_info.md
+  - state_outputs: data-sources/state_outputs.md
+  - state_resources: data-sources/state_resources.md
