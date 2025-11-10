@@ -7,8 +7,38 @@ This example demonstrates how to use the `tofusoup_provider_info` data source to
 This example shows three different use cases:
 
 1. **AWS Provider from Terraform Registry**: Queries the HashiCorp AWS provider from the official Terraform registry
-2. **Random Provider from OpenTofu Registry**: Queries the HashiCorp Random provider from the OpenTofu registry
+2. **Google Provider from Terraform Registry**: Queries the Google Cloud provider from the Terraform registry
 3. **Azure Provider with Default Registry**: Queries the Azure provider, demonstrating the default registry behavior (defaults to "terraform")
+
+## Important: Registry Namespace Differences
+
+**Terraform Registry and OpenTofu Registry use different namespace structures:**
+
+- **Terraform Registry** (`registry.terraform.io`):
+  - Hosts providers under their original namespaces
+  - Examples: `hashicorp/aws`, `hashicorp/google`, `cloudflare/cloudflare`
+
+- **OpenTofu Registry** (`registry.opentofu.org`):
+  - Hosts **forked** providers under the `opentofu` namespace
+  - Examples: `opentofu/aws`, `opentofu/google`, `opentofu/random`
+  - **Note**: The `hashicorp` namespace does NOT exist on OpenTofu registry
+
+**Common Mistake:**
+```terraform
+# ❌ This will FAIL - hashicorp namespace doesn't exist on OpenTofu registry
+data "tofusoup_provider_info" "broken" {
+  namespace = "hashicorp"
+  name      = "aws"
+  registry  = "opentofu"  # Error: Provider not found
+}
+
+# ✅ This works - uses correct "opentofu" namespace
+data "tofusoup_provider_info" "correct" {
+  namespace = "opentofu"  # Correct namespace for OpenTofu
+  name      = "aws"
+  registry  = "opentofu"
+}
+```
 
 ## Prerequisites
 

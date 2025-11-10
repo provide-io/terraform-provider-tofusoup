@@ -47,29 +47,41 @@ class ProviderInfoDataSource(BaseDataSource[str, ProviderInfoState, ProviderInfo
     Returns detailed information about a specific provider including its latest version,
     description, source URL, download count, and publication date.
 
+    **Important**: Terraform Registry and OpenTofu Registry use different namespace structures:
+    - **Terraform Registry** hosts providers under their original namespaces (e.g., `hashicorp/aws`)
+    - **OpenTofu Registry** hosts forked providers under the `opentofu` namespace (e.g., `opentofu/aws`)
+
     ## Example Usage
 
     ```terraform
-    data "tofusoup_provider_info" "aws" {
+    # Query from Terraform Registry
+    data "tofusoup_provider_info" "aws_terraform" {
       namespace = "hashicorp"
       name      = "aws"
       registry  = "terraform"
     }
 
-    output "aws_provider_version" {
-      description = "Latest version of the AWS provider"
-      value       = data.tofusoup_provider_info.aws.latest_version
+    # Query from OpenTofu Registry (note the different namespace!)
+    data "tofusoup_provider_info" "aws_opentofu" {
+      namespace = "opentofu"  # OpenTofu uses "opentofu" namespace
+      name      = "aws"
+      registry  = "opentofu"
     }
 
-    output "aws_provider_downloads" {
-      description = "Total downloads of the AWS provider"
-      value       = data.tofusoup_provider_info.aws.downloads
+    output "terraform_version" {
+      value = data.tofusoup_provider_info.aws_terraform.latest_version
+    }
+
+    output "opentofu_version" {
+      value = data.tofusoup_provider_info.aws_opentofu.latest_version
     }
     ```
 
     ## Argument Reference
 
-    - `namespace` - (Required) Provider namespace (e.g., "hashicorp", "cloudflare")
+    - `namespace` - (Required) Provider namespace
+      - For Terraform Registry: typically `hashicorp`, `cloudflare`, `datadog`, etc.
+      - For OpenTofu Registry: typically `opentofu` for official forked providers
     - `name` - (Required) Provider name (e.g., "aws", "azurerm", "google")
     - `registry` - (Optional) Registry to query: "terraform" or "opentofu". Default: "terraform"
 
