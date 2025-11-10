@@ -1,28 +1,33 @@
 # Query AWS provider information from Terraform registry
-data "tofusoup_provider_info" "aws" {
+data "tofusoup_provider_info" "aws_terraform" {
   namespace = "hashicorp"
   name      = "aws"
   registry  = "terraform"
 }
 
-# Query Google provider information from Terraform registry
-data "tofusoup_provider_info" "google" {
-  namespace = "hashicorp"
-  name      = "google"
-  registry  = "terraform"
+# Query AWS provider from OpenTofu registry (note: uses "opentofu" namespace)
+data "tofusoup_provider_info" "aws_opentofu" {
+  namespace = "opentofu"  # OpenTofu uses "opentofu" namespace, not "hashicorp"
+  name      = "aws"
+  registry  = "opentofu"
 }
 
-output "aws_latest_version" {
-  description = "Latest version of the AWS provider"
-  value       = data.tofusoup_provider_info.aws.latest_version
+output "terraform_version" {
+  description = "Latest AWS provider version from Terraform registry"
+  value       = data.tofusoup_provider_info.aws_terraform.latest_version
 }
 
-output "aws_downloads" {
-  description = "Total downloads of the AWS provider"
-  value       = data.tofusoup_provider_info.aws.downloads
+output "terraform_downloads" {
+  description = "Total downloads from Terraform registry"
+  value       = data.tofusoup_provider_info.aws_terraform.downloads
 }
 
-output "google_source_url" {
-  description = "Source URL for the Google provider"
-  value       = data.tofusoup_provider_info.google.source_url
+output "opentofu_version" {
+  description = "Latest AWS provider version from OpenTofu registry"
+  value       = data.tofusoup_provider_info.aws_opentofu.latest_version
+}
+
+output "opentofu_source" {
+  description = "Source URL for OpenTofu fork"
+  value       = data.tofusoup_provider_info.aws_opentofu.source_url
 }
