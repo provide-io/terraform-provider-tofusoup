@@ -20,7 +20,3 @@ provider "tofusoup" {
 
 No provider configuration required.
 
-### Data Sources
-
-- [`tofusoup_provider_info`](./data-sources/provider_info.md)
-
