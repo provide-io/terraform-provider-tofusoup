@@ -23,14 +23,14 @@ output "aws_provider_published_at" {
   value       = data.tofusoup_provider_info.aws.published_at
 }
 
-output "random_opentofu_version" {
-  description = "Latest version of the Random provider from OpenTofu registry"
-  value       = data.tofusoup_provider_info.random_opentofu.latest_version
+output "google_provider_version" {
+  description = "Latest version of the Google provider"
+  value       = data.tofusoup_provider_info.google.latest_version
 }
 
-output "random_opentofu_source" {
-  description = "Source URL for the Random provider from OpenTofu registry"
-  value       = data.tofusoup_provider_info.random_opentofu.source_url
+output "google_provider_source" {
+  description = "Source URL for the Google provider"
+  value       = data.tofusoup_provider_info.google.source_url
 }
 
 output "azurerm_provider_info" {
