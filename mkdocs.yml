@@ -1,5 +1,6 @@
+INHERIT: .provide/foundry/base-mkdocs.yml
 site_name: Terraform Provider TofuSoup
-site_url: https://registry.terraform.io/providers/provide-io/tofusoup/latest/docs
+site_url: https://foundry.provide.io/providers/provide-io/tofusoup/latest/docs
 site_description: Terraform provider for TofuSoup registry queries and state inspection
 dev_addr: 127.0.0.1:8000
 docs_dir: docs
@@ -46,12 +47,12 @@ markdown_extensions:
 nav:
 - Overview: index.md
 - Data Sources:
-  - module_info: data-sources/module_info.md
-  - module_search: data-sources/module_search.md
-  - module_versions: data-sources/module_versions.md
-  - provider_info: data-sources/provider_info.md
-  - provider_versions: data-sources/provider_versions.md
-  - registry_search: data-sources/registry_search.md
-  - state_info: data-sources/state_info.md
-  - state_outputs: data-sources/state_outputs.md
-  - state_resources: data-sources/state_resources.md
+  - tofusoup_module_info: data-sources/module_info.md
+  - tofusoup_module_search: data-sources/module_search.md
+  - tofusoup_module_versions: data-sources/module_versions.md
+  - tofusoup_provider_info: data-sources/provider_info.md
+  - tofusoup_provider_versions: data-sources/provider_versions.md
+  - tofusoup_registry_search: data-sources/registry_search.md
+  - tofusoup_state_info: data-sources/state_info.md
+  - tofusoup_state_outputs: data-sources/state_outputs.md
+  - tofusoup_state_resources: data-sources/state_resources.md
