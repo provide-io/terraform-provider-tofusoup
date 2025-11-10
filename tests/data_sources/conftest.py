@@ -9,6 +9,7 @@ from typing import Any
 
 import pytest
 from pyvider.resources.context import ResourceContext  # type: ignore
+from tofusoup.registry.models.provider import ProviderPlatform, ProviderVersion  # type: ignore
 
 from tofusoup.tf.components.data_sources.provider_info import ProviderInfoConfig  # type: ignore
 
@@ -51,6 +52,52 @@ def sample_opentofu_response() -> dict[str, Any]:
 def sample_context(sample_config: ProviderInfoConfig) -> ResourceContext:
     """Sample ResourceContext with valid config."""
     return ResourceContext(config=sample_config)
+
+
+@pytest.fixture
+def sample_provider_versions() -> list[ProviderVersion]:
+    """Sample provider versions list."""
+    return [
+        ProviderVersion(
+            version="6.8.0",
+            protocols=["6"],
+            platforms=[
+                ProviderPlatform(os="linux", arch="amd64"),
+                ProviderPlatform(os="darwin", arch="arm64"),
+            ],
+        ),
+        ProviderVersion(
+            version="6.7.0",
+            protocols=["6"],
+            platforms=[
+                ProviderPlatform(os="linux", arch="amd64"),
+                ProviderPlatform(os="windows", arch="amd64"),
+            ],
+        ),
+        ProviderVersion(
+            version="6.6.0",
+            protocols=["5.0", "6"],
+            platforms=[ProviderPlatform(os="linux", arch="amd64")],
+        ),
+    ]
+
+
+@pytest.fixture
+def sample_module_response() -> dict[str, Any]:
+    """Sample module registry API response."""
+    return {
+        "id": "terraform-aws-modules/vpc/aws/6.5.0",
+        "namespace": "terraform-aws-modules",
+        "name": "vpc",
+        "target_provider": "aws",
+        "version": "6.5.0",
+        "owner": "antonbabenko",
+        "description": "Terraform module to create AWS VPC resources",
+        "source": "https://github.com/terraform-aws-modules/terraform-aws-vpc",
+        "downloads": 152826752,
+        "verified": False,
+        "published_at": "2025-10-21T21:09:25.665344Z",
+    }
 
 
 # 🐍🧪🔚
