@@ -2,7 +2,7 @@ terraform {
   required_providers {
     tofusoup = {
       source  = "local/providers/tofusoup"
-      version = "0.1.0"
+      version = "0.0.1108"
     }
   }
 }
@@ -20,11 +20,11 @@ data "tofusoup_provider_info" "aws" {
   registry  = "terraform"
 }
 
-# Query Random provider from OpenTofu registry
-data "tofusoup_provider_info" "random_opentofu" {
+# Query Google provider from Terraform registry
+data "tofusoup_provider_info" "google" {
   namespace = "hashicorp"
-  name      = "random"
-  registry  = "opentofu"
+  name      = "google"
+  registry  = "terraform"
 }
 
 # Query Azure provider with default registry (terraform)
