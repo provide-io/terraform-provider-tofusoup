@@ -5,11 +5,11 @@ data "tofusoup_provider_info" "aws" {
   registry  = "terraform"
 }
 
-# Query Random provider information from OpenTofu registry
-data "tofusoup_provider_info" "random" {
+# Query Google provider information from Terraform registry
+data "tofusoup_provider_info" "google" {
   namespace = "hashicorp"
-  name      = "random"
-  registry  = "opentofu"
+  name      = "google"
+  registry  = "terraform"
 }
 
 output "aws_latest_version" {
@@ -22,7 +22,7 @@ output "aws_downloads" {
   value       = data.tofusoup_provider_info.aws.downloads
 }
 
-output "random_source_url" {
-  description = "Source URL for the Random provider"
-  value       = data.tofusoup_provider_info.random.source_url
+output "google_source_url" {
+  description = "Source URL for the Google provider"
+  value       = data.tofusoup_provider_info.google.source_url
 }
