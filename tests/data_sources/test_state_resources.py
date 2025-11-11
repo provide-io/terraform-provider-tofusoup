@@ -184,9 +184,7 @@ class TestStateResourcesRead:
     async def test_read_filter_by_module(self, sample_state_with_modules):
         """Test filtering resources by module."""
         ds = StateResourcesDataSource()
-        config = StateResourcesConfig(
-            state_path=str(sample_state_with_modules), filter_module="module.ec2_cluster"
-        )
+        config = StateResourcesConfig(state_path=str(sample_state_with_modules), filter_module="module.ec2_cluster")
         ctx = ResourceContext(config=config, state=None)
 
         state = await ds.read(ctx)
@@ -417,9 +415,7 @@ class TestStateResourcesEdgeCases:
     async def test_read_filter_no_matches(self, sample_state_with_resources):
         """Test filtering with no matches returns empty list."""
         ds = StateResourcesDataSource()
-        config = StateResourcesConfig(
-            state_path=str(sample_state_with_resources), filter_type="nonexistent_type"
-        )
+        config = StateResourcesConfig(state_path=str(sample_state_with_resources), filter_type="nonexistent_type")
         ctx = ResourceContext(config=config, state=None)
 
         state = await ds.read(ctx)
