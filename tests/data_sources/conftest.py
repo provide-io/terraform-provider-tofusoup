@@ -246,7 +246,11 @@ def sample_state_with_resources(tmp_path):
                 "outputs": {
                     "vpc_id": {"value": "vpc-0123456789abcdef0", "type": "string", "sensitive": False},
                     "instance_ids": {"value": ["i-001", "i-002"], "type": ["list", "string"], "sensitive": False},
-                    "database_endpoint": {"value": "mydb.us-east-1.rds.amazonaws.com", "type": "string", "sensitive": False},
+                    "database_endpoint": {
+                        "value": "mydb.us-east-1.rds.amazonaws.com",
+                        "type": "string",
+                        "sensitive": False,
+                    },
                 },
                 "resources": [
                     {
