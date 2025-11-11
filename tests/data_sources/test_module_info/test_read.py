@@ -9,19 +9,13 @@ from typing import Any
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from attrs.exceptions import FrozenInstanceError
-from pyvider.exceptions import DataSourceError  # type: ignore
 from pyvider.resources.context import ResourceContext  # type: ignore
-from pyvider.schema import PvsSchema  # type: ignore
 
 from tofusoup.registry.models.module import ModuleVersion  # type: ignore
 from tofusoup.tf.components.data_sources.module_info import (  # type: ignore
     ModuleInfoConfig,
     ModuleInfoDataSource,
-    ModuleInfoState,
 )
-
-
 
 
 class TestModuleInfoRead:
