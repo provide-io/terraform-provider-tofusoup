@@ -4,6 +4,8 @@ site_url: https://foundry.provide.io/providers/provide-io/tofusoup/latest/docs
 site_description: Terraform provider for TofuSoup registry queries and state inspection
 dev_addr: 127.0.0.1:11014
 docs_dir: docs
+hooks:
+- scripts/mkdocs_hooks.py
 theme:
   name: material
   features:
