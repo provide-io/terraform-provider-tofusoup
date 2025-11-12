@@ -262,7 +262,7 @@ mypy src/
 # Generate documentation with Plating
 make docs
 
-# Serve documentation locally (http://localhost:8000)
+# Serve documentation locally (http://localhost:11014)
 make docs-serve
 ```
 
