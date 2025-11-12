@@ -22,13 +22,13 @@ No provider configuration required.
 
 ### Data Sources
 
-- [`tofusoup_module_info`](./data-sources/module_info.md)
-- [`tofusoup_module_search`](./data-sources/module_search.md)
-- [`tofusoup_module_versions`](./data-sources/module_versions.md)
-- [`tofusoup_provider_info`](./data-sources/provider_info.md)
-- [`tofusoup_provider_versions`](./data-sources/provider_versions.md)
-- [`tofusoup_registry_search`](./data-sources/registry_search.md)
-- [`tofusoup_state_info`](./data-sources/state_info.md)
-- [`tofusoup_state_outputs`](./data-sources/state_outputs.md)
-- [`tofusoup_state_resources`](./data-sources/state_resources.md)
+- [`tofusoup_module_info`](./data-sources/module_info/)
+- [`tofusoup_module_search`](./data-sources/module_search/)
+- [`tofusoup_module_versions`](./data-sources/module_versions/)
+- [`tofusoup_provider_info`](./data-sources/provider_info/)
+- [`tofusoup_provider_versions`](./data-sources/provider_versions/)
+- [`tofusoup_registry_search`](./data-sources/registry_search/)
+- [`tofusoup_state_info`](./data-sources/state_info/)
+- [`tofusoup_state_outputs`](./data-sources/state_outputs/)
+- [`tofusoup_state_resources`](./data-sources/state_resources/)
 
