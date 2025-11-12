@@ -59,6 +59,21 @@ output "opentofu_latest_version" {
 
 ## Argument Reference
 
+## Schema
+
+### Required
+
+- `namespace` (String) - 
+- `name` (String) - 
+
+### Optional
+
+- `registry` (String) - 
+
+### Read-Only
+
+- `version_count` (String) - 
+- `versions` (Dynamic) - 
 
 
 ## Related Components

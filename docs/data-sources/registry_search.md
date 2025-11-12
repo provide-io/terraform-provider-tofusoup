@@ -57,6 +57,24 @@ output "verified_modules" {
 
 ## Argument Reference
 
+## Schema
+
+### Required
+
+- `query` (String) - 
+
+### Optional
+
+- `registry` (String) - 
+- `limit` (String) - 
+- `resource_type` (String) - 
+
+### Read-Only
+
+- `result_count` (String) - 
+- `provider_count` (String) - 
+- `module_count` (String) - 
+- `results` (Dynamic) - 
 
 
 ## Related Components

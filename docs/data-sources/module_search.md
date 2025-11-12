@@ -57,6 +57,21 @@ output "database_modules_summary" {
 
 ## Argument Reference
 
+## Schema
+
+### Required
+
+- `query` (String) - 
+
+### Optional
+
+- `registry` (String) - 
+- `limit` (String) - 
+
+### Read-Only
+
+- `result_count` (String) - 
+- `results` (Dynamic) - 
 
 
 ## Related Components

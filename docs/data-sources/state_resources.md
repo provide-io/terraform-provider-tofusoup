@@ -63,6 +63,22 @@ output "instance_ids" {
 
 ## Argument Reference
 
+## Schema
+
+### Required
+
+- `state_path` (String) - 
+
+### Optional
+
+- `filter_mode` (String) - 
+- `filter_type` (String) - 
+- `filter_module` (String) - 
+
+### Read-Only
+
+- `resource_count` (String) - 
+- `resources` (Dynamic) - 
 
 
 ## Related Components

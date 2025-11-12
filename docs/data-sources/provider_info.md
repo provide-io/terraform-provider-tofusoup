@@ -51,6 +51,24 @@ output "opentofu_source" {
 
 ## Argument Reference
 
+## Schema
+
+### Required
+
+- `namespace` (String) - 
+- `name` (String) - 
+
+### Optional
+
+- `registry` (String) - 
+
+### Read-Only
+
+- `latest_version` (String) - 
+- `description` (String) - 
+- `source_url` (String) - 
+- `downloads` (String) - 
+- `published_at` (String) - 
 
 
 ## Related Components

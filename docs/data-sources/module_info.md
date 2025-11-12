@@ -88,6 +88,27 @@ output "module_summary" {
 
 ## Argument Reference
 
+## Schema
+
+### Required
+
+- `namespace` (String) - Module namespace (e.g., 'terraform-aws-modules')
+- `name` (String) - Module name (e.g., 'vpc')
+- `target_provider` (String) - Target provider (e.g., 'aws')
+
+### Optional
+
+- `registry` (String) - Registry to query: 'terraform' or 'opentofu'
+
+### Read-Only
+
+- `version` (String) - Latest version string
+- `description` (String) - Module description
+- `source_url` (String) - Source repository URL
+- `downloads` (String) - Total download count
+- `verified` (String) - Whether module is verified
+- `published_at` (String) - Publication date string (ISO 8601 format)
+- `owner` (String) - Module owner/maintainer username
 
 
 ## Related Components

@@ -69,6 +69,22 @@ output "compute_latest_version" {
 
 ## Argument Reference
 
+## Schema
+
+### Required
+
+- `namespace` (String) - 
+- `name` (String) - 
+- `target_provider` (String) - 
+
+### Optional
+
+- `registry` (String) - 
+
+### Read-Only
+
+- `version_count` (String) - 
+- `versions` (Dynamic) - 
 
 
 ## Related Components

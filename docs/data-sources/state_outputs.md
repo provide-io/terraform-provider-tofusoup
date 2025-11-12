@@ -48,6 +48,20 @@ output "sensitive_outputs" {
 
 ## Argument Reference
 
+## Schema
+
+### Required
+
+- `state_path` (String) - 
+
+### Optional
+
+- `filter_name` (String) - 
+
+### Read-Only
+
+- `output_count` (String) - 
+- `outputs` (Dynamic) - 
 
 
 ## Related Components
