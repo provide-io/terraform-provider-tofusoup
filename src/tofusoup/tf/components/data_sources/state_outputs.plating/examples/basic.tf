@@ -1,11 +1,11 @@
 # List all outputs from a state file
 data "tofusoup_state_outputs" "all" {
-  state_path = "${path.module}/terraform.tfstate-example"
+  state_path = "./terraform.tfstate-example"
 }
 
 # Get a specific output by name
 data "tofusoup_state_outputs" "vpc_id" {
-  state_path  = "${path.module}/terraform.tfstate-example"
+  state_path  = "./terraform.tfstate-example"
   filter_name = "vpc_id"
 }
 

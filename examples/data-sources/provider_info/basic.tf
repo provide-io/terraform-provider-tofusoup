@@ -1,33 +1,33 @@
 # Query AWS provider information from Terraform registry
-data "tofusoup_provider_info" "aws_terraform" {
+data "tofusoup_provider_info" "aws" {
   namespace = "hashicorp"
   name      = "aws"
   registry  = "terraform"
 }
 
-# Query AWS provider from OpenTofu registry (note: uses "opentofu" namespace)
-data "tofusoup_provider_info" "aws_opentofu" {
-  namespace = "opentofu"  # OpenTofu uses "opentofu" namespace, not "hashicorp"
-  name      = "aws"
-  registry  = "opentofu"
+# Query null provider information from Terraform registry
+data "tofusoup_provider_info" "null" {
+  namespace = "hashicorp"
+  name      = "null"
+  registry  = "terraform"
 }
 
-output "terraform_version" {
-  description = "Latest AWS provider version from Terraform registry"
-  value       = data.tofusoup_provider_info.aws_terraform.latest_version
+output "aws_latest_version" {
+  description = "Latest AWS provider version"
+  value       = data.tofusoup_provider_info.aws.latest_version
 }
 
-output "terraform_downloads" {
-  description = "Total downloads from Terraform registry"
-  value       = data.tofusoup_provider_info.aws_terraform.downloads
+output "aws_downloads" {
+  description = "Total downloads of AWS provider"
+  value       = data.tofusoup_provider_info.aws.downloads
 }
 
-output "opentofu_version" {
-  description = "Latest AWS provider version from OpenTofu registry"
-  value       = data.tofusoup_provider_info.aws_opentofu.latest_version
+output "aws_description" {
+  description = "AWS provider description"
+  value       = data.tofusoup_provider_info.aws.description
 }
 
-output "opentofu_source" {
-  description = "Source URL for OpenTofu fork"
-  value       = data.tofusoup_provider_info.aws_opentofu.source_url
+output "null_latest_version" {
+  description = "Latest null provider version"
+  value       = data.tofusoup_provider_info.null.latest_version
 }
