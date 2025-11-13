@@ -1,17 +1,17 @@
 # List all resources from a state file
 data "tofusoup_state_resources" "all" {
-  state_path = "${path.module}/terraform.tfstate"
+  state_path = "${path.module}/terraform.tfstate-example"
 }
 
 # List only managed resources
 data "tofusoup_state_resources" "managed" {
-  state_path  = "${path.module}/terraform.tfstate"
+  state_path  = "${path.module}/terraform.tfstate-example"
   filter_mode = "managed"
 }
 
 # Find all AWS instances
 data "tofusoup_state_resources" "instances" {
-  state_path  = "${path.module}/terraform.tfstate"
+  state_path  = "${path.module}/terraform.tfstate-example"
   filter_type = "aws_instance"
 }
 
