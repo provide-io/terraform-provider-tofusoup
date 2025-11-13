@@ -58,3 +58,5 @@ site/
 # OS
 .DS_Store
 Thumbs.db
+.soup/logs/*
+*.log

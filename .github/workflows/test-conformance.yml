@@ -4,9 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       build_run_id:
-        description: 'Build workflow run ID (required)'
-        required: true
+        description: 'Build workflow run ID (leave empty for last successful build)'
+        required: false
         type: string
+      skip_bot:
+        description: 'Skip running the bot (for manual testing)'
+        required: false
+        type: boolean
+        default: false
   workflow_run:
     workflows: ["🏗️ Build Provider Binary"]
     types:
@@ -24,29 +29,59 @@ jobs:
     outputs:
       should_run: ${{ steps.check.outputs.should_run }}
       build_run_id: ${{ steps.check.outputs.build_run_id }}
+      skip_bot: ${{ steps.check.outputs.skip_bot }}
 
     steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
       - name: 📋 Determine build run ID
         id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          SKIP_BOT="${{ inputs.skip_bot }}"
+          SHOULD_RUN="true"
+          BUILD_RUN_ID=""
+
+          if [[ "$SKIP_BOT" == "true" ]]; then
+            echo "⏭️ Skipping bot as requested"
+          fi
+
           if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
             BUILD_RUN_ID="${{ github.event.workflow_run.id }}"
-            echo "should_run=true" >> $GITHUB_OUTPUT
-            echo "build_run_id=${BUILD_RUN_ID}" >> $GITHUB_OUTPUT
             echo "✅ Running tests with artifacts from build workflow run: ${BUILD_RUN_ID}"
-          elif [[ "${{ github.event_name }}" == "workflow_dispatch" && -n "${{ inputs.build_run_id }}" ]]; then
-            BUILD_RUN_ID="${{ inputs.build_run_id }}"
-            echo "should_run=true" >> $GITHUB_OUTPUT
-            echo "build_run_id=${BUILD_RUN_ID}" >> $GITHUB_OUTPUT
-            echo "✅ Running tests with artifacts from specified build run: ${BUILD_RUN_ID}"
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            PROVIDED_RUN_ID="${{ inputs.build_run_id }}"
+
+            if [[ -n "$PROVIDED_RUN_ID" ]]; then
+              BUILD_RUN_ID="$PROVIDED_RUN_ID"
+              echo "✅ Running tests with artifacts from specified build run: ${BUILD_RUN_ID}"
+            else
+              # Get last successful build using gh CLI
+              RUN_LIST=$(gh run list \
+                --workflow build-provider.yml \
+                --status completed \
+                --limit 1 \
+                --json databaseId,conclusion)
+
+              BUILD_RUN_ID=$(echo "$RUN_LIST" | jq '.[] | select(.conclusion=="success") | .databaseId')
+
+              if [[ -n "$BUILD_RUN_ID" ]] && [[ "$BUILD_RUN_ID" != "null" ]]; then
+                echo "✅ Using last successful build run: ${BUILD_RUN_ID}"
+              else
+                SHOULD_RUN="false"
+                echo "❌ ERROR: No successful build found. Please run the Build Provider Binary workflow first."
+              fi
+            fi
           else
-            echo "should_run=false" >> $GITHUB_OUTPUT
-            echo "❌ ERROR: This workflow requires artifacts from the Build Provider Binary workflow"
-            echo "Please run the Build Provider Binary workflow first, then either:"
-            echo "  1. Let it auto-trigger this workflow, OR"
-            echo "  2. Manually trigger this workflow and specify the build_run_id"
-            exit 1
+            SHOULD_RUN="false"
+            echo "❌ ERROR: Unexpected event type"
           fi
+
+          echo "should_run=${SHOULD_RUN}" >> $GITHUB_OUTPUT
+          echo "build_run_id=${BUILD_RUN_ID}" >> $GITHUB_OUTPUT
+          echo "skip_bot=${SKIP_BOT}" >> $GITHUB_OUTPUT
 
   conformance:
     name: 🧪 Test ${{ matrix.target }}
@@ -277,14 +312,14 @@ jobs:
           echo "✅ PASS: Smoke test 2 completed successfully"
           echo "════════════════════════════════════════════════════════════════"
 
-      - name: "🔬 Single Test Verification: tofusoup_provider_versions"
+      - name: "🔬 Single Test Verification: provider_versions"
         id: single_test
         env:
           TF_LOG: DEBUG
           PYVIDER_LOG_LEVEL: debug
         run: |
           chmod +x .github/scripts/single-test-verification.sh
-          .github/scripts/single-test-verification.sh tofusoup_provider_versions "${{ matrix.target }}"
+          .github/scripts/single-test-verification.sh provider_versions "${{ matrix.target }}"
 
       - name: 🧪 Run Full Conformance Tests
         id: full_conformance
@@ -309,9 +344,9 @@ jobs:
             examples/**/.terraform.lock.hcl
             examples/**/terraform.tfstate*
             examples/**/crash.log
-            examples/data-sources/tofusoup_provider_versions/.terraform/
-            examples/data-sources/tofusoup_provider_versions/terraform.tfstate*
-            examples/data-sources/tofusoup_provider_versions/.terraform.lock.hcl
+            examples/data-sources/provider_versions/.terraform/
+            examples/data-sources/provider_versions/terraform.tfstate*
+            examples/data-sources/provider_versions/.terraform.lock.hcl
             /tmp/smoke-test-init/.terraform/
             /tmp/smoke-test-init/terraform.tfstate*
             /tmp/smoke-test-init/.terraform.lock.hcl
@@ -324,12 +359,20 @@ jobs:
   summary:
     name: 📋 Test Summary
     needs: [check, conformance]
-    if: always() && needs.check.outputs.should_run == 'true'
+    if: always() && needs.check.outputs.should_run == 'true' && needs.check.outputs.skip_bot != 'true'
     runs-on: ubuntu-latest
 
     steps:
       - name: 📊 Generate Summary
         run: |
+          # Check if bot was skipped
+          if [[ "${{ needs.check.outputs.skip_bot }}" == "true" ]]; then
+            echo "## 🧪 Provider Conformance Tests - Bot Skipped" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Tests ran in manual/skip-bot mode. Summary generation skipped per request." >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+
           echo "## 🧪 Provider Conformance Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 

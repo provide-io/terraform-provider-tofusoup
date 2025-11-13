@@ -14,7 +14,7 @@ on:
         type: boolean
         default: true
       build_run_id:
-        description: 'Build workflow run ID (leave empty to trigger new build)'
+        description: 'Build workflow run ID (leave empty for last successful build or to trigger new build)'
         required: false
         type: string
 
@@ -22,50 +22,65 @@ env:
   PYTHON_VERSION: '3.11'
 
 jobs:
-  # Optionally trigger a new build if no build_run_id provided
+  # Optionally trigger a new build or find last successful build
   trigger_build:
-    name: 🏗️ Trigger Build
+    name: 🏗️ Trigger/Find Build
     runs-on: ubuntu-latest
     if: inputs.build_run_id == ''
     permissions:
       actions: write
       contents: read
     outputs:
-      run_id: ${{ steps.trigger.outputs.run_id }}
+      run_id: ${{ steps.determine.outputs.run_id }}
+      use_existing: ${{ steps.determine.outputs.use_existing }}
 
     steps:
-      - name: 🔨 Trigger build workflow
-        id: trigger
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const response = await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'build-provider.yml',
-              ref: context.ref
-            });
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
 
-            // Wait a bit for the workflow to start
-            await new Promise(resolve => setTimeout(resolve, 5000));
+      - name: 🔍 Check for last successful build
+        id: determine
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Try to find last successful build first
+          RUN_LIST=$(gh run list \
+            --workflow build-provider.yml \
+            --status completed \
+            --limit 1 \
+            --json databaseId,conclusion)
 
-            // Get the latest run
-            const runs = await github.rest.actions.listWorkflowRuns({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'build-provider.yml',
-              per_page: 1
-            });
+          RUN_ID=$(echo "$RUN_LIST" | jq '.[] | select(.conclusion=="success") | .databaseId')
 
-            const runId = runs.data.workflow_runs[0].id;
-            core.setOutput('run_id', runId);
-            console.log(`Build workflow triggered: ${runId}`);
+          if [[ -n "$RUN_ID" ]] && [[ "$RUN_ID" != "null" ]]; then
+            echo "✅ Using last successful build: ${RUN_ID}"
+            echo "run_id=${RUN_ID}" >> $GITHUB_OUTPUT
+            echo "use_existing=true" >> $GITHUB_OUTPUT
+          else
+            # No successful build found, trigger a new one
+            echo "⏳ No successful build found, triggering new build..."
+            gh workflow run build-provider.yml
+
+            # Wait a bit for the workflow to start
+            sleep 5
+
+            # Get the latest run
+            RUN_ID=$(gh run list \
+              --workflow build-provider.yml \
+              --limit 1 \
+              --json databaseId \
+              --jq '.[0].databaseId')
+
+            echo "🚀 Build workflow triggered: ${RUN_ID}"
+            echo "run_id=${RUN_ID}" >> $GITHUB_OUTPUT
+            echo "use_existing=false" >> $GITHUB_OUTPUT
+          fi
 
   # Wait for build to complete
   wait_for_build:
     name: ⏳ Wait for Build
     needs: trigger_build
-    if: always() && (inputs.build_run_id != '' || needs.trigger_build.outputs.run_id != '')
+    if: always()
     runs-on: ubuntu-latest
     outputs:
       build_run_id: ${{ steps.wait.outputs.build_run_id }}
@@ -73,50 +88,51 @@ jobs:
     steps:
       - name: ⏳ Wait for build completion
         id: wait
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const runId = '${{ inputs.build_run_id }}' || '${{ needs.trigger_build.outputs.run_id }}';
-            core.setOutput('build_run_id', runId);
+        run: |
+          if [[ -n "${{ inputs.build_run_id }}" ]]; then
+            RUN_ID="${{ inputs.build_run_id }}"
+          else
+            RUN_ID="${{ needs.trigger_build.outputs.run_id }}"
+          fi
+          echo "build_run_id=${RUN_ID}" >> $GITHUB_OUTPUT
 
-            if ('${{ inputs.build_run_id }}' !== '') {
-              console.log('Using provided build_run_id:', runId);
-              return;
-            }
+          # If provided or using existing successful build, skip waiting
+          if [[ -n "${{ inputs.build_run_id }}" ]]; then
+            echo "✅ Using provided build_run_id: ${RUN_ID}"
+            exit 0
+          fi
 
-            console.log('Waiting for build workflow to complete:', runId);
+          if [[ "${{ needs.trigger_build.outputs.use_existing }}" == "true" ]]; then
+            echo "✅ Using existing successful build: ${RUN_ID}"
+            exit 0
+          fi
 
-            let status = 'in_progress';
-            let attempts = 0;
-            const maxAttempts = 60; // 30 minutes max wait
+          echo "⏳ Waiting for build workflow to complete: ${RUN_ID}"
 
-            while (status === 'in_progress' && attempts < maxAttempts) {
-              const run = await github.rest.actions.getWorkflowRun({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                run_id: runId
-              });
+          ATTEMPTS=0
+          MAX_ATTEMPTS=60  # 30 minutes max wait
 
-              status = run.data.status;
-              const conclusion = run.data.conclusion;
+          while [[ $ATTEMPTS -lt $MAX_ATTEMPTS ]]; do
+            STATUS=$(gh run view $RUN_ID --json status --jq '.status')
+            CONCLUSION=$(gh run view $RUN_ID --json conclusion --jq '.conclusion')
 
-              console.log(`Build status: ${status}, conclusion: ${conclusion}`);
+            echo "Build status: ${STATUS}, conclusion: ${CONCLUSION}"
 
-              if (status === 'completed') {
-                if (conclusion !== 'success') {
-                  core.setFailed(`Build workflow failed with conclusion: ${conclusion}`);
-                  return;
-                }
-                break;
-              }
+            if [[ "$STATUS" == "completed" ]]; then
+              if [[ "$CONCLUSION" != "success" ]]; then
+                echo "❌ Build workflow failed with conclusion: ${CONCLUSION}"
+                exit 1
+              fi
+              echo "✅ Build workflow completed successfully"
+              exit 0
+            fi
 
-              await new Promise(resolve => setTimeout(resolve, 30000)); // Wait 30s
-              attempts++;
-            }
+            sleep 30  # Wait 30 seconds
+            ((ATTEMPTS++))
+          done
 
-            if (attempts >= maxAttempts) {
-              core.setFailed('Timeout waiting for build workflow');
-            }
+          echo "❌ Timeout waiting for build workflow"
+          exit 1
 
   release:
     name: 🎉 Create Release
@@ -129,16 +145,26 @@ jobs:
     steps:
       - name: 🤖 Generate App Token
         id: app-token
+        continue-on-error: true
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.PROVIDE_BOT_APP_ID }}
           private-key: ${{ secrets.PROVIDE_BOT_PRIVATE_KEY }}
 
+      - name: 🔐 Determine checkout token
+        id: checkout-token
+        run: |
+          if [[ -n "${{ steps.app-token.outputs.token }}" ]]; then
+            echo "token=${{ steps.app-token.outputs.token }}" >> $GITHUB_OUTPUT
+          else
+            echo "token=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: 📥 Checkout
         uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ steps.checkout-token.outputs.token }}
 
       - name: 📖 Read VERSION
         id: version
@@ -173,6 +199,7 @@ jobs:
 
       - name: 💾 Commit Documentation
         if: inputs.generate_docs == true
+        continue-on-error: true
         run: |
           # Configure git with providebot[bot] identity
           git config user.name "providebot[bot]"
@@ -330,6 +357,7 @@ jobs:
           EOF
 
       - name: 🏷️ Create Git tag
+        continue-on-error: true
         run: |
           # Configure git with providebot[bot] identity
           git config user.name "providebot[bot]"
@@ -340,6 +368,7 @@ jobs:
           git push origin "v${{ steps.version.outputs.VERSION }}" || echo "Tag already exists on remote"
 
       - name: 🚀 Create GitHub Release
+        continue-on-error: true
         uses: ncipollo/release-action@v1
         with:
           tag: "v${{ steps.version.outputs.VERSION }}"
