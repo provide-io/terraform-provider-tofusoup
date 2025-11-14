@@ -1,0 +1,379 @@
+name: 🚀 Release Provider
+
+on:
+  workflow_dispatch:
+    inputs:
+      prerelease:
+        description: 'Is this a pre-release?'
+        required: false
+        type: boolean
+        default: false
+      generate_docs:
+        description: 'Generate and commit documentation'
+        required: false
+        type: boolean
+        default: true
+      build_run_id:
+        description: 'Build workflow run ID (leave empty for last successful build or to trigger new build)'
+        required: false
+        type: string
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # Optionally trigger a new build or find last successful build
+  trigger_build:
+    name: 🏗️ Trigger/Find Build
+    runs-on: ubuntu-latest
+    if: inputs.build_run_id == ''
+    permissions:
+      actions: write
+      contents: read
+    outputs:
+      run_id: ${{ steps.determine.outputs.run_id }}
+      use_existing: ${{ steps.determine.outputs.use_existing }}
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔍 Check for last successful build
+        id: determine
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Try to find last successful build first
+          RUN_LIST=$(gh run list \
+            --workflow build-provider.yml \
+            --status completed \
+            --limit 1 \
+            --json databaseId,conclusion)
+
+          RUN_ID=$(echo "$RUN_LIST" | jq '.[] | select(.conclusion=="success") | .databaseId')
+
+          if [[ -n "$RUN_ID" ]] && [[ "$RUN_ID" != "null" ]]; then
+            echo "✅ Using last successful build: ${RUN_ID}"
+            echo "run_id=${RUN_ID}" >> $GITHUB_OUTPUT
+            echo "use_existing=true" >> $GITHUB_OUTPUT
+          else
+            # No successful build found, trigger a new one
+            echo "⏳ No successful build found, triggering new build..."
+            gh workflow run build-provider.yml
+
+            # Wait a bit for the workflow to start
+            sleep 5
+
+            # Get the latest run
+            RUN_ID=$(gh run list \
+              --workflow build-provider.yml \
+              --limit 1 \
+              --json databaseId \
+              --jq '.[0].databaseId')
+
+            echo "🚀 Build workflow triggered: ${RUN_ID}"
+            echo "run_id=${RUN_ID}" >> $GITHUB_OUTPUT
+            echo "use_existing=false" >> $GITHUB_OUTPUT
+          fi
+
+  # Wait for build to complete
+  wait_for_build:
+    name: ⏳ Wait for Build
+    needs: trigger_build
+    if: always()
+    runs-on: ubuntu-latest
+    outputs:
+      build_run_id: ${{ steps.wait.outputs.build_run_id }}
+
+    steps:
+      - name: ⏳ Wait for build completion
+        id: wait
+        run: |
+          if [[ -n "${{ inputs.build_run_id }}" ]]; then
+            RUN_ID="${{ inputs.build_run_id }}"
+          else
+            RUN_ID="${{ needs.trigger_build.outputs.run_id }}"
+          fi
+          echo "build_run_id=${RUN_ID}" >> $GITHUB_OUTPUT
+
+          # If provided or using existing successful build, skip waiting
+          if [[ -n "${{ inputs.build_run_id }}" ]]; then
+            echo "✅ Using provided build_run_id: ${RUN_ID}"
+            exit 0
+          fi
+
+          if [[ "${{ needs.trigger_build.outputs.use_existing }}" == "true" ]]; then
+            echo "✅ Using existing successful build: ${RUN_ID}"
+            exit 0
+          fi
+
+          echo "⏳ Waiting for build workflow to complete: ${RUN_ID}"
+
+          ATTEMPTS=0
+          MAX_ATTEMPTS=60  # 30 minutes max wait
+
+          while [[ $ATTEMPTS -lt $MAX_ATTEMPTS ]]; do
+            STATUS=$(gh run view $RUN_ID --json status --jq '.status')
+            CONCLUSION=$(gh run view $RUN_ID --json conclusion --jq '.conclusion')
+
+            echo "Build status: ${STATUS}, conclusion: ${CONCLUSION}"
+
+            if [[ "$STATUS" == "completed" ]]; then
+              if [[ "$CONCLUSION" != "success" ]]; then
+                echo "❌ Build workflow failed with conclusion: ${CONCLUSION}"
+                exit 1
+              fi
+              echo "✅ Build workflow completed successfully"
+              exit 0
+            fi
+
+            sleep 30  # Wait 30 seconds
+            ((ATTEMPTS++))
+          done
+
+          echo "❌ Timeout waiting for build workflow"
+          exit 1
+
+  release:
+    name: 🎉 Create Release
+    needs: wait_for_build
+    if: always() && needs.wait_for_build.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 🤖 Generate App Token
+        id: app-token
+        continue-on-error: true
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.PROVIDE_BOT_APP_ID }}
+          private-key: ${{ secrets.PROVIDE_BOT_PRIVATE_KEY }}
+
+      - name: 🔐 Determine checkout token
+        id: checkout-token
+        run: |
+          if [[ -n "${{ steps.app-token.outputs.token }}" ]]; then
+            echo "token=${{ steps.app-token.outputs.token }}" >> $GITHUB_OUTPUT
+          else
+            echo "token=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          token: ${{ steps.checkout-token.outputs.token }}
+
+      - name: 📖 Read VERSION
+        id: version
+        run: |
+          VERSION=$(cat VERSION)
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+          echo "📦 Releasing version: ${VERSION}"
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📦 Install UV
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: false
+
+      - name: 📚 Generate Documentation
+        if: inputs.generate_docs == true
+        run: |
+          echo "📝 Generating documentation with plating..."
+
+          # Install project dependencies and dev tools (includes plating)
+          uv sync --group dev
+
+          # Generate documentation
+          make docs
+
+          echo "✅ Documentation generated"
+          ls -la docs/
+
+      - name: 💾 Commit Documentation
+        if: inputs.generate_docs == true
+        continue-on-error: true
+        run: |
+          # Configure git with providebot[bot] identity
+          git config user.name "providebot[bot]"
+          git config user.email "178697328+providebot[bot]@users.noreply.github.com"
+
+          # Add generated documentation
+          git add docs/
+
+          # Commit if there are changes
+          if git diff --staged --quiet; then
+            echo "📝 No documentation changes to commit"
+          else
+            git commit -m "Generate documentation for v${{ steps.version.outputs.VERSION }}"
+            git push origin main
+            echo "✅ Documentation committed and pushed"
+          fi
+
+      - name: 📥 Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          run-id: ${{ needs.wait_for_build.outputs.build_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📁 Organize release files
+        run: |
+          mkdir -p release
+
+          # Move all zip files to release directory
+          find artifacts -name "*.zip" -type f -exec mv {} release/ \;
+
+          # Copy and rename manifest file
+          cp terraform-registry-manifest.json "release/terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_manifest.json"
+
+          echo "📦 Release files:"
+          ls -la release/
+
+      - name: 🔧 Generate checksums
+        run: |
+          cd release
+
+          # Generate SHA256 checksums for all files
+          sha256sum * > "terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_SHA256SUMS"
+
+          echo "📝 Checksums:"
+          cat "terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_SHA256SUMS"
+
+      - name: 🔐 Sign checksums with GPG
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          chmod +x .github/scripts/sign-release.sh
+          .github/scripts/sign-release.sh release/
+
+          echo "✅ Signatures created:"
+          ls -la release/*.sig
+
+      - name: 🔍 Verify release artifacts
+        run: |
+          cd release
+          echo "📋 Verifying release artifacts for Terraform Registry..."
+
+          # Check all required files exist
+          REQUIRED_FILES=(
+            "terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_linux_amd64.zip"
+            "terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_linux_arm64.zip"
+            "terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_darwin_amd64.zip"
+            "terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_darwin_arm64.zip"
+            "terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_manifest.json"
+            "terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_SHA256SUMS"
+            "terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_SHA256SUMS.sig"
+          )
+
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ Missing required file: $file"
+              exit 1
+            else
+              echo "✅ Found: $file"
+            fi
+          done
+
+          # Verify SHA256SUMS contains all required entries
+          echo -e "\n📝 Checking SHA256SUMS entries..."
+          for platform in linux_amd64 linux_arm64 darwin_amd64 darwin_arm64; do
+            if grep -q "${platform}.zip" "terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_SHA256SUMS"; then
+              echo "✅ SHA256SUMS contains ${platform}"
+            else
+              echo "❌ SHA256SUMS missing ${platform}"
+              exit 1
+            fi
+          done
+
+          # Verify manifest.json
+          if grep -q "manifest.json" "terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_SHA256SUMS"; then
+            echo "✅ SHA256SUMS contains manifest.json"
+          else
+            echo "❌ SHA256SUMS missing manifest.json"
+            exit 1
+          fi
+
+          echo -e "\n✅ All release artifacts verified!"
+
+      - name: 📝 Generate release notes
+        run: |
+          cat > release-notes.md << EOF
+          # Terraform Provider TofuSoup v${{ steps.version.outputs.VERSION }}
+
+          ## 📦 Installation
+
+          ### Terraform Registry (Coming Soon)
+          \`\`\`hcl
+          terraform {
+            required_providers {
+              tofusoup = {
+                source  = "provide-io/tofusoup"
+                version = "${{ steps.version.outputs.VERSION }}"
+              }
+            }
+          }
+          \`\`\`
+
+          ### Manual Installation
+          1. Download the appropriate package for your platform from the assets below
+          2. Extract the archive to get the provider binary
+          3. Place it in your Terraform plugins directory
+
+          ## 🔒 Verification
+
+          Verify your download with:
+          \`\`\`bash
+          # Download the SHA256SUMS and signature files
+          curl -LO https://github.com/provide-io/terraform-provider-tofusoup/releases/download/v${{ steps.version.outputs.VERSION }}/terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_SHA256SUMS
+          curl -LO https://github.com/provide-io/terraform-provider-tofusoup/releases/download/v${{ steps.version.outputs.VERSION }}/terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_SHA256SUMS.sig
+
+          # Verify the signature
+          gpg --verify terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_SHA256SUMS.sig terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_SHA256SUMS
+
+          # Verify the checksum
+          sha256sum -c terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_SHA256SUMS 2>&1 | grep OK
+          \`\`\`
+
+          ## 📋 Supported Platforms
+
+          - Linux AMD64
+          - Linux ARM64
+          - macOS ARM64 (Apple Silicon)
+          - macOS AMD64 (Intel)
+
+          ## 🚀 What's New
+
+          TofuSoup Terraform Provider - Query Terraform/OpenTofu registries and inspect state files.
+          EOF
+
+      - name: 🏷️ Create Git tag
+        continue-on-error: true
+        run: |
+          # Configure git with providebot[bot] identity
+          git config user.name "providebot[bot]"
+          git config user.email "178697328+providebot[bot]@users.noreply.github.com"
+
+          # Create and push tag (ensure it exists before release)
+          git tag -a "v${{ steps.version.outputs.VERSION }}" -m "Release v${{ steps.version.outputs.VERSION }}" || echo "Tag might already exist"
+          git push origin "v${{ steps.version.outputs.VERSION }}" || echo "Tag already exists on remote"
+
+      - name: 🚀 Create GitHub Release
+        continue-on-error: true
+        uses: ncipollo/release-action@v1
+        with:
+          tag: "v${{ steps.version.outputs.VERSION }}"
+          name: "v${{ steps.version.outputs.VERSION }}"
+          bodyFile: "release-notes.md"
+          artifacts: "release/*"
+          prerelease: ${{ inputs.prerelease }}
+          token: ${{ secrets.GITHUB_TOKEN }}

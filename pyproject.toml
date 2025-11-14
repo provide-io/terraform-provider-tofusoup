@@ -4,7 +4,7 @@ version = "0.0.1108"
 description = "Terraform provider for TofuSoup registry queries and state inspection"
 requires-python = ">=3.11"
 readme = "README.md"
-license = { text = "MIT" }
+license = "Apache-2.0"
 
 dependencies = [
     "pyvider",
