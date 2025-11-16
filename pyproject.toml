@@ -1,6 +1,6 @@
 [project]
 name = "terraform-provider-tofusoup"
-version = "0.0.1108"
+dynamic = ["version"]
 description = "Terraform provider for TofuSoup registry queries and state inspection"
 requires-python = ">=3.11"
 readme = "README.md"
@@ -35,8 +35,11 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
+
 [tool.ruff]
-line-length = 120
+line-length = 111
 target-version = "py311"
 
 [tool.mypy]
