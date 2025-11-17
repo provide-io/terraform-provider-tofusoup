@@ -5,19 +5,18 @@ description = "Terraform provider for TofuSoup registry queries and state inspec
 requires-python = ">=3.11"
 readme = "README.md"
 license = "Apache-2.0"
-
-[project.urls]
-Homepage = "https://foundry.provide.io/terraform-provider-tofusoup/"
-Documentation = "https://foundry.provide.io/terraform-provider-tofusoup/"
-Repository = "https://foundry.provide.io/terraform-provider-tofusoup/repo"
-Issues = "https://foundry.provide.io/terraform-provider-tofusoup/issues"
-
 dependencies = [
     "pyvider",
     "tofusoup",
     "flavorpack",
     "provide-foundation[all]",
 ]
+
+[project.urls]
+Homepage = "https://foundry.provide.io/terraform-provider-tofusoup/"
+Documentation = "https://foundry.provide.io/terraform-provider-tofusoup/"
+Repository = "https://foundry.provide.io/terraform-provider-tofusoup/repo"
+Issues = "https://foundry.provide.io/terraform-provider-tofusoup/issues"
 
 [project.scripts]
 terraform-provider-tofusoup = "pyvider.cli:main"
