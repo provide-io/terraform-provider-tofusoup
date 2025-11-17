@@ -52,8 +52,10 @@ dist/terraform-provider-*
 # MkDocs
 site/
 
-# Provide
-.provide/
+# Provide (track .md files, ignore generated)
+.provide/foundry/
+.provide/cache/
+.provide/tmp/
 
 # OS
 .DS_Store
