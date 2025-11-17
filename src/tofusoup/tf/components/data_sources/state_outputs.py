@@ -11,7 +11,7 @@ from pyvider.data_sources.base import BaseDataSource  # type: ignore
 from pyvider.data_sources.decorators import register_data_source  # type: ignore
 from pyvider.exceptions import DataSourceError  # type: ignore
 from pyvider.resources.context import ResourceContext  # type: ignore
-from pyvider.schema import PvsSchema, a_bool, a_list, a_obj, a_str, a_num, s_data_source  # type: ignore
+from pyvider.schema import PvsSchema, a_bool, a_list, a_num, a_obj, a_str, s_data_source  # type: ignore
 
 
 @define(frozen=True)
@@ -239,4 +239,4 @@ class StateOutputsDataSource(BaseDataSource[str, StateOutputsState, StateOutputs
             raise DataSourceError(f"Permission denied reading state file: {config.state_path}") from e
         except Exception as e:
             logger.error("Failed to read state outputs", state_path=config.state_path, error=str(e))
-            raise DataSourceError(f"Failed to read state outputs from '{config.state_path}': {str(e)}") from e
+            raise DataSourceError(f"Failed to read state outputs from '{config.state_path}': {e!s}") from e

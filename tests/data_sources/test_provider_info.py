@@ -9,10 +9,10 @@ from typing import Any
 
 import pytest
 from attrs.exceptions import FrozenInstanceError
+from pytest_httpx import HTTPXMock
 from pyvider.exceptions import DataSourceError  # type: ignore
 from pyvider.resources.context import ResourceContext  # type: ignore
 from pyvider.schema import PvsSchema  # type: ignore
-from pytest_httpx import HTTPXMock
 
 from tofusoup.tf.components.data_sources.provider_info import (  # type: ignore
     ProviderInfoConfig,

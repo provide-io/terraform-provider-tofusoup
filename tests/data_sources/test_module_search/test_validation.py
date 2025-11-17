@@ -2,6 +2,7 @@
 
 import pytest
 from attrs import evolve
+
 from tofusoup.tf.components.data_sources.module_search import (  # type: ignore
     ModuleSearchConfig,
     ModuleSearchDataSource,

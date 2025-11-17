@@ -3,6 +3,7 @@
 import pytest
 from pyvider.exceptions import DataSourceError
 from pyvider.resources.context import ResourceContext
+
 from tofusoup.tf.components.data_sources.registry_search import (
     RegistrySearchConfig,
     RegistrySearchDataSource,
@@ -38,9 +39,8 @@ class TestRegistrySearchErrorHandling:
         with patch(
             "tofusoup.tf.components.data_sources.registry_search.IBMTerraformRegistry",
             return_value=mock_registry,
-        ):
-            with pytest.raises(DataSourceError, match="Failed to search registry"):
-                await ds.read(ctx)
+        ), pytest.raises(DataSourceError, match="Failed to search registry"):
+            await ds.read(ctx)
 
     @pytest.mark.asyncio
     async def test_read_opentofu_registry_error(self):
@@ -59,9 +59,8 @@ class TestRegistrySearchErrorHandling:
         with patch(
             "tofusoup.tf.components.data_sources.registry_search.OpenTofuRegistry",
             return_value=mock_registry,
-        ):
-            with pytest.raises(DataSourceError, match="Failed to search registry"):
-                await ds.read(ctx)
+        ), pytest.raises(DataSourceError, match="Failed to search registry"):
+            await ds.read(ctx)
 
     @pytest.mark.asyncio
     async def test_read_includes_query_in_error(self):
@@ -80,9 +79,8 @@ class TestRegistrySearchErrorHandling:
         with patch(
             "tofusoup.tf.components.data_sources.registry_search.IBMTerraformRegistry",
             return_value=mock_registry,
-        ):
-            with pytest.raises(DataSourceError, match="myquery"):
-                await ds.read(ctx)
+        ), pytest.raises(DataSourceError, match="myquery"):
+            await ds.read(ctx)
 
     @pytest.mark.asyncio
     async def test_read_includes_registry_in_error(self):
@@ -101,9 +99,8 @@ class TestRegistrySearchErrorHandling:
         with patch(
             "tofusoup.tf.components.data_sources.registry_search.OpenTofuRegistry",
             return_value=mock_registry,
-        ):
-            with pytest.raises(DataSourceError, match="opentofu"):
-                await ds.read(ctx)
+        ), pytest.raises(DataSourceError, match="opentofu"):
+            await ds.read(ctx)
 
     @pytest.mark.asyncio
     async def test_read_includes_resource_type_in_error(self):
@@ -122,6 +119,5 @@ class TestRegistrySearchErrorHandling:
         with patch(
             "tofusoup.tf.components.data_sources.registry_search.IBMTerraformRegistry",
             return_value=mock_registry,
-        ):
-            with pytest.raises(DataSourceError, match="providers"):
-                await ds.read(ctx)
+        ), pytest.raises(DataSourceError, match="providers"):
+            await ds.read(ctx)
