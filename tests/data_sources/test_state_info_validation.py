@@ -1,6 +1,7 @@
 """Tests for the state_info data source validation."""
 
 import pytest
+
 from tofusoup.tf.components.data_sources.state_info import (
     StateInfoConfig,
     StateInfoDataSource,

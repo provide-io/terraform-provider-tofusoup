@@ -10,6 +10,7 @@ from pyvider.data_sources.decorators import register_data_source  # type: ignore
 from pyvider.exceptions import DataSourceError  # type: ignore
 from pyvider.resources.context import ResourceContext  # type: ignore
 from pyvider.schema import PvsSchema, a_list, a_num, a_obj, a_str, s_data_source  # type: ignore
+
 from tofusoup.config.defaults import OPENTOFU_REGISTRY_URL, TERRAFORM_REGISTRY_URL  # type: ignore
 from tofusoup.registry.base import RegistryConfig  # type: ignore
 from tofusoup.registry.models.module import ModuleVersion  # type: ignore
@@ -231,5 +232,5 @@ class ModuleVersionsDataSource(BaseDataSource[str, ModuleVersionsState, ModuleVe
                 error=str(e),
             )
             raise DataSourceError(
-                f"Failed to query module versions for {module_id} from {config.registry} registry: {str(e)}"
+                f"Failed to query module versions for {module_id} from {config.registry} registry: {e!s}"
             ) from e
