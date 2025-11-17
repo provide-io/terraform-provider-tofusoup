@@ -42,6 +42,10 @@ version = {file = "VERSION"}
 line-length = 111
 target-version = "py311"
 
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "ANN", "B", "C90", "SIM", "PTH", "RUF"]
+ignore = ["ANN401", "E501"]
+
 [tool.mypy]
 python_version = "3.11"
 strict = true
@@ -49,6 +53,7 @@ strict = true
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+pythonpath = ["src"]
 
 [pyvider]
 component_packages = ["tofusoup.tf.components"]
