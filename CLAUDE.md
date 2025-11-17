@@ -43,13 +43,18 @@ pytest tests/data_sources/test_provider_info.py::test_read_provider_info
 
 ### Code Quality
 
-After editing any Python file, run these commands in sequence:
+After editing any Python file, run these commands:
 
 ```bash
+# If `we` commands available:
+we format
+we lint
+we typecheck
+
+# Otherwise:
 ruff format <file>
-ruff check --fix --unsafe-fixes <file>
+ruff check --fix <file>
 mypy <file>
-ruff format <file>  # Again after fixes
 ```
 
 ### Documentation
