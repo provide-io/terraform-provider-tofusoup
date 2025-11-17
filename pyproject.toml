@@ -6,6 +6,12 @@ requires-python = ">=3.11"
 readme = "README.md"
 license = "Apache-2.0"
 
+[project.urls]
+Homepage = "https://foundry.provide.io/terraform-provider-tofusoup/"
+Documentation = "https://foundry.provide.io/terraform-provider-tofusoup/"
+Repository = "https://foundry.provide.io/terraform-provider-tofusoup/repo"
+Issues = "https://foundry.provide.io/terraform-provider-tofusoup/issues"
+
 dependencies = [
     "pyvider",
     "tofusoup",
