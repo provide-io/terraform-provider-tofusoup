@@ -283,4 +283,4 @@ class StateResourcesDataSource(BaseDataSource[str, StateResourcesState, StateRes
             raise DataSourceError(f"Permission denied reading state file: {config.state_path}") from e
         except Exception as e:
             logger.error("Failed to read state resources", state_path=config.state_path, error=str(e))
-            raise DataSourceError(f"Failed to read state resources from '{config.state_path}': {str(e)}") from e
+            raise DataSourceError(f"Failed to read state resources from '{config.state_path}': {e!s}") from e

@@ -1,6 +1,7 @@
 """Basic tests for RegistrySearchDataSource structure."""
 
 import pytest
+
 from tofusoup.tf.components.data_sources.registry_search import (
     RegistrySearchConfig,
     RegistrySearchDataSource,

@@ -16,6 +16,7 @@ from pyvider.data_sources.decorators import register_data_source  # type: ignore
 from pyvider.exceptions import DataSourceError  # type: ignore
 from pyvider.resources.context import ResourceContext  # type: ignore
 from pyvider.schema import PvsSchema, a_bool, a_num, a_str, s_data_source  # type: ignore
+
 from tofusoup.config.defaults import OPENTOFU_REGISTRY_URL, TERRAFORM_REGISTRY_URL  # type: ignore
 from tofusoup.registry.base import RegistryConfig  # type: ignore
 from tofusoup.registry.opentofu import OpenTofuRegistry  # type: ignore
@@ -293,5 +294,5 @@ class ModuleInfoDataSource(BaseDataSource[str, ModuleInfoState, ModuleInfoConfig
                 error=str(e),
             )
             raise DataSourceError(
-                f"Failed to query module info for {module_id} from {config.registry or 'terraform'} registry: {str(e)}"
+                f"Failed to query module info for {module_id} from {config.registry or 'terraform'} registry: {e!s}"
             ) from e

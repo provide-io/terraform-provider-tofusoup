@@ -1,6 +1,7 @@
 """Tests for TofuSoup provider."""
 
 import pytest
+
 from tofusoup.tf.components.provider import (  # type: ignore[import-untyped]
     TofuSoupProvider,
     TofuSoupProviderConfig,

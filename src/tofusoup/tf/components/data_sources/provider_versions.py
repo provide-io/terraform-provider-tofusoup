@@ -10,6 +10,7 @@ from pyvider.data_sources.decorators import register_data_source  # type: ignore
 from pyvider.exceptions import DataSourceError  # type: ignore
 from pyvider.resources.context import ResourceContext  # type: ignore
 from pyvider.schema import PvsSchema, a_list, a_num, a_obj, a_str, s_data_source  # type: ignore
+
 from tofusoup.config.defaults import OPENTOFU_REGISTRY_URL, TERRAFORM_REGISTRY_URL  # type: ignore
 from tofusoup.registry.base import RegistryConfig  # type: ignore
 from tofusoup.registry.models.provider import ProviderVersion  # type: ignore
@@ -215,5 +216,5 @@ class ProviderVersionsDataSource(BaseDataSource[str, ProviderVersionsState, Prov
             )
             raise DataSourceError(
                 f"Failed to query provider versions for {config.namespace}/{config.name} "
-                f"from {config.registry} registry: {str(e)}"
+                f"from {config.registry} registry: {e!s}"
             ) from e
