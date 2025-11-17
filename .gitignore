@@ -60,3 +60,5 @@ site/
 Thumbs.db
 .soup/logs/*
 *.log
+.mypy_cache/
+.ruff_cache/
