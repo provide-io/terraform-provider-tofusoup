@@ -1,0 +1,8 @@
+[pyvider]
+name = "tofusoup"
+component_packages = ["tofusoup.tf.components"]
+
+[tool.flavor]
+entry_point = "pyvider.cli:main"
+output_path = "dist/terraform-provider-tofusoup"
+platforms = ["darwin_arm64", "linux_amd64", "linux_arm64", "windows_amd64"]

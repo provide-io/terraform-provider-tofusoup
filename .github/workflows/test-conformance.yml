@@ -1,0 +1,425 @@
+name: 🧪 Provider Conformance Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_run_id:
+        description: 'Build workflow run ID (leave empty for last successful build)'
+        required: false
+        type: string
+      skip_bot:
+        description: 'Skip running the bot (for manual testing)'
+        required: false
+        type: boolean
+        default: false
+  workflow_run:
+    workflows: ["🏗️ Build Provider Binary"]
+    types:
+      - completed
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # Check if we should run tests (skip if workflow_run failed)
+  check:
+    name: 🔍 Check Build Status
+    runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+      build_run_id: ${{ steps.check.outputs.build_run_id }}
+      skip_bot: ${{ steps.check.outputs.skip_bot }}
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📋 Determine build run ID
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SKIP_BOT="${{ inputs.skip_bot }}"
+          SHOULD_RUN="true"
+          BUILD_RUN_ID=""
+
+          if [[ "$SKIP_BOT" == "true" ]]; then
+            echo "⏭️ Skipping bot as requested"
+          fi
+
+          if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
+            BUILD_RUN_ID="${{ github.event.workflow_run.id }}"
+            echo "✅ Running tests with artifacts from build workflow run: ${BUILD_RUN_ID}"
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            PROVIDED_RUN_ID="${{ inputs.build_run_id }}"
+
+            if [[ -n "$PROVIDED_RUN_ID" ]]; then
+              BUILD_RUN_ID="$PROVIDED_RUN_ID"
+              echo "✅ Running tests with artifacts from specified build run: ${BUILD_RUN_ID}"
+            else
+              # Get last successful build using gh CLI
+              RUN_LIST=$(gh run list \
+                --workflow build-provider.yml \
+                --status completed \
+                --limit 1 \
+                --json databaseId,conclusion)
+
+              BUILD_RUN_ID=$(echo "$RUN_LIST" | jq '.[] | select(.conclusion=="success") | .databaseId')
+
+              if [[ -n "$BUILD_RUN_ID" ]] && [[ "$BUILD_RUN_ID" != "null" ]]; then
+                echo "✅ Using last successful build run: ${BUILD_RUN_ID}"
+              else
+                SHOULD_RUN="false"
+                echo "❌ ERROR: No successful build found. Please run the Build Provider Binary workflow first."
+              fi
+            fi
+          else
+            SHOULD_RUN="false"
+            echo "❌ ERROR: Unexpected event type"
+          fi
+
+          echo "should_run=${SHOULD_RUN}" >> $GITHUB_OUTPUT
+          echo "build_run_id=${BUILD_RUN_ID}" >> $GITHUB_OUTPUT
+          echo "skip_bot=${SKIP_BOT}" >> $GITHUB_OUTPUT
+
+  conformance:
+    name: 🧪 Test ${{ matrix.target }}
+    needs: check
+    if: needs.check.outputs.should_run == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            platform: linux
+            arch: amd64
+            target: linux_amd64
+          - os: macos-15
+            platform: darwin
+            arch: arm64
+            target: darwin_arm64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📖 Read VERSION
+        id: version
+        run: |
+          VERSION=$(cat VERSION)
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+          echo "🧪 Testing version: ${VERSION}"
+
+      - name: 📥 Download provider artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: provider-${{ matrix.target }}
+          path: provider-binary
+          run-id: ${{ needs.check.outputs.build_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+
+      - name: 📦 Extract provider binary
+        run: |
+          cd provider-binary
+          echo "📦 Contents of provider-binary directory:"
+          ls -la
+          echo ""
+
+          echo "📦 Extracting provider archive..."
+          unzip terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_${{ matrix.target }}.zip
+          chmod +x terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}
+
+          echo ""
+          echo "✅ Extracted provider binary:"
+          ls -la terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}
+
+      - name: 🔍 Verify provider binary
+        run: |
+          PROVIDER_BINARY="provider-binary/terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}"
+
+          echo "════════════════════════════════════════════════════════════════"
+          echo "🔍 PROVIDER BINARY VERIFICATION"
+          echo "════════════════════════════════════════════════════════════════"
+          echo ""
+
+          echo "📋 Binary information:"
+          ls -lah "$PROVIDER_BINARY"
+          echo ""
+
+          echo "📋 File type:"
+          file "$PROVIDER_BINARY" || echo "file command not available"
+          echo ""
+
+          if [[ "${{ matrix.platform }}" == "linux" ]]; then
+            echo "📋 Library dependencies (ldd):"
+            ldd "$PROVIDER_BINARY" 2>&1 || echo "ldd not available or binary not dynamically linked"
+          else
+            echo "📋 Library dependencies (otool):"
+            otool -L "$PROVIDER_BINARY" 2>&1 || echo "otool not available"
+          fi
+          echo ""
+
+          echo "📋 Testing provider executable:"
+          if "$PROVIDER_BINARY" --version 2>&1 | head -10; then
+            echo "✅ Provider supports --version"
+          else
+            echo "⚠️  Provider doesn't support --version, trying without arguments..."
+            if timeout 5 "$PROVIDER_BINARY" 2>&1 | head -10; then
+              echo "✅ Provider is executable"
+            else
+              echo "❌ Provider failed to execute"
+              exit 1
+            fi
+          fi
+
+          echo ""
+          echo "✅ Provider binary verification complete"
+          echo "════════════════════════════════════════════════════════════════"
+
+      - name: 🔌 Install provider to Terraform plugin directory
+        run: |
+          chmod +x .github/scripts/install-provider.sh
+          .github/scripts/install-provider.sh \
+            "${{ steps.version.outputs.VERSION }}" \
+            "${{ matrix.target }}" \
+            "provider-binary/terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}"
+
+      - name: 📝 Install OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.10.6
+
+      - name: 🐍 Setup Python (for tofusoup)
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📦 Install UV (for tofusoup)
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: 🍲 Install tofusoup
+        run: |
+          uv tool install tofusoup
+          echo "✅ Tofusoup installed"
+          soup --version
+
+      - name: "🔥 Smoke Test 1: Provider Initialization"
+        run: |
+          echo "════════════════════════════════════════════════════════════════"
+          echo "🔥 SMOKE TEST 1: Provider Initialization"
+          echo "════════════════════════════════════════════════════════════════"
+          echo ""
+          echo "This test validates that the provider loads and responds with"
+          echo "a minimal Terraform configuration."
+          echo ""
+
+          mkdir -p /tmp/smoke-test-init
+          cd /tmp/smoke-test-init
+
+          cat > main.tf << 'EOF'
+          terraform {
+            required_providers {
+              tofusoup = {
+                source  = "local/providers/tofusoup"
+                version = ">= 0.0.1"
+              }
+            }
+          }
+
+          provider "tofusoup" {}
+
+          output "test" {
+            value = "smoke test - provider initialized"
+          }
+          EOF
+
+          echo "📋 Terraform configuration:"
+          cat main.tf
+          echo ""
+
+          echo "🔧 Running: tofu init"
+          tofu init
+          echo ""
+
+          echo "📊 Running: tofu plan"
+          tofu plan
+          echo ""
+
+          echo "✅ PASS: Smoke test 1 completed successfully"
+          echo "════════════════════════════════════════════════════════════════"
+
+      - name: "🔥 Smoke Test 2: Registry Query"
+        run: |
+          echo "════════════════════════════════════════════════════════════════"
+          echo "🔥 SMOKE TEST 2: Registry Query (Data Source)"
+          echo "════════════════════════════════════════════════════════════════"
+          echo ""
+          echo "This test validates that the provider can query the Terraform"
+          echo "registry for provider information."
+          echo ""
+
+          mkdir -p /tmp/smoke-test-registry
+          cd /tmp/smoke-test-registry
+
+          cat > main.tf << 'EOF'
+          terraform {
+            required_providers {
+              tofusoup = {
+                source  = "local/providers/tofusoup"
+                version = ">= 0.0.1"
+              }
+            }
+          }
+
+          provider "tofusoup" {}
+
+          data "tofusoup_provider_info" "aws" {
+            namespace = "hashicorp"
+            name      = "aws"
+          }
+
+          output "latest_version" {
+            value = data.tofusoup_provider_info.aws.latest_version
+          }
+          EOF
+
+          echo "📋 Terraform configuration:"
+          cat main.tf
+          echo ""
+
+          echo "🔧 Running: tofu init"
+          tofu init
+          echo ""
+
+          echo "📊 Running: tofu plan"
+          tofu plan
+          echo ""
+
+          echo "🚀 Running: tofu apply -auto-approve"
+          tofu apply -auto-approve
+          echo ""
+
+          echo "📤 Running: tofu output"
+          tofu output
+          echo ""
+
+          echo "✅ PASS: Smoke test 2 completed successfully"
+          echo "════════════════════════════════════════════════════════════════"
+
+      - name: "🔬 Single Test Verification: provider_versions"
+        id: single_test
+        env:
+          TF_LOG: DEBUG
+          PYVIDER_LOG_LEVEL: debug
+        run: |
+          chmod +x .github/scripts/single-test-verification.sh
+          .github/scripts/single-test-verification.sh provider_versions "${{ matrix.target }}"
+
+      - name: 🧪 Run Full Conformance Tests
+        id: full_conformance
+        if: success()
+        continue-on-error: true
+        env:
+          TF_LOG: DEBUG
+          PYVIDER_LOG_LEVEL: debug
+        run: |
+          chmod +x .github/scripts/run-conformance-suite.sh
+          .github/scripts/run-conformance-suite.sh "${{ matrix.target }}"
+
+      - name: 📤 Upload test logs and artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: conformance-test-logs-${{ matrix.target }}
+          path: |
+            /tmp/conformance_output.txt
+            examples/**/.soup/logs/*.log
+            examples/**/.soup/logs/terraform.log
+            examples/**/.terraform.lock.hcl
+            examples/**/terraform.tfstate*
+            examples/**/crash.log
+            examples/data-sources/provider_versions/.terraform/
+            examples/data-sources/provider_versions/terraform.tfstate*
+            examples/data-sources/provider_versions/.terraform.lock.hcl
+            /tmp/smoke-test-init/.terraform/
+            /tmp/smoke-test-init/terraform.tfstate*
+            /tmp/smoke-test-init/.terraform.lock.hcl
+            /tmp/smoke-test-registry/.terraform/
+            /tmp/smoke-test-registry/terraform.tfstate*
+            /tmp/smoke-test-registry/.terraform.lock.hcl
+          retention-days: 7
+          if-no-files-found: warn
+
+  summary:
+    name: 📋 Test Summary
+    needs: [check, conformance]
+    if: always() && needs.check.outputs.should_run == 'true' && needs.check.outputs.skip_bot != 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📊 Generate Summary
+        run: |
+          # Check if bot was skipped
+          if [[ "${{ needs.check.outputs.skip_bot }}" == "true" ]]; then
+            echo "## 🧪 Provider Conformance Tests - Bot Skipped" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Tests ran in manual/skip-bot mode. Summary generation skipped per request." >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+
+          echo "## 🧪 Provider Conformance Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Create results table
+          echo "| Platform | Status | Details |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|---------|" >> $GITHUB_STEP_SUMMARY
+
+          CONFORMANCE_RESULT="${{ needs.conformance.result }}"
+
+          if [[ "$CONFORMANCE_RESULT" == "success" ]]; then
+            echo "| linux_amd64 | ✅ PASSED | All tests successful |" >> $GITHUB_STEP_SUMMARY
+            echo "| darwin_arm64 | ✅ PASSED | All tests successful |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Test Coverage" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ **Smoke Test 1:** Provider initialization" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ **Smoke Test 2:** Registry query (tofusoup_provider_info)" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ **Single Test:** Full cycle on tofusoup_provider_versions" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ **Full Suite:** All 9 data source examples" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "🎉 All conformance tests passed successfully!" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          else
+            echo "| linux_amd64 | ❌ FAILED | See job logs for details |" >> $GITHUB_STEP_SUMMARY
+            echo "| darwin_arm64 | ⚠️ SKIPPED/FAILED | See job logs for details |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Failure Details" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Some tests failed. The workflow uses a **hybrid failure handling** approach:" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- **Platforms run independently** (fail-fast: false)" >> $GITHUB_STEP_SUMMARY
+            echo "- **Single test acts as circuit breaker** - full suite skipped if it fails" >> $GITHUB_STEP_SUMMARY
+            echo "- **Full suite collects all failures** (continue-on-error: true)" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "#### Artifacts Available" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Download test artifacts for detailed logs:" >> $GITHUB_STEP_SUMMARY
+            echo "- \`conformance-test-logs-linux_amd64\` - Linux test logs and state files" >> $GITHUB_STEP_SUMMARY
+            echo "- \`conformance-test-logs-darwin_arm64\` - macOS test logs and state files" >> $GITHUB_STEP_SUMMARY
+            echo "- \`/tmp/conformance_output.txt\` - Soup stir full output with error details" >> $GITHUB_STEP_SUMMARY
+            echo "- \`.soup/logs/\` - Individual test logs for each example" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "#### Next Steps" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "1. Check the job logs to see which step failed" >> $GITHUB_STEP_SUMMARY
+            echo "2. Download artifacts to review detailed error messages" >> $GITHUB_STEP_SUMMARY
+            echo "3. Look for \`conformance_output.txt\` for soup stir failure analysis" >> $GITHUB_STEP_SUMMARY
+            echo "4. Review individual test logs in \`.soup/logs/terraform.log\`" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi

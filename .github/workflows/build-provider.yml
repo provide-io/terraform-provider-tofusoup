@@ -1,0 +1,172 @@
+name: 🏗️ Build Provider Binary
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload_retention_days:
+        description: 'Artifact retention days'
+        required: false
+        type: number
+        default: 7
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  build:
+    name: 📦 Build for ${{ matrix.target }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            platform: linux
+            arch: amd64
+            target: linux_amd64
+          - os: ubuntu-24.04-arm
+            platform: linux
+            arch: arm64
+            target: linux_arm64
+          - os: macos-15
+            platform: darwin
+            arch: arm64
+            target: darwin_arm64
+          - os: macos-15-intel
+            platform: darwin
+            arch: amd64
+            target: darwin_amd64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📖 Read VERSION
+        id: version
+        run: |
+          VERSION=$(cat VERSION)
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+          echo "📦 Building version: ${VERSION}"
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📦 Install UV
+        uses: astral-sh/setup-uv@v4
+        continue-on-error: true
+        with:
+          enable-cache: false
+
+      - name: 🔧 Install dependencies
+        run: |
+          # Install project dependencies and dev tools (flavorpack, plating)
+          # Dev tools are NOT included in the PSP package - only used for building
+          uv sync --group dev
+
+      - name: 🔑 Generate temporary signing keys
+        run: |
+          # Generate Ed25519 keys using flavor keygen (run via uv to use venv)
+          uv run flavor keygen --out-dir keys
+          echo "✅ Generated temporary signing keys"
+          ls -la keys/
+
+      - name: 🧹 Clear package caches
+        run: |
+          echo "🧹 Clearing pip and uv caches to ensure fresh PyPI index..."
+          pip cache purge 2>/dev/null || echo "No pip cache to clear"
+          uv cache clean 2>/dev/null || echo "No uv cache to clear"
+          echo "✅ Caches cleared"
+
+      - name: 🏗️ Build PSP package
+        run: |
+          # The version is already set dynamically from VERSION file
+          # No need to update pyproject.toml as it uses dynamic = ["version"]
+
+          # Build the PSP package with retry logic for transient PyPI issues
+          # Note: flavorpack >= 0.0.5 automatically uses manylinux2014 wheels on Linux
+          echo "🏗️ Building PSP package (with retry on failure)..."
+
+          if ! uv run flavor pack \
+            --manifest pyproject.toml \
+            --output "terraform-provider-tofusoup.psp"; then
+            echo "⚠️ First build attempt failed, waiting 30s and retrying..."
+            sleep 30
+
+            # Force PyPI index refresh by checking latest version
+            python3 -m pip index versions flavorpack 2>/dev/null || true
+
+            # Retry build
+            uv run flavor pack \
+              --manifest pyproject.toml \
+              --output "terraform-provider-tofusoup.psp"
+          fi
+
+          echo "✅ Built PSP package:"
+          ls -la terraform-provider-tofusoup.psp
+
+      - name: 📦 Package for Terraform
+        run: |
+          # Rename PSP to Terraform provider binary format
+          BINARY_NAME="terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}"
+          cp terraform-provider-tofusoup.psp "$BINARY_NAME"
+          chmod +x "$BINARY_NAME"
+
+          # Test execution with timing
+          echo "🧪 Testing provider binary execution..."
+          echo "First run (cold start):"
+          time ./"$BINARY_NAME" --help || true
+
+          echo -e "\nSecond run (warm start):"
+          time ./"$BINARY_NAME" --help || true
+
+          # Create zip archive with proper naming
+          ZIP_NAME="terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_${{ matrix.target }}.zip"
+          zip "$ZIP_NAME" "$BINARY_NAME"
+
+          echo "📦 Created Terraform provider package:"
+          ls -la "$ZIP_NAME"
+
+          # Test unzip to verify
+          unzip -l "$ZIP_NAME"
+
+      - name: 📤 Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-${{ matrix.target }}
+          path: |
+            terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_${{ matrix.target }}.zip
+          retention-days: ${{ inputs.upload_retention_days || 7 }}
+
+  summary:
+    name: 📋 Build Summary
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout (for VERSION file)
+        uses: actions/checkout@v4
+
+      - name: 📖 Read VERSION
+        id: version
+        run: |
+          VERSION=$(cat VERSION)
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: 📊 Summary
+        run: |
+          echo "## 🎉 Build Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** \`${{ steps.version.outputs.VERSION }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Built Packages" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ linux_amd64" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ linux_arm64" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ darwin_amd64" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ darwin_arm64" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ⏭️ Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Conformance tests will automatically run on these artifacts." >> $GITHUB_STEP_SUMMARY
