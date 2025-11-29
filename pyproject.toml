@@ -62,6 +62,7 @@ strict = true
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["src"]
+addopts = "--dist load"
 
 [pyvider]
 component_packages = ["tofusoup.tf.components"]
