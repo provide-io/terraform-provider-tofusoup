@@ -34,7 +34,9 @@ class TestModuleInfoErrorHandling:
     @pytest.mark.asyncio
     async def test_read_handles_module_not_found(self) -> None:
         """Test that read handles module not found error."""
-        config = ModuleInfoConfig(namespace="nonexistent", name="module", target_provider="aws", registry="terraform")
+        config = ModuleInfoConfig(
+            namespace="nonexistent", name="module", target_provider="aws", registry="terraform"
+        )
         ctx = ResourceContext(config=config, state=None)
 
         mock_registry = AsyncMock()
@@ -64,7 +66,9 @@ class TestModuleInfoErrorHandling:
         import httpx
 
         mock_registry.list_module_versions = AsyncMock(
-            side_effect=httpx.HTTPStatusError("Server error", request=AsyncMock(), response=AsyncMock(status_code=500))
+            side_effect=httpx.HTTPStatusError(
+                "Server error", request=AsyncMock(), response=AsyncMock(status_code=500)
+            )
         )
         mock_registry.__aenter__ = AsyncMock(return_value=mock_registry)
         mock_registry.__aexit__ = AsyncMock(return_value=None)

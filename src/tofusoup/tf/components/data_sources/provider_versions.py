@@ -157,7 +157,9 @@ class ProviderVersionsDataSource(BaseDataSource[str, ProviderVersionsState, Prov
         return {
             "version": version.version,
             "protocols": list(version.protocols) if version.protocols else [],
-            "platforms": [{"os": platform.os, "arch": platform.arch} for platform in (version.platforms or [])],
+            "platforms": [
+                {"os": platform.os, "arch": platform.arch} for platform in (version.platforms or [])
+            ],
         }
 
     @resilient()

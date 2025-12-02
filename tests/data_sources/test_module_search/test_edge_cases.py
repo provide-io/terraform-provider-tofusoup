@@ -66,7 +66,9 @@ class TestModuleSearchEdgeCases:
         assert result["source_url"] is None
 
     @pytest.mark.asyncio
-    async def test_read_with_special_characters_in_query(self, sample_module_search_results: list[Module]) -> None:
+    async def test_read_with_special_characters_in_query(
+        self, sample_module_search_results: list[Module]
+    ) -> None:
         """Test read with special characters in query."""
         config = ModuleSearchConfig(query="vpc-module", registry="terraform")
         ds = ModuleSearchDataSource()
