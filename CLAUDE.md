@@ -26,13 +26,13 @@ source .venv/bin/activate
 
 ```bash
 # Build the provider binary (FlavorPack)
-make build
+we build
 
 # Install to local Terraform plugin directory
-make install
+we pkg install
 
 # Run all tests
-make test
+we test
 
 # Run a single test file
 pytest tests/data_sources/test_provider_info.py
@@ -61,16 +61,16 @@ mypy <file>
 
 ```bash
 # Generate documentation with Plating
-make docs
+we docs build
 
 # Serve documentation locally (http://localhost:11014)
-make docs-serve
+we docs serve
 ```
 
 ### Local Testing with Terraform
 
 ```bash
-# After `make build && make install`
+# After `we build && we pkg install`
 cd examples/data-sources/<datasource_name>
 terraform init
 terraform plan
@@ -233,9 +233,8 @@ terraform {
 ## Configuration Files
 
 - `pyproject.toml` - Python project configuration, dependencies, tool settings
-- `soup.toml` - Pyvider provider configuration, FlavorPack settings
+- `soup.toml` - Pyvider provider configuration, FlavorPack settings, wrknv tasks
 - `mkdocs.yml` - MkDocs documentation site configuration
-- `Makefile` - Build, test, docs, and installation targets
 
 ## Code Quality Standards
 
