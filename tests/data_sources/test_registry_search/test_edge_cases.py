@@ -88,7 +88,9 @@ class TestRegistrySearchEdgeCases:
         assert state.query == "test-query_123"
 
     @pytest.mark.asyncio
-    async def test_read_with_many_mixed_results(self, sample_provider_search_results, sample_module_search_results):
+    async def test_read_with_many_mixed_results(
+        self, sample_provider_search_results, sample_module_search_results
+    ):
         """Test handling of many mixed results."""
         ds = RegistrySearchDataSource()
         config = RegistrySearchConfig(query="aws", registry="terraform", limit=100)
@@ -163,7 +165,9 @@ class TestRegistrySearchEdgeCases:
             assert result["type"] == "module"
 
     @pytest.mark.asyncio
-    async def test_read_limit_applies_after_merge(self, sample_provider_search_results, sample_module_search_results):
+    async def test_read_limit_applies_after_merge(
+        self, sample_provider_search_results, sample_module_search_results
+    ):
         """Test that limit is applied after merging provider and module results."""
         ds = RegistrySearchDataSource()
         config = RegistrySearchConfig(query="aws", registry="terraform", limit=3)
@@ -188,7 +192,9 @@ class TestRegistrySearchEdgeCases:
         assert state.result_count == 3
 
     @pytest.mark.asyncio
-    async def test_read_all_includes_both_types(self, sample_provider_search_results, sample_module_search_results):
+    async def test_read_all_includes_both_types(
+        self, sample_provider_search_results, sample_module_search_results
+    ):
         """Test that resource_type='all' includes both providers and modules."""
         ds = RegistrySearchDataSource()
         config = RegistrySearchConfig(query="aws", resource_type="all")

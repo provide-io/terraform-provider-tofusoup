@@ -264,7 +264,9 @@ class ModuleInfoDataSource(BaseDataSource[str, ModuleInfoState, ModuleInfoConfig
 
             # Check if module was found
             if not details:
-                raise DataSourceError(f"Module {module_id} not found in {config.registry or 'terraform'} registry")
+                raise DataSourceError(
+                    f"Module {module_id} not found in {config.registry or 'terraform'} registry"
+                )
 
             # Extract fields from the API response
             return ModuleInfoState(
