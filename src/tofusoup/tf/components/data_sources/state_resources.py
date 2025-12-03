@@ -220,7 +220,9 @@ class StateResourcesDataSource(BaseDataSource[str, StateResourcesState, StateRes
 
             if config.filter_module:
                 filtered_resources = [r for r in filtered_resources if r.get("module") == config.filter_module]
-                logger.debug(f"Filtered by module '{config.filter_module}': {len(filtered_resources)} resources")
+                logger.debug(
+                    f"Filtered by module '{config.filter_module}': {len(filtered_resources)} resources"
+                )
 
             # Convert to output format
             resource_data = []

@@ -54,7 +54,9 @@ class TestModuleInfoDataSource:
 
     def test_state_class_is_frozen(self) -> None:
         """Test that ModuleInfoState is immutable (frozen)."""
-        state = ModuleInfoState(namespace="terraform-aws-modules", name="vpc", target_provider="aws", version="6.5.0")
+        state = ModuleInfoState(
+            namespace="terraform-aws-modules", name="vpc", target_provider="aws", version="6.5.0"
+        )
 
         with pytest.raises(FrozenInstanceError):
             state.version = "7.0.0"

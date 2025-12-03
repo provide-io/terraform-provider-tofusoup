@@ -36,10 +36,13 @@ class TestRegistrySearchErrorHandling:
         mock_registry.__aenter__ = AsyncMock(return_value=mock_registry)
         mock_registry.__aexit__ = AsyncMock(return_value=None)
 
-        with patch(
-            "tofusoup.tf.components.data_sources.registry_search.IBMTerraformRegistry",
-            return_value=mock_registry,
-        ), pytest.raises(DataSourceError, match="Failed to search registry"):
+        with (
+            patch(
+                "tofusoup.tf.components.data_sources.registry_search.IBMTerraformRegistry",
+                return_value=mock_registry,
+            ),
+            pytest.raises(DataSourceError, match="Failed to search registry"),
+        ):
             await ds.read(ctx)
 
     @pytest.mark.asyncio
@@ -56,10 +59,13 @@ class TestRegistrySearchErrorHandling:
         mock_registry.__aenter__ = AsyncMock(return_value=mock_registry)
         mock_registry.__aexit__ = AsyncMock(return_value=None)
 
-        with patch(
-            "tofusoup.tf.components.data_sources.registry_search.OpenTofuRegistry",
-            return_value=mock_registry,
-        ), pytest.raises(DataSourceError, match="Failed to search registry"):
+        with (
+            patch(
+                "tofusoup.tf.components.data_sources.registry_search.OpenTofuRegistry",
+                return_value=mock_registry,
+            ),
+            pytest.raises(DataSourceError, match="Failed to search registry"),
+        ):
             await ds.read(ctx)
 
     @pytest.mark.asyncio
@@ -76,10 +82,13 @@ class TestRegistrySearchErrorHandling:
         mock_registry.__aenter__ = AsyncMock(return_value=mock_registry)
         mock_registry.__aexit__ = AsyncMock(return_value=None)
 
-        with patch(
-            "tofusoup.tf.components.data_sources.registry_search.IBMTerraformRegistry",
-            return_value=mock_registry,
-        ), pytest.raises(DataSourceError, match="myquery"):
+        with (
+            patch(
+                "tofusoup.tf.components.data_sources.registry_search.IBMTerraformRegistry",
+                return_value=mock_registry,
+            ),
+            pytest.raises(DataSourceError, match="myquery"),
+        ):
             await ds.read(ctx)
 
     @pytest.mark.asyncio
@@ -96,10 +105,13 @@ class TestRegistrySearchErrorHandling:
         mock_registry.__aenter__ = AsyncMock(return_value=mock_registry)
         mock_registry.__aexit__ = AsyncMock(return_value=None)
 
-        with patch(
-            "tofusoup.tf.components.data_sources.registry_search.OpenTofuRegistry",
-            return_value=mock_registry,
-        ), pytest.raises(DataSourceError, match="opentofu"):
+        with (
+            patch(
+                "tofusoup.tf.components.data_sources.registry_search.OpenTofuRegistry",
+                return_value=mock_registry,
+            ),
+            pytest.raises(DataSourceError, match="opentofu"),
+        ):
             await ds.read(ctx)
 
     @pytest.mark.asyncio
@@ -116,8 +128,11 @@ class TestRegistrySearchErrorHandling:
         mock_registry.__aenter__ = AsyncMock(return_value=mock_registry)
         mock_registry.__aexit__ = AsyncMock(return_value=None)
 
-        with patch(
-            "tofusoup.tf.components.data_sources.registry_search.IBMTerraformRegistry",
-            return_value=mock_registry,
-        ), pytest.raises(DataSourceError, match="providers"):
+        with (
+            patch(
+                "tofusoup.tf.components.data_sources.registry_search.IBMTerraformRegistry",
+                return_value=mock_registry,
+            ),
+            pytest.raises(DataSourceError, match="providers"),
+        ):
             await ds.read(ctx)

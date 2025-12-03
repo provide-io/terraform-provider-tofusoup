@@ -238,7 +238,9 @@ class TestProviderInfoRead:
             "name": "aws",
         }
 
-        httpx_mock.add_response(url="https://registry.terraform.io/v1/providers/hashicorp/aws", json=minimal_response)
+        httpx_mock.add_response(
+            url="https://registry.terraform.io/v1/providers/hashicorp/aws", json=minimal_response
+        )
 
         ds = ProviderInfoDataSource()
         config = ProviderInfoConfig(namespace="hashicorp", name="aws", registry="terraform")
@@ -292,7 +294,9 @@ class TestProviderInfoErrorHandling:
     async def test_read_handles_provider_not_found(self, httpx_mock: HTTPXMock) -> None:
         """Test that read handles 404 provider not found error."""
         # Mock a 404 response - registry returns empty dict for 404s
-        httpx_mock.add_response(url="https://registry.terraform.io/v1/providers/nonexistent/provider", status_code=404)
+        httpx_mock.add_response(
+            url="https://registry.terraform.io/v1/providers/nonexistent/provider", status_code=404
+        )
 
         ds = ProviderInfoDataSource()
         config = ProviderInfoConfig(namespace="nonexistent", name="provider", registry="terraform")
@@ -309,7 +313,9 @@ class TestProviderInfoErrorHandling:
     async def test_read_handles_http_error(self, httpx_mock: HTTPXMock) -> None:
         """Test that read handles HTTP errors (5xx)."""
         # Mock a 500 server error - registry returns empty dict for HTTP errors
-        httpx_mock.add_response(url="https://registry.terraform.io/v1/providers/hashicorp/aws", status_code=500)
+        httpx_mock.add_response(
+            url="https://registry.terraform.io/v1/providers/hashicorp/aws", status_code=500
+        )
 
         ds = ProviderInfoDataSource()
         config = ProviderInfoConfig(namespace="hashicorp", name="aws", registry="terraform")
@@ -339,7 +345,9 @@ class TestProviderInfoErrorHandling:
     async def test_read_wraps_exception_with_context(self, httpx_mock: HTTPXMock) -> None:
         """Test that exceptions are wrapped with helpful context."""
         # Mock a 403 error - registry returns empty dict
-        httpx_mock.add_response(url="https://registry.terraform.io/v1/providers/hashicorp/aws", status_code=403)
+        httpx_mock.add_response(
+            url="https://registry.terraform.io/v1/providers/hashicorp/aws", status_code=403
+        )
 
         ds = ProviderInfoDataSource()
         config = ProviderInfoConfig(namespace="hashicorp", name="aws", registry="terraform")

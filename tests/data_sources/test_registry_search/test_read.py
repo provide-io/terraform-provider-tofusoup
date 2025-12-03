@@ -98,7 +98,9 @@ class TestRegistrySearchRead:
         assert all(r["type"] == "module" for r in state.results)  # type: ignore
 
     @pytest.mark.asyncio
-    async def test_read_opentofu_registry_all_types(self, sample_provider_search_results, sample_module_search_results):
+    async def test_read_opentofu_registry_all_types(
+        self, sample_provider_search_results, sample_module_search_results
+    ):
         """Test reading from OpenTofu registry with all resource types."""
         ds = RegistrySearchDataSource()
         config = RegistrySearchConfig(query="aws", registry="opentofu", resource_type="all")
@@ -193,7 +195,9 @@ class TestRegistrySearchRead:
         assert state.registry == "terraform"
 
     @pytest.mark.asyncio
-    async def test_read_default_resource_type(self, sample_provider_search_results, sample_module_search_results):
+    async def test_read_default_resource_type(
+        self, sample_provider_search_results, sample_module_search_results
+    ):
         """Test that default resource_type is all."""
         ds = RegistrySearchDataSource()
         config = RegistrySearchConfig(query="aws")  # No resource_type specified
@@ -244,7 +248,9 @@ class TestRegistrySearchRead:
         assert state.results == []
 
     @pytest.mark.asyncio
-    async def test_read_mixed_results_conversion(self, sample_provider_search_results, sample_module_search_results):
+    async def test_read_mixed_results_conversion(
+        self, sample_provider_search_results, sample_module_search_results
+    ):
         """Test that mixed provider and module results are properly converted."""
         ds = RegistrySearchDataSource()
         config = RegistrySearchConfig(query="aws", registry="terraform")
@@ -306,10 +312,14 @@ class TestRegistrySearchRead:
         assert len(state.results) == 3  # type: ignore
 
     @pytest.mark.asyncio
-    async def test_read_preserves_config_values(self, sample_provider_search_results, sample_module_search_results):
+    async def test_read_preserves_config_values(
+        self, sample_provider_search_results, sample_module_search_results
+    ):
         """Test that config values are preserved in state."""
         ds = RegistrySearchDataSource()
-        config = RegistrySearchConfig(query="kubernetes", registry="opentofu", resource_type="modules", limit=25)
+        config = RegistrySearchConfig(
+            query="kubernetes", registry="opentofu", resource_type="modules", limit=25
+        )
         ctx = ResourceContext(config=config, state=None)
 
         from unittest.mock import AsyncMock, MagicMock, patch

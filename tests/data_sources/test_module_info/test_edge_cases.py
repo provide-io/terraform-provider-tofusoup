@@ -24,10 +24,14 @@ class TestModuleInfoEdgeCases:
     """Edge case tests."""
 
     @pytest.mark.asyncio
-    async def test_read_with_null_registry_defaults_to_terraform(self, sample_module_response: dict[str, Any]) -> None:
+    async def test_read_with_null_registry_defaults_to_terraform(
+        self, sample_module_response: dict[str, Any]
+    ) -> None:
         """Test that None/null registry value defaults to terraform."""
         # Explicitly set registry to None
-        config = ModuleInfoConfig(namespace="terraform-aws-modules", name="vpc", target_provider="aws", registry=None)
+        config = ModuleInfoConfig(
+            namespace="terraform-aws-modules", name="vpc", target_provider="aws", registry=None
+        )
         ctx = ResourceContext(config=config, state=None)
 
         mock_registry = AsyncMock()
@@ -134,7 +138,9 @@ class TestModuleInfoEdgeCases:
             result = await ds.read(ctx)
 
         # Should use the first (latest) version
-        mock_registry.get_module_details.assert_called_once_with("terraform-aws-modules", "vpc", "aws", "6.5.0")
+        mock_registry.get_module_details.assert_called_once_with(
+            "terraform-aws-modules", "vpc", "aws", "6.5.0"
+        )
         assert result.version == "6.5.0"
 
 
