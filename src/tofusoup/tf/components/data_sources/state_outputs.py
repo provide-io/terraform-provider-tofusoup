@@ -203,10 +203,7 @@ class StateOutputsDataSource(BaseDataSource[str, StateOutputsState, StateOutputs
 
                 # Convert type to string representation
                 # Type can be a string ("string", "number") or array (["list", "string"])
-                if isinstance(output_type, list):
-                    type_str = json.dumps(output_type)
-                else:
-                    type_str = str(output_type)
+                type_str = json.dumps(output_type) if isinstance(output_type, list) else str(output_type)
 
                 output_data.append(
                     {
