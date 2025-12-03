@@ -192,7 +192,7 @@ jobs:
           uv sync --group dev
 
           # Generate documentation
-          make docs
+          we docs build
 
           echo "✅ Documentation generated"
           ls -la docs/

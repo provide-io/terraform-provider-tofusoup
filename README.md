@@ -224,17 +224,17 @@ source .venv/bin/activate
 
 ```bash
 # Build the provider binary
-make build
+we build
 
 # Install to local Terraform plugins directory
-make install
+we pkg install
 ```
 
 ### Testing
 
 ```bash
 # Run all tests (280 tests)
-make test
+we test
 
 # Run specific test file
 PYTHONPATH=src pytest tests/data_sources/test_state_outputs.py -v
@@ -260,10 +260,10 @@ mypy src/
 
 ```bash
 # Generate documentation with Plating
-make docs
+we docs build
 
 # Serve documentation locally (http://localhost:11014)
-make docs-serve
+we docs serve
 ```
 
 ## Architecture
@@ -311,7 +311,7 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for det
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
-4. Run tests (`make test`)
+4. Run tests (`we test`)
 5. Run code quality checks (`ruff format && ruff check`)
 6. Commit your changes (`git commit -m 'Add amazing feature'`)
 7. Push to the branch (`git push origin feature/amazing-feature`)
