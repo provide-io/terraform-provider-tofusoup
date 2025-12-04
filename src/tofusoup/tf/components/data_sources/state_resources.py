@@ -220,7 +220,9 @@ class StateResourcesDataSource(BaseDataSource[str, StateResourcesState, StateRes
 
             if config.filter_module:
                 filtered_resources = [r for r in filtered_resources if r.get("module") == config.filter_module]
-                logger.debug(f"Filtered by module '{config.filter_module}': {len(filtered_resources)} resources")
+                logger.debug(
+                    f"Filtered by module '{config.filter_module}': {len(filtered_resources)} resources"
+                )
 
             # Convert to output format
             resource_data = []
@@ -233,10 +235,7 @@ class StateResourcesDataSource(BaseDataSource[str, StateResourcesState, StateRes
                 instances = resource.get("instances", [])
 
                 # Construct unique resource ID
-                if module:
-                    resource_id = f"{mode}.{module}.{type_}.{name}"
-                else:
-                    resource_id = f"{mode}.{type_}.{name}"
+                resource_id = f"{mode}.{module}.{type_}.{name}" if module else f"{mode}.{type_}.{name}"
 
                 # Get ID from first instance if available
                 instance_id = None
