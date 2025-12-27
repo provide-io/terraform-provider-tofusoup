@@ -76,3 +76,6 @@ output_dir = "docs"
 entry_point = "pyvider.cli:main"
 output_path = "dist/terraform-provider-tofusoup"
 platforms = ["darwin_arm64", "linux_amd64", "linux_arm64", "windows_amd64"]
+
+[tool.bandit]
+exclude_dirs = [".venv", "tests", "workenv"]
