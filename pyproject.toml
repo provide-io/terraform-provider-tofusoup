@@ -1,3 +1,13 @@
+#
+# terraform-provider-tofusoup/pyproject.toml
+#
+# Terraform provider for TofuSoup registry queries and state inspection
+#
+
+[build-system]
+requires = ["setuptools>=75.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "terraform-provider-tofusoup"
 dynamic = ["version"]
@@ -5,6 +15,13 @@ description = "Terraform provider for TofuSoup registry queries and state inspec
 requires-python = ">=3.11"
 readme = "README.md"
 license = "Apache-2.0"
+authors = [
+    { name = "Tim Perkins", email = "code@tim.life" }
+]
+maintainers = [
+    { name = "provide.io", email = "code@provide.io" }
+]
+keywords = ["terraform", "provider", "tofusoup", "opentofu", "registry", "state"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -13,6 +30,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Typing :: Typed",
 ]
 dependencies = [
     "pyvider",
@@ -42,10 +60,6 @@ docs = [
     "provide-testkit[docs]",
 ]
 
-[build-system]
-requires = ["setuptools>=75.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [tool.setuptools.packages.find]
 where = ["src"]
 
@@ -54,6 +68,7 @@ version = {file = "VERSION"}
 
 [tool.ruff]
 line-length = 111
+indent-width = 4
 target-version = "py311"
 
 [tool.ruff.lint]
@@ -83,9 +98,29 @@ ignore = [
 "src/tofusoup/tf/components/data_sources/state_outputs.py" = ["C901"]
 "src/tofusoup/tf/components/data_sources/state_resources.py" = ["C901"]
 
+[tool.ruff.lint.isort]
+known-first-party = ["tofusoup", "tests"]
+force-sort-within-sections = true
+combine-as-imports = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
 [tool.mypy]
 python_version = "3.11"
 strict = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = [
+    "pyvider.*",
+    "tofusoup.*",
+    "flavorpack.*",
+]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -93,6 +128,32 @@ testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = ""
 # Parallel execution: pytest -n <workers> (range: 2-16, recommend: CPU cores or 8, max: 16 to avoid xdist hang)
+
+[tool.coverage.run]
+branch = true
+source = ["."]
+
+[tool.coverage.report]
+fail_under = 70
+show_missing = true
+skip_covered = true
+precision = 2
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "def __repr__",
+    "def __str__",
+    "pass",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+[tool.coverage.xml]
+output = "coverage.xml"
 
 [pyvider]
 component_packages = ["tofusoup.tf.components"]
