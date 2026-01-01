@@ -1,18 +1,18 @@
 """TofuSoup state_info data source implementation."""
 
-import json
 from datetime import datetime
+import json
 from pathlib import Path
 from typing import cast
 
 from attrs import define
 from provide.foundation import logger
 from provide.foundation.errors import resilient
-from pyvider.data_sources.base import BaseDataSource  # type: ignore
-from pyvider.data_sources.decorators import register_data_source  # type: ignore
-from pyvider.exceptions import DataSourceError  # type: ignore
-from pyvider.resources.context import ResourceContext  # type: ignore
-from pyvider.schema import PvsSchema, a_num, a_str, s_data_source  # type: ignore
+from pyvider.data_sources.base import BaseDataSource
+from pyvider.data_sources.decorators import register_data_source
+from pyvider.exceptions import DataSourceError
+from pyvider.resources.context import ResourceContext
+from pyvider.schema import PvsSchema, a_num, a_str, s_data_source
 
 
 @define(frozen=True)
@@ -41,7 +41,7 @@ class StateInfoState:
 
 
 @register_data_source("tofusoup_state_info")
-class StateInfoDataSource(BaseDataSource[str, StateInfoState, StateInfoConfig]):  # type: ignore[misc]
+class StateInfoDataSource(BaseDataSource[str, StateInfoState, StateInfoConfig]):
     """
     Read Terraform state file metadata and statistics.
 
@@ -150,7 +150,7 @@ class StateInfoDataSource(BaseDataSource[str, StateInfoState, StateInfoConfig]):
         return errors
 
     @resilient()
-    async def read(self, ctx: ResourceContext) -> StateInfoState:
+    async def read(self, ctx: ResourceContext) -> StateInfoState:  # type: ignore[type-arg]
         """Read state file information."""
         if not ctx.config:
             raise DataSourceError("Configuration is required.")
