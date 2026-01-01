@@ -7,11 +7,11 @@ from typing import Any, cast
 from attrs import define
 from provide.foundation import logger
 from provide.foundation.errors import resilient
-from pyvider.data_sources.base import BaseDataSource  # type: ignore
-from pyvider.data_sources.decorators import register_data_source  # type: ignore
-from pyvider.exceptions import DataSourceError  # type: ignore
-from pyvider.resources.context import ResourceContext  # type: ignore
-from pyvider.schema import PvsSchema, a_bool, a_list, a_num, a_obj, a_str, s_data_source  # type: ignore
+from pyvider.data_sources.base import BaseDataSource
+from pyvider.data_sources.decorators import register_data_source
+from pyvider.exceptions import DataSourceError
+from pyvider.resources.context import ResourceContext
+from pyvider.schema import PvsSchema, a_bool, a_list, a_num, a_obj, a_str, s_data_source
 
 
 @define(frozen=True)
@@ -37,7 +37,7 @@ class StateResourcesState:
 
 
 @register_data_source("tofusoup_state_resources")
-class StateResourcesDataSource(BaseDataSource[str, StateResourcesState, StateResourcesConfig]):  # type: ignore[misc]
+class StateResourcesDataSource(BaseDataSource[str, StateResourcesState, StateResourcesConfig]):
     """
     List and inspect all resources from a Terraform state file.
 
@@ -171,7 +171,7 @@ class StateResourcesDataSource(BaseDataSource[str, StateResourcesState, StateRes
         return errors
 
     @resilient()
-    async def read(self, ctx: ResourceContext) -> StateResourcesState:
+    async def read(self, ctx: ResourceContext) -> StateResourcesState:  # type: ignore[type-arg]
         """Read resources from state file."""
         if not ctx.config:
             raise DataSourceError("Configuration is required.")
