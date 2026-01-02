@@ -3,13 +3,13 @@
 from datetime import datetime
 from unittest.mock import AsyncMock, patch
 
-import pytest
 from attrs import evolve
+import pytest
 from pyvider.exceptions import DataSourceError  # type: ignore
 from pyvider.resources.context import ResourceContext  # type: ignore
 from pyvider.schema import PvsSchema  # type: ignore
-from tofusoup.registry.models.module import ModuleVersion  # type: ignore
 
+from tofusoup.registry.models.module import ModuleVersion  # type: ignore
 from tofusoup.tf.components.data_sources.module_versions import (  # type: ignore
     ModuleVersionsConfig,
     ModuleVersionsDataSource,
