@@ -117,6 +117,97 @@ output "resource_inventory" {
 }
 ```
 
+## Documentation
+
+- **[Documentation Index](https://github.com/provide-io/terraform-provider-tofusoup/blob/main/docs/index.md)** - Overview and example usage
+- **[Data Sources Reference](https://github.com/provide-io/terraform-provider-tofusoup/tree/main/docs/data-sources)** - Complete data source documentation
+- **[Examples](https://github.com/provide-io/terraform-provider-tofusoup/tree/main/examples)** - Working examples for all data sources
+
+## Development
+
+### Prerequisites
+
+- Python 3.11+
+- [uv](https://github.com/astral-sh/uv) package manager
+- Terraform or OpenTofu 1.6+
+
+### Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/provide-io/terraform-provider-tofusoup
+cd terraform-provider-tofusoup
+
+# Create virtual environment and install dependencies
+uv sync
+source .venv/bin/activate
+```
+
+### Building
+
+```bash
+# Build the provider binary
+we build
+
+# Install to local Terraform plugins directory
+we pkg install
+```
+
+### Testing
+
+```bash
+# Run all tests (280 tests)
+we test
+
+# Run specific test file
+PYTHONPATH=src pytest tests/data_sources/test_state_outputs.py -v
+
+# Run with coverage
+PYTHONPATH=src pytest tests/ --cov=src --cov-report=html
+```
+
+### Code Quality
+
+```bash
+# Format code
+ruff format src/ tests/
+
+# Lint code
+ruff check --fix --unsafe-fixes src/ tests/
+
+# Type check
+mypy src/
+```
+
+### Documentation
+
+```bash
+# Generate documentation with Plating
+we docs build
+
+# Serve documentation locally (http://localhost:11014)
+we docs serve
+```
+
+## Contributing
+
+Contributions are welcome! Please see [CLAUDE.md](https://github.com/provide-io/terraform-provider-tofusoup/blob/main/CLAUDE.md) for development guidance.
+
+### Development Workflow
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests (`we test`)
+5. Run code quality checks (`ruff format && ruff check`)
+6. Commit your changes (`git commit -m 'Add amazing feature'`)
+7. Push to the branch (`git push origin feature/amazing-feature`)
+8. Open a Pull Request
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](https://github.com/provide-io/terraform-provider-tofusoup/blob/main/LICENSE) file for details.
+
 ## Use Cases
 
 ### 1. Cross-Stack References
@@ -192,80 +283,6 @@ output "aws_versions_last_year" {
 }
 ```
 
-## Documentation
-
-- **[Getting Started Guide](docs/guides/getting-started.md)** - Step-by-step introduction
-- **[Data Sources Reference](docs/data-sources/)** - Complete data source documentation
-- **[Best Practices](docs/guides/best-practices.md)** - Recommended usage patterns
-- **[Troubleshooting](docs/guides/troubleshooting.md)** - Common issues and solutions
-- **[Examples](examples/)** - Working examples for all data sources
-
-## Development
-
-### Prerequisites
-
-- Python 3.11+
-- [uv](https://github.com/astral-sh/uv) package manager
-- Terraform or OpenTofu 1.6+
-
-### Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/provide-io/terraform-provider-tofusoup
-cd terraform-provider-tofusoup
-
-# Create virtual environment and install dependencies
-uv sync
-source .venv/bin/activate
-```
-
-### Building
-
-```bash
-# Build the provider binary
-we build
-
-# Install to local Terraform plugins directory
-we pkg install
-```
-
-### Testing
-
-```bash
-# Run all tests (280 tests)
-we test
-
-# Run specific test file
-PYTHONPATH=src pytest tests/data_sources/test_state_outputs.py -v
-
-# Run with coverage
-PYTHONPATH=src pytest tests/ --cov=src --cov-report=html
-```
-
-### Code Quality
-
-```bash
-# Format code
-ruff format src/ tests/
-
-# Lint code
-ruff check --fix --unsafe-fixes src/ tests/
-
-# Type check
-mypy src/
-```
-
-### Documentation
-
-```bash
-# Generate documentation with Plating
-we docs build
-
-# Serve documentation locally (http://localhost:11014)
-we docs serve
-```
-
 ## Architecture
 
 Built using the [Pyvider](https://github.com/provide-io/pyvider) framework for Python-based Terraform providers:
@@ -302,25 +319,6 @@ terraform-provider-tofusoup/
 - **Terraform/OpenTofu**: 1.6 or higher
 - **Platform**: macOS (arm64/amd64), Linux (amd64/arm64), Windows (amd64)
 
-## Contributing
-
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
-### Development Workflow
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Run tests (`we test`)
-5. Run code quality checks (`ruff format && ruff check`)
-6. Commit your changes (`git commit -m 'Add amazing feature'`)
-7. Push to the branch (`git push origin feature/amazing-feature`)
-8. Open a Pull Request
-
-## License
-
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-
 ## Acknowledgments
 
 - Built with [Pyvider](https://github.com/provide-io/pyvider) framework
@@ -332,11 +330,11 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 - **Issues**: [GitHub Issues](https://github.com/provide-io/terraform-provider-tofusoup/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/provide-io/terraform-provider-tofusoup/discussions)
-- **Documentation**: [docs/](docs/)
+- **Documentation**: [docs/](https://github.com/provide-io/terraform-provider-tofusoup/tree/main/docs)
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for release history.
+See [CHANGELOG.md](https://github.com/provide-io/terraform-provider-tofusoup/blob/main/CHANGELOG.md) for release history.
 
 ## Roadmap
 
@@ -356,3 +354,5 @@ See [CHANGELOG.md](CHANGELOG.md) for release history.
 ---
 
 **Status**: Production Ready | **Version**: 0.0.1109 | **Tests**: 280/280 Passing ✅
+
+Copyright (c) Provide.io LLC.
