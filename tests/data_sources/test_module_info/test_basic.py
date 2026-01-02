@@ -5,8 +5,8 @@
 
 """Tests for tofusoup_module_info data source."""
 
-import pytest
 from attrs.exceptions import FrozenInstanceError
+import pytest
 from pyvider.schema import PvsSchema  # type: ignore
 
 from tofusoup.tf.components.data_sources.module_info import (  # type: ignore
