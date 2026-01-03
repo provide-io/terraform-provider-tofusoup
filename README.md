@@ -355,4 +355,4 @@ See [CHANGELOG.md](https://github.com/provide-io/terraform-provider-tofusoup/blo
 
 **Status**: Production Ready | **Version**: 0.0.1109 | **Tests**: 280/280 Passing ✅
 
-Copyright (c) Provide.io LLC.
+Copyright (c) provide.io LLC.
