@@ -7,8 +7,8 @@
 
 from typing import Any
 
-import pytest
 from attrs.exceptions import FrozenInstanceError
+import pytest
 from pytest_httpx import HTTPXMock
 from pyvider.exceptions import DataSourceError  # type: ignore
 from pyvider.resources.context import ResourceContext  # type: ignore

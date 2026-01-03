@@ -1,7 +1,7 @@
 """Tests for tofusoup_module_search data source."""
 
-import pytest
 from attrs import evolve
+import pytest
 
 from tofusoup.tf.components.data_sources.module_search import (  # type: ignore
     ModuleSearchConfig,
