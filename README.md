@@ -3,6 +3,10 @@
 [![Tests](https://img.shields.io/badge/tests-280%2F280%20passing-brightgreen)](tests/)
 [![Version](https://img.shields.io/badge/version-0.0.1109-blue)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![uv](https://img.shields.io/badge/uv-package_manager-FF6B35.svg)](https://github.com/astral-sh/uv)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![CI](https://github.com/provide-io/terraform-provider-tofusoup/actions/workflows/ci.yml/badge.svg)](https://github.com/provide-io/terraform-provider-tofusoup/actions)
 
 A Terraform provider for querying Terraform/OpenTofu registries and inspecting Terraform state files, powered by [TofuSoup](https://github.com/provide-io/tofusoup).
 
