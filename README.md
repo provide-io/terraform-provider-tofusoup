@@ -38,7 +38,7 @@ terraform {
   required_providers {
     tofusoup = {
       source  = "local/providers/tofusoup"
-      version = ">= 0.0.3"
+      version = ">= 0.3.0"
     }
   }
 }
@@ -160,10 +160,10 @@ we pkg install
 we test
 
 # Run specific test file
-PYTHONPATH=src pytest tests/data_sources/test_state_outputs.py -v
+we test -- tests/data_sources/test_state_outputs.py -v
 
 # Run with coverage
-PYTHONPATH=src pytest tests/ --cov=src --cov-report=html
+we test coverage
 ```
 
 ### Code Quality
