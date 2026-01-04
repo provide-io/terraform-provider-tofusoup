@@ -210,108 +210,23 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](https:
 
 ## Use Cases
 
-### 1. Cross-Stack References
+Common scenarios for using the TofuSoup provider:
+- **Cross-Stack References**: Share outputs between stacks without remote backends
+- **Registry Discovery**: Find and validate modules/providers before adoption
+- **State Auditing**: Inventory resources across multiple environments
+- **Version Management**: Track provider/module versions programmatically
 
-Read outputs from one Terraform stack and use them in another without remote state backends:
-
-```terraform
-data "tofusoup_state_outputs" "infra" {
-  state_path = "../infrastructure/terraform.tfstate"
-}
-
-locals {
-  vpc_id = jsondecode([
-    for o in data.tofusoup_state_outputs.infra.outputs :
-    o.value if o.name == "vpc_id"
-  ][0])
-}
-```
-
-### 2. Registry Discovery
-
-Find and validate modules before using them:
-
-```terraform
-data "tofusoup_module_search" "database" {
-  query           = "rds"
-  target_provider = "aws"
-  verified_only   = true
-}
-
-output "verified_rds_modules" {
-  value = [
-    for m in data.tofusoup_module_search.database.modules :
-    m.id if m.verified
-  ]
-}
-```
-
-### 3. State Auditing
-
-Inventory resources across multiple state files:
-
-```terraform
-data "tofusoup_state_info" "prod" {
-  state_path = "./prod.tfstate"
-}
-
-output "prod_summary" {
-  value = {
-    resources = data.tofusoup_state_info.prod.resources_count
-    outputs   = data.tofusoup_state_info.prod.outputs_count
-    modules   = data.tofusoup_state_info.prod.modules_count
-  }
-}
-```
-
-### 4. Version Management
-
-Track provider versions across environments:
-
-```terraform
-data "tofusoup_provider_versions" "aws" {
-  namespace = "hashicorp"
-  name      = "aws"
-  registry  = "terraform"
-}
-
-output "aws_versions_last_year" {
-  value = [
-    for v in data.tofusoup_provider_versions.aws.versions :
-    v.version if v.version_major >= 5
-  ]
-}
-```
+See [docs/use-cases.md](https://github.com/provide-io/terraform-provider-tofusoup/blob/main/docs/use-cases.md) for detailed examples and best practices.
 
 ## Architecture
 
-Built using the [Pyvider](https://github.com/provide-io/pyvider) framework for Python-based Terraform providers:
+Built using the [Pyvider](https://github.com/provide-io/pyvider) framework with:
+- **FlavorPack** (PSPF/2025) for cross-platform binaries
+- **Plating** for automated documentation
+- **TofuSoup** for async registry client and state inspection
+- **pytest** for comprehensive testing (280/280 passing)
 
-- **Package Format**: [FlavorPack](https://github.com/provide-io/flavorpack) (PSPF/2025)
-- **Documentation**: [Plating](https://github.com/provide-io/plating) (automated from code)
-- **Registry Client**: [TofuSoup](https://github.com/provide-io/tofusoup) (async registry API)
-- **Testing**: pytest + pytest-asyncio
-
-## Project Structure
-
-```
-terraform-provider-tofusoup/
-├── src/tofusoup/tf/components/
-│   ├── provider.py              # Provider configuration
-│   └── data_sources/            # All 9 data sources
-│       ├── provider_info.py
-│       ├── provider_versions.py
-│       ├── module_info.py
-│       ├── module_versions.py
-│       ├── module_search.py
-│       ├── registry_search.py
-│       ├── state_info.py
-│       ├── state_resources.py
-│       └── state_outputs.py
-├── tests/                        # 280 comprehensive tests
-├── examples/                     # Working examples for all data sources
-└── docs/                         # Generated documentation
-```
+See [docs/architecture.md](https://github.com/provide-io/terraform-provider-tofusoup/blob/main/docs/architecture.md) for technical details and project structure.
 
 ## Requirements
 
