@@ -38,7 +38,7 @@ terraform {
   required_providers {
     tofusoup = {
       source  = "local/providers/tofusoup"
-      version = "0.0.1109"
+      version = ">= 0.0.3"
     }
   }
 }
@@ -353,6 +353,6 @@ See [CHANGELOG.md](https://github.com/provide-io/terraform-provider-tofusoup/blo
 
 ---
 
-**Status**: Production Ready | **Version**: 0.0.1109 | **Tests**: 280/280 Passing ✅
+**Status**: Pre-release | **Version**: 0.0.1109 | **Tests**: 280/280 Passing ✅
 
-Copyright (c) Provide.io LLC.
+Copyright (c) provide.io LLC.
