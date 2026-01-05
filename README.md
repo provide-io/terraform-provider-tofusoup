@@ -161,13 +161,13 @@ we pkg install
 
 ```bash
 # Run all tests (280 tests)
-we test
+we run test
 
 # Run specific test file
-we test -- tests/data_sources/test_state_outputs.py -v
+we run test -- tests/data_sources/test_state_outputs.py -v
 
 # Run with coverage
-we test coverage
+we run test.coverage
 ```
 
 ### Code Quality
@@ -187,10 +187,10 @@ mypy src/
 
 ```bash
 # Generate documentation with Plating
-we docs build
+we run docs.build
 
 # Serve documentation locally (http://localhost:11014)
-we docs serve
+we run docs.serve
 ```
 
 ## Contributing
@@ -202,7 +202,7 @@ Contributions are welcome! Please see [CLAUDE.md](https://github.com/provide-io/
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
-4. Run tests (`we test`)
+4. Run tests (`we run test`)
 5. Run code quality checks (`ruff format && ruff check`)
 6. Commit your changes (`git commit -m 'Add amazing feature'`)
 7. Push to the branch (`git push origin feature/amazing-feature`)

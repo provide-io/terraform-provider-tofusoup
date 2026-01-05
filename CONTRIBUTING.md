@@ -31,13 +31,13 @@ This will create a virtual environment and install all development dependencies.
 
 ```bash
 # Run all tests (280 tests)
-we test
+we run test
 
 # Run specific test file
-we test -- tests/data_sources/test_provider_info.py -v
+we run test -- tests/data_sources/test_provider_info.py -v
 
 # Run with coverage
-we test coverage
+we run test.coverage
 
 # Or manually
 uv run pytest                    # Run all tests
@@ -212,10 +212,10 @@ tofusoup_your_datasource/
 
 ```bash
 # Generate documentation with Plating
-we docs build
+we run docs.build
 
 # Serve documentation locally
-we docs serve
+we run docs.serve
 ```
 
 ## Testing Guidelines
@@ -301,7 +301,7 @@ When adding new features or changing APIs:
 1. Update relevant docstrings in component code
 2. Update `README.md` if adding user-facing features
 3. Add examples in `examples/data-sources/` directory
-4. Run `we docs build` to regenerate documentation
+4. Run `we run docs.build` to regenerate documentation
 5. Update `CHANGELOG.md` under `[Unreleased]`
 
 ## Submitting Changes
@@ -318,7 +318,7 @@ When adding new features or changing APIs:
 
 4. Ensure all tests pass and code quality checks pass:
    ```bash
-   we test
+   we run test
    ruff format && ruff check
    mypy src/
    ```
