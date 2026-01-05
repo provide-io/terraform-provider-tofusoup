@@ -9,9 +9,6 @@ description: |-
 !!! warning "Pre-release"
     This documentation covers a pre-release. APIs and features may change, and some documented items are exploratory and may change or be removed.
 
-!!! warning "Pre-release"
-    This documentation covers a pre-release. APIs and features may change, and some documented items are exploratory and may change or be removed.
-
 
 Terraform provider for tofusoup - A Python-based Terraform provider built with the Pyvider framework.
 
