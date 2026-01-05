@@ -205,20 +205,13 @@ tests/
 - **Streaming**: Large state files processed efficiently
 - **Memory**: Minimal memory footprint
 
-## Future Enhancements
+## Potential Enhancements
 
-### Planned Features
 1. **Integration Testing**: Full end-to-end test suite
 2. **Remote State**: Backend support for S3, GCS, Azure
 3. **Enhanced Caching**: Distributed cache support
 4. **Additional Data Sources**: Dependencies, platform details
 5. **CI/CD**: GitHub Actions pipeline
-
-### Roadmap
-- v0.1.0: Initial release with core data sources
-- v0.2.0: Remote state support
-- v0.3.0: Enhanced caching and performance
-- v1.0.0: Production-ready with full CI/CD
 
 ## Design Principles
 

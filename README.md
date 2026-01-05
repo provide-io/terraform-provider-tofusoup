@@ -255,23 +255,6 @@ See [docs/architecture.md](https://github.com/provide-io/terraform-provider-tofu
 
 See [CHANGELOG.md](https://github.com/provide-io/terraform-provider-tofusoup/blob/main/CHANGELOG.md) for release history.
 
-## Roadmap
-
-### Current Version: v0.0.1109
-- ✅ All 9 data sources implemented
-- ✅ 280 comprehensive tests
-- ✅ Complete documentation
-- ✅ Working examples
-
-### Future Enhancements
-- Integration testing suite
-- Remote state backend support
-- Enhanced caching mechanisms
-- Additional data sources (dependencies, platform details)
-- CI/CD pipeline with GitHub Actions
-
----
-
 **Status**: Pre-release | **Version**: 0.0.1109 | **Tests**: 280/280 Passing ✅
 
 Copyright (c) provide.io LLC.
