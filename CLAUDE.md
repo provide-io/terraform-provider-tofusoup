@@ -32,7 +32,7 @@ we build
 we pkg install
 
 # Run all tests
-we test
+we run test
 
 # Run a single test file
 pytest tests/data_sources/test_provider_info.py
@@ -47,8 +47,8 @@ After editing any Python file, run these commands:
 
 ```bash
 # If `we` commands available:
-we format
-we lint
+we run format
+we run lint
 we typecheck
 
 # Otherwise:
@@ -61,10 +61,10 @@ mypy <file>
 
 ```bash
 # Generate documentation with Plating
-we docs build
+we run docs.build
 
 # Serve documentation locally (http://localhost:11014)
-we docs serve
+we run docs.serve
 ```
 
 ### Local Testing with Terraform
