@@ -4,13 +4,7 @@ description: |-
   Terraform provider for tofusoup
 ---
 
-# Tofusoup Provider
-
-!!! warning "Pre-release"
-    This documentation covers a pre-release. APIs and features may change during the pre-release series.
-
-
-Terraform provider for tofusoup - A Python-based Terraform provider built with the Pyvider framework.
+# Tofusoup ProviderTerraform provider for tofusoup - A Python-based Terraform provider built with the Pyvider framework.
 
 ## Example Usage
 
