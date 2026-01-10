@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 """Data source for querying module information from Terraform or OpenTofu registry.
 
 This module provides the ModuleInfoDataSource class for retrieving detailed

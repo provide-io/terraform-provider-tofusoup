@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 """TofuSoup module_versions data source implementation."""
 
 from typing import Any, cast
