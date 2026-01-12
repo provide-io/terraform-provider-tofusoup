@@ -14,28 +14,28 @@ permissions:
 jobs:
   quality:
     name: 🔧 Code Quality
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: provide-io/ci-tooling/actions/setup-python-env@v0.0.1
+      - uses: provide-io/ci-tooling/actions/setup-python-env@v0
         with:
           python-version: '3.11'
           install-extras: 'dev,test'
-      - uses: provide-io/ci-tooling/actions/python-quality@v0.0.1
+      - uses: provide-io/ci-tooling/actions/python-quality@v0
         with:
           source-paths: 'src tests'
 
   test:
     name: 🧪 Tests
     needs: quality
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: provide-io/ci-tooling/actions/setup-python-env@v0.0.1
+      - uses: provide-io/ci-tooling/actions/setup-python-env@v0
         with:
           python-version: '3.11'
           install-extras: 'dev,test'
-      - uses: provide-io/ci-tooling/actions/python-test@v0.0.1
+      - uses: provide-io/ci-tooling/actions/python-test@v0
         with:
           coverage-threshold: 80
 
@@ -43,11 +43,11 @@ jobs:
     name: 📦 Build
     needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: provide-io/ci-tooling/actions/setup-python-env@v0.0.1
+      - uses: provide-io/ci-tooling/actions/setup-python-env@v0
         with:
           python-version: '3.11'
-      - uses: provide-io/ci-tooling/actions/python-build@v0.0.1
-      - uses: provide-io/ci-tooling/actions/python-release@v0.0.1
+      - uses: provide-io/ci-tooling/actions/python-build@v0
+      - uses: provide-io/ci-tooling/actions/python-release@v0
