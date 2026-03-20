@@ -215,21 +215,24 @@ class StateResourcesDataSource(BaseDataSource[str, StateResourcesState, StateRes
 
             if config.filter_mode:
                 filtered_resources = [r for r in filtered_resources if r.get("mode") == config.filter_mode]
-                logger.debug(
-                    f"Filtered by mode '{config.filter_mode}': {len(filtered_resources)} resources"
-                )
+                if logger.is_debug_enabled():
+                    logger.debug(
+                        f"Filtered by mode '{config.filter_mode}': {len(filtered_resources)} resources"
+                    )
 
             if config.filter_type:
                 filtered_resources = [r for r in filtered_resources if r.get("type") == config.filter_type]
-                logger.debug(
-                    f"Filtered by type '{config.filter_type}': {len(filtered_resources)} resources"
-                )
+                if logger.is_debug_enabled():
+                    logger.debug(
+                        f"Filtered by type '{config.filter_type}': {len(filtered_resources)} resources"
+                    )
 
             if config.filter_module:
                 filtered_resources = [r for r in filtered_resources if r.get("module") == config.filter_module]
-                logger.debug(
-                    f"Filtered by module '{config.filter_module}': {len(filtered_resources)} resources"
-                )
+                if logger.is_debug_enabled():
+                    logger.debug(
+                        f"Filtered by module '{config.filter_module}': {len(filtered_resources)} resources"
+                    )
 
             # Convert to output format
             resource_data = []
