@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-
 """TofuSoup module_search data source implementation."""
 
 from typing import Any, cast
@@ -8,17 +5,17 @@ from typing import Any, cast
 from attrs import define
 from provide.foundation import logger
 from provide.foundation.errors import resilient
-from pyvider.data_sources.base import BaseDataSource
-from pyvider.data_sources.decorators import register_data_source
-from pyvider.exceptions import DataSourceError
-from pyvider.resources.context import ResourceContext
-from pyvider.schema import PvsSchema, a_bool, a_list, a_num, a_obj, a_str, s_data_source
+from pyvider.data_sources.base import BaseDataSource  # type: ignore
+from pyvider.data_sources.decorators import register_data_source  # type: ignore
+from pyvider.exceptions import DataSourceError  # type: ignore
+from pyvider.resources.context import ResourceContext  # type: ignore
+from pyvider.schema import PvsSchema, a_bool, a_list, a_num, a_obj, a_str, s_data_source  # type: ignore
 
-from tofusoup.config.defaults import OPENTOFU_REGISTRY_URL, TERRAFORM_REGISTRY_URL
-from tofusoup.registry.base import RegistryConfig
-from tofusoup.registry.models.module import Module
-from tofusoup.registry.opentofu import OpenTofuRegistry
-from tofusoup.registry.terraform import IBMTerraformRegistry
+from tofusoup.config.defaults import OPENTOFU_REGISTRY_URL, TERRAFORM_REGISTRY_URL  # type: ignore
+from tofusoup.registry.base import RegistryConfig  # type: ignore
+from tofusoup.registry.models.module import Module  # type: ignore
+from tofusoup.registry.opentofu import OpenTofuRegistry  # type: ignore
+from tofusoup.registry.terraform import IBMTerraformRegistry  # type: ignore
 
 
 @define(frozen=True)
@@ -42,7 +39,7 @@ class ModuleSearchState:
 
 
 @register_data_source("tofusoup_module_search")
-class ModuleSearchDataSource(BaseDataSource[str, ModuleSearchState, ModuleSearchConfig]):
+class ModuleSearchDataSource(BaseDataSource[str, ModuleSearchState, ModuleSearchConfig]):  # type: ignore[misc]
     """
     Search for modules in Terraform or OpenTofu registry.
 
@@ -171,7 +168,7 @@ class ModuleSearchDataSource(BaseDataSource[str, ModuleSearchState, ModuleSearch
         }
 
     @resilient()
-    async def read(self, ctx: ResourceContext) -> ModuleSearchState:  # type: ignore[type-arg]
+    async def read(self, ctx: ResourceContext) -> ModuleSearchState:
         """Search for modules in the registry."""
         if not ctx.config:
             raise DataSourceError("Configuration is required.")

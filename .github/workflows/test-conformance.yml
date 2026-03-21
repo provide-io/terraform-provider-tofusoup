@@ -24,7 +24,7 @@ jobs:
   # Check if we should run tests (skip if workflow_run failed)
   check:
     name: 🔍 Check Build Status
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     outputs:
       should_run: ${{ steps.check.outputs.should_run }}
@@ -360,7 +360,7 @@ jobs:
     name: 📋 Test Summary
     needs: [check, conformance]
     if: always() && needs.check.outputs.should_run == 'true' && needs.check.outputs.skip_bot != 'true'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: 📊 Generate Summary
