@@ -9,7 +9,7 @@ dependencies = [
     "pyvider",
     "tofusoup",
     "flavorpack",
-    "provide-foundation[all]",
+    "provide-foundation[all]>=0.3.21,<0.4",
 ]
 
 [project.urls]
