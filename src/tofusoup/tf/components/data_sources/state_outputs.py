@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-
 """TofuSoup state_outputs data source implementation."""
 
 import json
@@ -10,11 +7,11 @@ from typing import Any, cast
 from attrs import define
 from provide.foundation import logger
 from provide.foundation.errors import resilient
-from pyvider.data_sources.base import BaseDataSource
-from pyvider.data_sources.decorators import register_data_source
-from pyvider.exceptions import DataSourceError
-from pyvider.resources.context import ResourceContext
-from pyvider.schema import PvsSchema, a_bool, a_list, a_num, a_obj, a_str, s_data_source
+from pyvider.data_sources.base import BaseDataSource  # type: ignore
+from pyvider.data_sources.decorators import register_data_source  # type: ignore
+from pyvider.exceptions import DataSourceError  # type: ignore
+from pyvider.resources.context import ResourceContext  # type: ignore
+from pyvider.schema import PvsSchema, a_bool, a_list, a_num, a_obj, a_str, s_data_source  # type: ignore
 
 
 @define(frozen=True)
@@ -36,7 +33,7 @@ class StateOutputsState:
 
 
 @register_data_source("tofusoup_state_outputs")
-class StateOutputsDataSource(BaseDataSource[str, StateOutputsState, StateOutputsConfig]):
+class StateOutputsDataSource(BaseDataSource[str, StateOutputsState, StateOutputsConfig]):  # type: ignore[misc]
     """
     Read and inspect outputs from a Terraform state file.
 
@@ -150,7 +147,7 @@ class StateOutputsDataSource(BaseDataSource[str, StateOutputsState, StateOutputs
         return errors
 
     @resilient()
-    async def read(self, ctx: ResourceContext) -> StateOutputsState:  # type: ignore[type-arg]
+    async def read(self, ctx: ResourceContext) -> StateOutputsState:
         """Read outputs from state file."""
         if not ctx.config:
             raise DataSourceError("Configuration is required.")
@@ -188,10 +185,12 @@ class StateOutputsDataSource(BaseDataSource[str, StateOutputsState, StateOutputs
             if config.filter_name:
                 if config.filter_name in outputs_dict:
                     outputs_dict = {config.filter_name: outputs_dict[config.filter_name]}
-                    logger.debug(f"Filtered by name '{config.filter_name}': 1 output")
+                    if logger.is_debug_enabled():
+                        logger.debug(f"Filtered by name '{config.filter_name}': 1 output")
                 else:
                     outputs_dict = {}
-                    logger.debug(f"Filtered by name '{config.filter_name}': 0 outputs (not found)")
+                    if logger.is_debug_enabled():
+                        logger.debug(f"Filtered by name '{config.filter_name}': 0 outputs (not found)")
 
             # Convert to output format
             output_data = []
