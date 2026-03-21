@@ -25,7 +25,7 @@ dependencies = [
     "pyvider>=0.3.22",
     "tofusoup>=0.3.22",
     "flavorpack",
-    "provide-foundation[all]>=0.3.21,<0.4",
+    "provide-foundation[all]>=0.3.21",
 ]
 
 [project.urls]
