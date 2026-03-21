@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -10,9 +10,9 @@ from typing import Any
 
 import pytest
 from pyvider.resources.context import ResourceContext  # type: ignore
-
 from tofusoup.registry.models.module import Module, ModuleVersion  # type: ignore
 from tofusoup.registry.models.provider import Provider, ProviderPlatform, ProviderVersion  # type: ignore
+
 from tofusoup.tf.components.data_sources.provider_info import ProviderInfoConfig  # type: ignore
 
 

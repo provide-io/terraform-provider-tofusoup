@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-
 """TofuSoup provider_info data source implementation."""
 
 from typing import cast
@@ -8,16 +5,16 @@ from typing import cast
 from attrs import define
 from provide.foundation import logger
 from provide.foundation.errors import resilient
-from pyvider.data_sources.base import BaseDataSource
-from pyvider.data_sources.decorators import register_data_source
-from pyvider.exceptions import DataSourceError
-from pyvider.resources.context import ResourceContext
-from pyvider.schema import PvsSchema, a_num, a_str, s_data_source
+from pyvider.data_sources.base import BaseDataSource  # type: ignore
+from pyvider.data_sources.decorators import register_data_source  # type: ignore
+from pyvider.exceptions import DataSourceError  # type: ignore
+from pyvider.resources.context import ResourceContext  # type: ignore
+from pyvider.schema import PvsSchema, a_num, a_str, s_data_source  # type: ignore
 
-from tofusoup.config.defaults import OPENTOFU_REGISTRY_URL, TERRAFORM_REGISTRY_URL
-from tofusoup.registry.base import RegistryConfig
-from tofusoup.registry.opentofu import OpenTofuRegistry
-from tofusoup.registry.terraform import IBMTerraformRegistry
+from tofusoup.config.defaults import OPENTOFU_REGISTRY_URL, TERRAFORM_REGISTRY_URL  # type: ignore
+from tofusoup.registry.base import RegistryConfig  # type: ignore
+from tofusoup.registry.opentofu import OpenTofuRegistry  # type: ignore
+from tofusoup.registry.terraform import IBMTerraformRegistry  # type: ignore
 
 
 @define(frozen=True)
@@ -44,7 +41,7 @@ class ProviderInfoState:
 
 
 @register_data_source("tofusoup_provider_info")
-class ProviderInfoDataSource(BaseDataSource[str, ProviderInfoState, ProviderInfoConfig]):
+class ProviderInfoDataSource(BaseDataSource[str, ProviderInfoState, ProviderInfoConfig]):  # type: ignore[misc]
     """
     Query provider details from Terraform or OpenTofu registry.
 
@@ -133,7 +130,7 @@ class ProviderInfoDataSource(BaseDataSource[str, ProviderInfoState, ProviderInfo
         return errors
 
     @resilient()
-    async def read(self, ctx: ResourceContext) -> ProviderInfoState:  # type: ignore[type-arg]
+    async def read(self, ctx: ResourceContext) -> ProviderInfoState:
         """Read provider information from the registry."""
         if not ctx.config:
             raise DataSourceError("Configuration is required.")

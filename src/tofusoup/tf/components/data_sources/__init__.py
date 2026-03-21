@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-
 """TofuSoup Terraform provider data sources."""
 
 from tofusoup.tf.components.data_sources import (

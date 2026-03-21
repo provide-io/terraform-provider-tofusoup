@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -7,8 +7,8 @@
 
 from typing import Any
 
-from attrs.exceptions import FrozenInstanceError
 import pytest
+from attrs.exceptions import FrozenInstanceError
 from pytest_httpx import HTTPXMock
 from pyvider.exceptions import DataSourceError  # type: ignore
 from pyvider.resources.context import ResourceContext  # type: ignore

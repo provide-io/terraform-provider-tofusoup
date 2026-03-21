@@ -3,10 +3,6 @@
 [![Tests](https://img.shields.io/badge/tests-280%2F280%20passing-brightgreen)](tests/)
 [![Version](https://img.shields.io/badge/version-0.0.1109-blue)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![uv](https://img.shields.io/badge/uv-package_manager-FF6B35.svg)](https://github.com/astral-sh/uv)
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![CI](https://github.com/provide-io/terraform-provider-tofusoup/actions/workflows/ci.yml/badge.svg)](https://github.com/provide-io/terraform-provider-tofusoup/actions)
 
 A Terraform provider for querying Terraform/OpenTofu registries and inspecting Terraform state files, powered by [TofuSoup](https://github.com/provide-io/tofusoup).
 
@@ -42,7 +38,7 @@ terraform {
   required_providers {
     tofusoup = {
       source  = "local/providers/tofusoup"
-      version = ">= 0.3.0"
+      version = "0.0.1109"
     }
   }
 }
@@ -121,11 +117,88 @@ output "resource_inventory" {
 }
 ```
 
+## Use Cases
+
+### 1. Cross-Stack References
+
+Read outputs from one Terraform stack and use them in another without remote state backends:
+
+```terraform
+data "tofusoup_state_outputs" "infra" {
+  state_path = "../infrastructure/terraform.tfstate"
+}
+
+locals {
+  vpc_id = jsondecode([
+    for o in data.tofusoup_state_outputs.infra.outputs :
+    o.value if o.name == "vpc_id"
+  ][0])
+}
+```
+
+### 2. Registry Discovery
+
+Find and validate modules before using them:
+
+```terraform
+data "tofusoup_module_search" "database" {
+  query           = "rds"
+  target_provider = "aws"
+  verified_only   = true
+}
+
+output "verified_rds_modules" {
+  value = [
+    for m in data.tofusoup_module_search.database.modules :
+    m.id if m.verified
+  ]
+}
+```
+
+### 3. State Auditing
+
+Inventory resources across multiple state files:
+
+```terraform
+data "tofusoup_state_info" "prod" {
+  state_path = "./prod.tfstate"
+}
+
+output "prod_summary" {
+  value = {
+    resources = data.tofusoup_state_info.prod.resources_count
+    outputs   = data.tofusoup_state_info.prod.outputs_count
+    modules   = data.tofusoup_state_info.prod.modules_count
+  }
+}
+```
+
+### 4. Version Management
+
+Track provider versions across environments:
+
+```terraform
+data "tofusoup_provider_versions" "aws" {
+  namespace = "hashicorp"
+  name      = "aws"
+  registry  = "terraform"
+}
+
+output "aws_versions_last_year" {
+  value = [
+    for v in data.tofusoup_provider_versions.aws.versions :
+    v.version if v.version_major >= 5
+  ]
+}
+```
+
 ## Documentation
 
-- **[Documentation Index](https://github.com/provide-io/terraform-provider-tofusoup/blob/main/docs/index.md)** - Overview and example usage
-- **[Data Sources Reference](https://github.com/provide-io/terraform-provider-tofusoup/tree/main/docs/data-sources)** - Complete data source documentation
-- **[Examples](https://github.com/provide-io/terraform-provider-tofusoup/tree/main/examples)** - Working examples for all data sources
+- **[Getting Started Guide](docs/guides/getting-started.md)** - Step-by-step introduction
+- **[Data Sources Reference](docs/data-sources/)** - Complete data source documentation
+- **[Best Practices](docs/guides/best-practices.md)** - Recommended usage patterns
+- **[Troubleshooting](docs/guides/troubleshooting.md)** - Common issues and solutions
+- **[Examples](examples/)** - Working examples for all data sources
 
 ## Development
 
@@ -161,13 +234,13 @@ we pkg install
 
 ```bash
 # Run all tests (280 tests)
-we run test
+we test
 
 # Run specific test file
-we run test -- tests/data_sources/test_state_outputs.py -v
+PYTHONPATH=src pytest tests/data_sources/test_state_outputs.py -v
 
 # Run with coverage
-we run test.coverage
+PYTHONPATH=src pytest tests/ --cov=src --cov-report=html
 ```
 
 ### Code Quality
@@ -187,22 +260,58 @@ mypy src/
 
 ```bash
 # Generate documentation with Plating
-we run docs.build
+we docs build
 
 # Serve documentation locally (http://localhost:11014)
-we run docs.serve
+we docs serve
 ```
+
+## Architecture
+
+Built using the [Pyvider](https://github.com/provide-io/pyvider) framework for Python-based Terraform providers:
+
+- **Package Format**: [FlavorPack](https://github.com/provide-io/flavorpack) (PSPF/2025)
+- **Documentation**: [Plating](https://github.com/provide-io/plating) (automated from code)
+- **Registry Client**: [TofuSoup](https://github.com/provide-io/tofusoup) (async registry API)
+- **Testing**: pytest + pytest-asyncio
+
+## Project Structure
+
+```
+terraform-provider-tofusoup/
+├── src/tofusoup/tf/components/
+│   ├── provider.py              # Provider configuration
+│   └── data_sources/            # All 9 data sources
+│       ├── provider_info.py
+│       ├── provider_versions.py
+│       ├── module_info.py
+│       ├── module_versions.py
+│       ├── module_search.py
+│       ├── registry_search.py
+│       ├── state_info.py
+│       ├── state_resources.py
+│       └── state_outputs.py
+├── tests/                        # 280 comprehensive tests
+├── examples/                     # Working examples for all data sources
+└── docs/                         # Generated documentation
+```
+
+## Requirements
+
+- **Python**: 3.11 or higher
+- **Terraform/OpenTofu**: 1.6 or higher
+- **Platform**: macOS (arm64/amd64), Linux (amd64/arm64), Windows (amd64)
 
 ## Contributing
 
-Contributions are welcome! Please see [CLAUDE.md](https://github.com/provide-io/terraform-provider-tofusoup/blob/main/CLAUDE.md) for development guidance.
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ### Development Workflow
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
-4. Run tests (`we run test`)
+4. Run tests (`we test`)
 5. Run code quality checks (`ruff format && ruff check`)
 6. Commit your changes (`git commit -m 'Add amazing feature'`)
 7. Push to the branch (`git push origin feature/amazing-feature`)
@@ -210,33 +319,7 @@ Contributions are welcome! Please see [CLAUDE.md](https://github.com/provide-io/
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](https://github.com/provide-io/terraform-provider-tofusoup/blob/main/LICENSE) file for details.
-
-## Use Cases
-
-Common scenarios for using the TofuSoup provider:
-- **Cross-Stack References**: Share outputs between stacks without remote backends
-- **Registry Discovery**: Find and validate modules/providers before adoption
-- **State Auditing**: Inventory resources across multiple environments
-- **Version Management**: Track provider/module versions programmatically
-
-See [docs/use-cases.md](https://github.com/provide-io/terraform-provider-tofusoup/blob/main/docs/use-cases.md) for detailed examples and best practices.
-
-## Architecture
-
-Built using the [Pyvider](https://github.com/provide-io/pyvider) framework with:
-- **FlavorPack** (PSPF/2025) for cross-platform binaries
-- **Plating** for automated documentation
-- **TofuSoup** for async registry client and state inspection
-- **pytest** for comprehensive testing (280/280 passing)
-
-See [docs/architecture.md](https://github.com/provide-io/terraform-provider-tofusoup/blob/main/docs/architecture.md) for technical details and project structure.
-
-## Requirements
-
-- **Python**: 3.11 or higher
-- **Terraform/OpenTofu**: 1.6 or higher
-- **Platform**: macOS (arm64/amd64), Linux (amd64/arm64), Windows (amd64)
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
@@ -249,12 +332,27 @@ See [docs/architecture.md](https://github.com/provide-io/terraform-provider-tofu
 
 - **Issues**: [GitHub Issues](https://github.com/provide-io/terraform-provider-tofusoup/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/provide-io/terraform-provider-tofusoup/discussions)
-- **Documentation**: [docs/](https://github.com/provide-io/terraform-provider-tofusoup/tree/main/docs)
+- **Documentation**: [docs/](docs/)
 
 ## Changelog
 
-See [CHANGELOG.md](https://github.com/provide-io/terraform-provider-tofusoup/blob/main/CHANGELOG.md) for release history.
+See [CHANGELOG.md](CHANGELOG.md) for release history.
 
-**Status**: Pre-release | **Version**: 0.0.1109 | **Tests**: 280/280 Passing ✅
+## Roadmap
 
-Copyright (c) provide.io LLC.
+### Current Version: v0.0.1109
+- ✅ All 9 data sources implemented
+- ✅ 280 comprehensive tests
+- ✅ Complete documentation
+- ✅ Working examples
+
+### Future Enhancements
+- Integration testing suite
+- Remote state backend support
+- Enhanced caching mechanisms
+- Additional data sources (dependencies, platform details)
+- CI/CD pipeline with GitHub Actions
+
+---
+
+**Status**: Production Ready | **Version**: 0.0.1109 | **Tests**: 280/280 Passing ✅
