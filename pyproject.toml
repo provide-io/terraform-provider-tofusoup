@@ -22,10 +22,11 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "pyvider>=0.3.22",
-    "tofusoup>=0.3.22",
+    "pyvider>=0.3.21",
+    "tofusoup",
     "flavorpack",
     "provide-foundation[all]>=0.3.21",
+    "jq>=1.9.1,<1.11.0",
 ]
 
 [project.urls]
