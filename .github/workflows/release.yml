@@ -38,6 +38,14 @@ jobs:
       - name: 📥 Checkout
         uses: actions/checkout@v4
 
+      - name: 🔧 Ensure gh CLI available
+        shell: bash
+        run: |
+          if ! command -v gh >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq gh
+          fi
+
       - name: 🔍 Check for last successful build
         id: determine
         env:
@@ -86,6 +94,14 @@ jobs:
       build_run_id: ${{ steps.wait.outputs.build_run_id }}
 
     steps:
+      - name: 🔧 Ensure gh CLI available
+        shell: bash
+        run: |
+          if ! command -v gh >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq gh
+          fi
+
       - name: ⏳ Wait for build completion
         id: wait
         run: |
@@ -173,15 +189,16 @@ jobs:
           echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
           echo "📦 Releasing version: ${VERSION}"
 
-      - name: 🐍 Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
       - name: 📦 Install UV
         uses: astral-sh/setup-uv@v4
         with:
           enable-cache: false
+
+      - name: 🐍 Setup Python
+        if: env.ACT != 'true' && github.actor != 'nektos/act'
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: 📚 Generate Documentation
         if: inputs.generate_docs == true

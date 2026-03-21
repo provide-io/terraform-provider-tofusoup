@@ -35,6 +35,14 @@ jobs:
       - name: 📥 Checkout
         uses: actions/checkout@v4
 
+      - name: 🔧 Ensure gh CLI available
+        shell: bash
+        run: |
+          if ! command -v gh >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq gh
+          fi
+
       - name: 📋 Determine build run ID
         id: check
         env:
@@ -89,16 +97,7 @@ jobs:
     if: needs.check.outputs.should_run == 'true'
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-24.04
-            platform: linux
-            arch: amd64
-            target: linux_amd64
-          - os: macos-15
-            platform: darwin
-            arch: arm64
-            target: darwin_arm64
+      matrix: ${{ fromJson((github.actor == 'nektos/act') && '{"include":[{"os":"ubuntu-24.04","platform":"linux","arch":"amd64","target":"linux_amd64"}]}' || '{"include":[{"os":"ubuntu-24.04","platform":"linux","arch":"amd64","target":"linux_amd64"},{"os":"macos-15","platform":"darwin","arch":"arm64","target":"darwin_arm64"}]}') }}
 
     runs-on: ${{ matrix.os }}
 
@@ -193,15 +192,16 @@ jobs:
         with:
           tofu_version: 1.10.6
 
-      - name: 🐍 Setup Python (for tofusoup)
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
       - name: 📦 Install UV (for tofusoup)
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: 🐍 Setup Python (for tofusoup)
+        if: env.ACT != 'true' && github.actor != 'nektos/act'
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: 🍲 Install tofusoup
         run: |

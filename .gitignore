@@ -63,3 +63,6 @@ Thumbs.db
 *.log
 .mypy_cache/
 .ruff_cache/
+
+# Local act CI config (machine-specific)
+.actrc
