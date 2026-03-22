@@ -16,24 +16,7 @@ jobs:
   build:
     name: 📦 Build for ${{ matrix.target }}
     strategy:
-      matrix:
-        include:
-          - os: ubuntu-24.04
-            platform: linux
-            arch: amd64
-            target: linux_amd64
-          - os: ubuntu-24.04-arm
-            platform: linux
-            arch: arm64
-            target: linux_arm64
-          - os: macos-15
-            platform: darwin
-            arch: arm64
-            target: darwin_arm64
-          - os: macos-15-intel
-            platform: darwin
-            arch: amd64
-            target: darwin_amd64
+      matrix: ${{ fromJson((github.actor == 'nektos/act') && '{"include":[{"os":"ubuntu-24.04","platform":"linux","arch":"amd64","target":"linux_amd64"}]}' || '{"include":[{"os":"ubuntu-24.04","platform":"linux","arch":"amd64","target":"linux_amd64"},{"os":"ubuntu-24.04-arm","platform":"linux","arch":"arm64","target":"linux_arm64"},{"os":"macos-15","platform":"darwin","arch":"arm64","target":"darwin_arm64"},{"os":"macos-15-intel","platform":"darwin","arch":"amd64","target":"darwin_amd64"}]}') }}
 
     runs-on: ${{ matrix.os }}
 
@@ -48,16 +31,17 @@ jobs:
           echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
           echo "📦 Building version: ${VERSION}"
 
-      - name: 🐍 Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
       - name: 📦 Install UV
         uses: astral-sh/setup-uv@v4
         continue-on-error: true
         with:
           enable-cache: false
+
+      - name: 🐍 Setup Python
+        if: env.ACT != 'true' && github.actor != 'nektos/act'
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: 🔧 Install dependencies
         run: |
@@ -162,10 +146,17 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📦 Built Packages" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ linux_amd64" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ linux_arm64" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ darwin_amd64" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ darwin_arm64" >> $GITHUB_STEP_SUMMARY
+          if [[ "${ACT:-}" == "true" || "${{ github.actor }}" == "nektos/act" ]]; then
+            echo "- ✅ linux_amd64 (local act mode)" >> $GITHUB_STEP_SUMMARY
+            echo "- ⏭️ linux_arm64 (skipped under act)" >> $GITHUB_STEP_SUMMARY
+            echo "- ⏭️ darwin_amd64 (skipped under act)" >> $GITHUB_STEP_SUMMARY
+            echo "- ⏭️ darwin_arm64 (skipped under act)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ✅ linux_amd64" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ linux_arm64" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ darwin_amd64" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ darwin_arm64" >> $GITHUB_STEP_SUMMARY
+          fi
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### ⏭️ Next Steps" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
