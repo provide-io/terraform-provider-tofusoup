@@ -188,12 +188,10 @@ class StateOutputsDataSource(BaseDataSource[str, StateOutputsState, StateOutputs
             if config.filter_name:
                 if config.filter_name in outputs_dict:
                     outputs_dict = {config.filter_name: outputs_dict[config.filter_name]}
-                    if logger.is_debug_enabled():
-                        logger.debug(f"Filtered by name '{config.filter_name}': 1 output")
+                    logger.debug(f"Filtered by name '{config.filter_name}': 1 output")
                 else:
                     outputs_dict = {}
-                    if logger.is_debug_enabled():
-                        logger.debug(f"Filtered by name '{config.filter_name}': 0 outputs (not found)")
+                    logger.debug(f"Filtered by name '{config.filter_name}': 0 outputs (not found)")
 
             # Convert to output format
             output_data = []
