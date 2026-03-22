@@ -1,11 +1,8 @@
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-
 """TofuSoup Terraform provider implementation."""
 
 from attrs import define
-from pyvider.providers import BaseProvider, ProviderMetadata, register_provider
-from pyvider.schema import PvsSchema, a_num, a_str, s_provider
+from pyvider.providers import BaseProvider, ProviderMetadata, register_provider  # type: ignore
+from pyvider.schema import PvsSchema, a_num, a_str, s_provider  # type: ignore
 
 
 @define(frozen=True)
@@ -20,7 +17,7 @@ class TofuSoupProviderConfig:
 
 
 @register_provider("tofusoup")
-class TofuSoupProvider(BaseProvider):
+class TofuSoupProvider(BaseProvider):  # type: ignore[misc]
     """
     Terraform provider for TofuSoup registry queries and state inspection.
 

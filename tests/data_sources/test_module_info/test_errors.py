@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -10,8 +10,8 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from pyvider.exceptions import DataSourceError  # type: ignore
 from pyvider.resources.context import ResourceContext  # type: ignore
-
 from tofusoup.registry.models.module import ModuleVersion  # type: ignore
+
 from tofusoup.tf.components.data_sources.module_info import (  # type: ignore
     ModuleInfoConfig,
     ModuleInfoDataSource,

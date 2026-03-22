@@ -1,12 +1,12 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
 """Tests for tofusoup_module_info data source."""
 
-from attrs.exceptions import FrozenInstanceError
 import pytest
+from attrs.exceptions import FrozenInstanceError
 from pyvider.schema import PvsSchema  # type: ignore
 
 from tofusoup.tf.components.data_sources.module_info import (  # type: ignore
