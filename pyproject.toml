@@ -28,7 +28,7 @@ terraform-provider-tofusoup = "tofusoup.tf.components"
 
 [dependency-groups]
 dev = [
-    "provide-testkit[all]",
+    "provide-testkit[standard,advanced-testing,build]",
     "plating",
 ]
 docs = [
