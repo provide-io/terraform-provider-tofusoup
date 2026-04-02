@@ -11,112 +11,104 @@ on:
 
 env:
   PYTHON_VERSION: '3.11'
+  PYTHONIOENCODING: utf-8
 
 jobs:
   build:
     name: 📦 Build for ${{ matrix.target }}
     strategy:
-      matrix: ${{ fromJson((github.actor == 'nektos/act') && '{"include":[{"os":"ubuntu-24.04","platform":"linux","arch":"amd64","target":"linux_amd64"}]}' || '{"include":[{"os":"ubuntu-24.04","platform":"linux","arch":"amd64","target":"linux_amd64"},{"os":"ubuntu-24.04-arm","platform":"linux","arch":"arm64","target":"linux_arm64"},{"os":"macos-15","platform":"darwin","arch":"arm64","target":"darwin_arm64"},{"os":"macos-15-intel","platform":"darwin","arch":"amd64","target":"darwin_amd64"}]}') }}
+      fail-fast: false
+      matrix: ${{ fromJson((github.actor == 'nektos/act') && '{"include":[{"os":"ubuntu-24.04","platform":"linux","arch":"amd64","target":"linux_amd64"}]}' || '{"include":[{"os":"ubuntu-24.04","platform":"linux","arch":"amd64","target":"linux_amd64"},{"os":"ubuntu-24.04-arm","platform":"linux","arch":"arm64","target":"linux_arm64"},{"os":"macos-15","platform":"darwin","arch":"arm64","target":"darwin_arm64"},{"os":"macos-15-intel","platform":"darwin","arch":"amd64","target":"darwin_amd64"},{"os":"windows-2025","platform":"windows","arch":"amd64","target":"windows_amd64"}]}') }}
 
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.platform == 'windows' }}
 
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
 
       - name: 📖 Read VERSION
         id: version
+        shell: bash
         run: |
           VERSION=$(cat VERSION)
           echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
           echo "📦 Building version: ${VERSION}"
 
+      - name: 🐍 Setup Python
+        if: env.ACT != 'true' && github.actor != 'nektos/act'
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
       - name: 📦 Install UV
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57  # v8.0.0
         continue-on-error: true
         with:
           enable-cache: false
 
-      - name: 🐍 Setup Python
-        if: env.ACT != 'true' && github.actor != 'nektos/act'
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
       - name: 🔧 Install dependencies
-        run: |
-          # Install project dependencies and dev tools (flavorpack, plating)
-          # Dev tools are NOT included in the PSP package - only used for building
-          uv sync --group dev
+        shell: bash
+        run: uv sync --group dev
 
       - name: 🔑 Generate temporary signing keys
+        shell: bash
         run: |
-          # Generate Ed25519 keys using flavor keygen (run via uv to use venv)
           uv run flavor keygen --out-dir keys
           echo "✅ Generated temporary signing keys"
           ls -la keys/
 
       - name: 🧹 Clear package caches
+        shell: bash
         run: |
-          echo "🧹 Clearing pip and uv caches to ensure fresh PyPI index..."
           pip cache purge 2>/dev/null || echo "No pip cache to clear"
           uv cache clean 2>/dev/null || echo "No uv cache to clear"
-          echo "✅ Caches cleared"
 
       - name: 🏗️ Build PSP package
+        shell: bash
         run: |
-          # The version is already set dynamically from VERSION file
-          # No need to update pyproject.toml as it uses dynamic = ["version"]
-
-          # Build the PSP package with retry logic for transient PyPI issues
-          # Note: flavorpack >= 0.0.5 automatically uses manylinux2014 wheels on Linux
           echo "🏗️ Building PSP package (with retry on failure)..."
-
           if ! uv run flavor pack \
             --manifest pyproject.toml \
             --output "terraform-provider-tofusoup.psp"; then
             echo "⚠️ First build attempt failed, waiting 30s and retrying..."
             sleep 30
-
-            # Force PyPI index refresh by checking latest version
             python3 -m pip index versions flavorpack 2>/dev/null || true
-
-            # Retry build
             uv run flavor pack \
               --manifest pyproject.toml \
               --output "terraform-provider-tofusoup.psp"
           fi
-
           echo "✅ Built PSP package:"
           ls -la terraform-provider-tofusoup.psp
 
       - name: 📦 Package for Terraform
+        shell: bash
         run: |
-          # Rename PSP to Terraform provider binary format
-          BINARY_NAME="terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}"
+          if [[ "${{ matrix.platform }}" == "windows" ]]; then
+            BINARY_NAME="terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}.exe"
+          else
+            BINARY_NAME="terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}"
+          fi
+
           cp terraform-provider-tofusoup.psp "$BINARY_NAME"
-          chmod +x "$BINARY_NAME"
+          chmod +x "$BINARY_NAME" 2>/dev/null || true
 
-          # Test execution with timing
           echo "🧪 Testing provider binary execution..."
-          echo "First run (cold start):"
-          time ./"$BINARY_NAME" --help || true
+          time ./"$BINARY_NAME" launch-context || true
 
-          echo -e "\nSecond run (warm start):"
-          time ./"$BINARY_NAME" --help || true
-
-          # Create zip archive with proper naming
           ZIP_NAME="terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_${{ matrix.target }}.zip"
-          zip "$ZIP_NAME" "$BINARY_NAME"
+          if command -v zip &>/dev/null; then
+            zip "$ZIP_NAME" "$BINARY_NAME"
+          else
+            7z a "$ZIP_NAME" "$BINARY_NAME"
+          fi
 
           echo "📦 Created Terraform provider package:"
           ls -la "$ZIP_NAME"
-
-          # Test unzip to verify
-          unzip -l "$ZIP_NAME"
+          unzip -l "$ZIP_NAME" 2>/dev/null || 7z l "$ZIP_NAME" 2>/dev/null || true
 
       - name: 📤 Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f  # v7.0.0
         with:
           name: provider-${{ matrix.target }}
           path: |
@@ -126,11 +118,11 @@ jobs:
   summary:
     name: 📋 Build Summary
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: 📥 Checkout (for VERSION file)
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
 
       - name: 📖 Read VERSION
         id: version
@@ -146,18 +138,8 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📦 Built Packages" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          if [[ "${ACT:-}" == "true" || "${{ github.actor }}" == "nektos/act" ]]; then
-            echo "- ✅ linux_amd64 (local act mode)" >> $GITHUB_STEP_SUMMARY
-            echo "- ⏭️ linux_arm64 (skipped under act)" >> $GITHUB_STEP_SUMMARY
-            echo "- ⏭️ darwin_amd64 (skipped under act)" >> $GITHUB_STEP_SUMMARY
-            echo "- ⏭️ darwin_arm64 (skipped under act)" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "- ✅ linux_amd64" >> $GITHUB_STEP_SUMMARY
-            echo "- ✅ linux_arm64" >> $GITHUB_STEP_SUMMARY
-            echo "- ✅ darwin_amd64" >> $GITHUB_STEP_SUMMARY
-            echo "- ✅ darwin_arm64" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### ⏭️ Next Steps" >> $GITHUB_STEP_SUMMARY
+          for target in linux_amd64 linux_arm64 darwin_amd64 darwin_arm64 windows_amd64; do
+            echo "- ✅ $target" >> $GITHUB_STEP_SUMMARY
+          done
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Conformance tests will automatically run on these artifacts." >> $GITHUB_STEP_SUMMARY

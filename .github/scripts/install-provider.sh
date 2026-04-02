@@ -33,15 +33,23 @@ echo "   Platform: $PLATFORM"
 echo "   Source: $SOURCE_BINARY"
 
 # Determine plugin directory based on platform
-PLUGIN_DIR="${HOME}/.terraform.d/plugins/local/providers/tofusoup/${VERSION}/${PLATFORM}"
+if [[ "$PLATFORM" == windows_* ]]; then
+  PLUGIN_DIR="${APPDATA}/terraform.d/plugins/local/providers/tofusoup/${VERSION}/${PLATFORM}"
+else
+  PLUGIN_DIR="${HOME}/.terraform.d/plugins/local/providers/tofusoup/${VERSION}/${PLATFORM}"
+fi
 
 # Create plugin directory
 mkdir -p "$PLUGIN_DIR"
 
-# Copy provider binary (Terraform expects binary without version suffix in filename)
-DEST_BINARY="${PLUGIN_DIR}/terraform-provider-tofusoup"
+# Copy provider binary (Windows needs .exe extension)
+if [[ "$PLATFORM" == windows_* ]]; then
+  DEST_BINARY="${PLUGIN_DIR}/terraform-provider-tofusoup.exe"
+else
+  DEST_BINARY="${PLUGIN_DIR}/terraform-provider-tofusoup"
+fi
 cp "$SOURCE_BINARY" "$DEST_BINARY"
-chmod +x "$DEST_BINARY"
+chmod +x "$DEST_BINARY" 2>/dev/null || true
 
 echo ""
 echo "✅ Provider installed successfully!"
@@ -53,7 +61,7 @@ echo "📋 Installation details:"
 ls -lah "$DEST_BINARY"
 
 # Check if binary is executable and can run
-if [[ -x "$DEST_BINARY" ]]; then
+if [[ -x "$DEST_BINARY" ]] || [[ "$PLATFORM" == windows_* ]]; then
   echo ""
   echo "✅ Provider binary is executable"
 
