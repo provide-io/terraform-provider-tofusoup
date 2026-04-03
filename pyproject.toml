@@ -6,11 +6,12 @@ requires-python = ">=3.11"
 readme = "README.md"
 license = "Apache-2.0"
 dependencies = [
-    "pyvider>=0.3.21",
-    "tofusoup",
+    "pyvider>=0.3.22",
+    "tofusoup>=0.3.22",
     "flavorpack",
-    "provide-foundation[all]>=0.3.21",
-    "jq>=1.9.1,<1.11.0",
+    "provide-foundation[all]>=0.3.29",
+    "jq>=1.9.1,<1.11.0; sys_platform != 'win32' or platform_machine != 'ARM64'",
+    "cryptography>=46.0.0,<=46.0.3; sys_platform == 'win32' and platform_machine == 'ARM64'",
 ]
 
 [project.urls]
@@ -27,7 +28,7 @@ terraform-provider-tofusoup = "tofusoup.tf.components"
 
 [dependency-groups]
 dev = [
-    "provide-testkit[all]",
+    "provide-testkit[standard,advanced-testing,build]",
     "plating",
 ]
 docs = [
