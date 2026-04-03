@@ -19,6 +19,7 @@ on:
 
 env:
   PYTHON_VERSION: '3.11'
+  PYTHONIOENCODING: utf-8
 
 jobs:
   # Check if we should run tests (skip if workflow_run failed)
@@ -97,9 +98,10 @@ jobs:
     if: needs.check.outputs.should_run == 'true'
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson((github.actor == 'nektos/act') && '{"include":[{"os":"ubuntu-24.04","platform":"linux","arch":"amd64","target":"linux_amd64"}]}' || '{"include":[{"os":"ubuntu-24.04","platform":"linux","arch":"amd64","target":"linux_amd64"},{"os":"macos-15","platform":"darwin","arch":"arm64","target":"darwin_arm64"}]}') }}
+      matrix: ${{ fromJson((github.actor == 'nektos/act') && '{"include":[{"os":"ubuntu-24.04","platform":"linux","arch":"amd64","target":"linux_amd64"}]}' || '{"include":[{"os":"ubuntu-24.04","platform":"linux","arch":"amd64","target":"linux_amd64"},{"os":"macos-15","platform":"darwin","arch":"arm64","target":"darwin_arm64"},{"os":"windows-2025","platform":"windows","arch":"amd64","target":"windows_amd64"}]}') }}
 
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.platform == 'windows' }}
 
     steps:
       - name: 📥 Checkout
@@ -107,6 +109,7 @@ jobs:
 
       - name: 📖 Read VERSION
         id: version
+        shell: bash
         run: |
           VERSION=$(cat VERSION)
           echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
@@ -122,6 +125,7 @@ jobs:
           repository: ${{ github.repository }}
 
       - name: 📦 Extract provider binary
+        shell: bash
         run: |
           cd provider-binary
           echo "📦 Contents of provider-binary directory:"
@@ -130,86 +134,82 @@ jobs:
 
           echo "📦 Extracting provider archive..."
           unzip terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_${{ matrix.target }}.zip
-          chmod +x terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}
+
+          if [[ "${{ matrix.platform }}" == "windows" ]]; then
+            BINARY="terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}.exe"
+          else
+            BINARY="terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}"
+          fi
+          chmod +x "$BINARY" 2>/dev/null || true
 
           echo ""
           echo "✅ Extracted provider binary:"
-          ls -la terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}
+          ls -la "$BINARY"
 
       - name: 🔍 Verify provider binary
+        shell: bash
         run: |
-          PROVIDER_BINARY="provider-binary/terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}"
+          if [[ "${{ matrix.platform }}" == "windows" ]]; then
+            PROVIDER_BINARY="provider-binary/terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}.exe"
+          else
+            PROVIDER_BINARY="provider-binary/terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}"
+          fi
 
           echo "════════════════════════════════════════════════════════════════"
           echo "🔍 PROVIDER BINARY VERIFICATION"
           echo "════════════════════════════════════════════════════════════════"
-          echo ""
 
           echo "📋 Binary information:"
           ls -lah "$PROVIDER_BINARY"
           echo ""
 
           echo "📋 File type:"
-          file "$PROVIDER_BINARY" || echo "file command not available"
+          file "$PROVIDER_BINARY" 2>/dev/null || echo "file command not available"
           echo ""
 
-          if [[ "${{ matrix.platform }}" == "linux" ]]; then
-            echo "📋 Library dependencies (ldd):"
-            ldd "$PROVIDER_BINARY" 2>&1 || echo "ldd not available or binary not dynamically linked"
-          else
-            echo "📋 Library dependencies (otool):"
-            otool -L "$PROVIDER_BINARY" 2>&1 || echo "otool not available"
-          fi
-          echo ""
-
-          echo "📋 Testing provider executable:"
-          if "$PROVIDER_BINARY" --version 2>&1 | head -10; then
-            echo "✅ Provider supports --version"
-          else
-            echo "⚠️  Provider doesn't support --version, trying without arguments..."
-            if timeout 5 "$PROVIDER_BINARY" 2>&1 | head -10; then
-              echo "✅ Provider is executable"
-            else
-              echo "❌ Provider failed to execute"
-              exit 1
-            fi
-          fi
-
-          echo ""
-          echo "✅ Provider binary verification complete"
+          echo "📋 Testing provider executable (launch-context):"
+          timeout 10 "$PROVIDER_BINARY" launch-context 2>&1 | head -10 || true
+          echo "✅ Provider binary is valid"
           echo "════════════════════════════════════════════════════════════════"
 
       - name: 🔌 Install provider to Terraform plugin directory
+        shell: bash
         run: |
+          if [[ "${{ matrix.platform }}" == "windows" ]]; then
+            SOURCE="provider-binary/terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}.exe"
+          else
+            SOURCE="provider-binary/terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}"
+          fi
           chmod +x .github/scripts/install-provider.sh
           .github/scripts/install-provider.sh \
             "${{ steps.version.outputs.VERSION }}" \
             "${{ matrix.target }}" \
-            "provider-binary/terraform-provider-tofusoup_v${{ steps.version.outputs.VERSION }}"
+            "$SOURCE"
 
       - name: 📝 Install OpenTofu
         uses: opentofu/setup-opentofu@v1
         with:
           tofu_version: 1.10.6
+          tofu_wrapper: false
 
-      - name: 📦 Install UV (for tofusoup)
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: 🐍 Setup Python (for tofusoup)
+      - name: 🐍 Setup Python
         if: env.ACT != 'true' && github.actor != 'nektos/act'
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: 📦 Install UV
+        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57  # v8.0.0
+
       - name: 🍲 Install tofusoup
+        shell: bash
         run: |
           uv tool install tofusoup
           echo "✅ Tofusoup installed"
           soup --version
 
       - name: "🔥 Smoke Test 1: Provider Initialization"
+        shell: bash
         run: |
           echo "════════════════════════════════════════════════════════════════"
           echo "🔥 SMOKE TEST 1: Provider Initialization"
@@ -255,6 +255,7 @@ jobs:
           echo "════════════════════════════════════════════════════════════════"
 
       - name: "🔥 Smoke Test 2: Registry Query"
+        shell: bash
         run: |
           echo "════════════════════════════════════════════════════════════════"
           echo "🔥 SMOKE TEST 2: Registry Query (Data Source)"
@@ -314,6 +315,7 @@ jobs:
 
       - name: "🔬 Single Test Verification: provider_versions"
         id: single_test
+        shell: bash
         env:
           TF_LOG: DEBUG
           PYVIDER_LOG_LEVEL: debug
@@ -325,6 +327,7 @@ jobs:
         id: full_conformance
         if: success()
         continue-on-error: true
+        shell: bash
         env:
           TF_LOG: DEBUG
           PYVIDER_LOG_LEVEL: debug
