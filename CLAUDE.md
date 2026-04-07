@@ -252,4 +252,4 @@ Reference implementations and documentation:
 - `plating` - Documentation generation usage
 - `flavorpack` - Binary packaging documentation
 
-All located in `/Users/tim/code/gh/provide-io/`
+All located as siblings in the provide-io workspace.
