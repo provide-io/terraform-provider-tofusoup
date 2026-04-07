@@ -195,7 +195,7 @@ output "aws_versions_last_year" {
 ## Documentation
 
 - **[Getting Started Guide](https://foundry.provide.io/terraform-provider-tofusoup/)** - Step-by-step introduction
-- **[Data Sources Reference](https://foundry.provide.io/terraform-provider-tofusoup/data-sources/)** - Complete data source documentation
+- **[Data Sources Reference](https://foundry.provide.io/terraform-provider-tofusoup/data-sources/provider_info/)** - Complete data source documentation
 - **[Use Cases](https://foundry.provide.io/terraform-provider-tofusoup/use-cases/)** - Recommended usage patterns
 - **[Examples](examples/)** - Working examples for all data sources
 
