@@ -17,8 +17,8 @@ dependencies = [
 [project.urls]
 Homepage = "https://foundry.provide.io/terraform-provider-tofusoup/"
 Documentation = "https://foundry.provide.io/terraform-provider-tofusoup/"
-Repository = "https://foundry.provide.io/terraform-provider-tofusoup/repo"
-Issues = "https://foundry.provide.io/terraform-provider-tofusoup/issues"
+Repository = "https://github.com/provide-io/terraform-provider-tofusoup"
+Issues = "https://github.com/provide-io/terraform-provider-tofusoup/issues"
 
 [project.scripts]
 terraform-provider-tofusoup = "pyvider.cli:main"
