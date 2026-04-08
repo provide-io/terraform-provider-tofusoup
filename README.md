@@ -194,10 +194,9 @@ output "aws_versions_last_year" {
 
 ## Documentation
 
-- **[Getting Started Guide](docs/guides/getting-started.md)** - Step-by-step introduction
-- **[Data Sources Reference](docs/data-sources/)** - Complete data source documentation
-- **[Best Practices](docs/guides/best-practices.md)** - Recommended usage patterns
-- **[Troubleshooting](docs/guides/troubleshooting.md)** - Common issues and solutions
+- **[Getting Started Guide](https://foundry.provide.io/terraform-provider-tofusoup/)** - Step-by-step introduction
+- **[Data Sources Reference](https://foundry.provide.io/terraform-provider-tofusoup/data-sources/)** - Complete data source documentation
+- **[Use Cases](https://foundry.provide.io/terraform-provider-tofusoup/use-cases/)** - Recommended usage patterns
 - **[Examples](examples/)** - Working examples for all data sources
 
 ## Development
@@ -332,7 +331,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 - **Issues**: [GitHub Issues](https://github.com/provide-io/terraform-provider-tofusoup/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/provide-io/terraform-provider-tofusoup/discussions)
-- **Documentation**: [docs/](docs/)
+- **Documentation**: [Foundry Docs](https://foundry.provide.io/terraform-provider-tofusoup/)
 
 ## Changelog
 
