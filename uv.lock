@@ -2861,7 +2861,7 @@ wheels = [
 
 [[package]]
 name = "pyvider"
-version = "0.3.31"
+version = "0.3.32"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -2875,9 +2875,9 @@ dependencies = [
     { name = "pyvider-cty" },
     { name = "pyvider-rpcplugin" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e3/b6/4c2f207bcbddf89d164233247fe88ff3e2ee9d0cd47bd6481808f1dcd24b/pyvider-0.3.31.tar.gz", hash = "sha256:a649fa6773ea9599e1ce05ed8fa8cf8fb28615b0ba6486199e95245a1a29dfdb", size = 124797, upload-time = "2026-04-01T19:48:33.895Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/03/cd/55720d92aac79444888928fa45223b19c530236eaa5d8aa276528feea9dd/pyvider-0.3.32.tar.gz", hash = "sha256:9e76fe9f3e045434a3cfceed2e4d4b17c6511b6cbda5667d48ec9a5338fe5dfa", size = 124965, upload-time = "2026-04-08T18:36:49.103Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/eb/44/5420dbfd472f93ebbd91834d61899ad4e945527499d491f73819e401f13a/pyvider-0.3.31-py3-none-any.whl", hash = "sha256:e2ea0e162bd200ba70d05806a52ed0ac4230c2b5f5f791cd6f81b6b05f5ddaa4", size = 178271, upload-time = "2026-04-01T19:48:32.523Z" },
+    { url = "https://files.pythonhosted.org/packages/22/cb/4a89673681a8f6b40db68b8b107d225323e89d90ef6ab2385a20b0724541/pyvider-0.3.32-py3-none-any.whl", hash = "sha256:9030c7425540aa7f01083c125819cd23aa2b561e10edc48516e079c6bbf12109", size = 178464, upload-time = "2026-04-08T18:36:47.328Z" },
 ]
 
 [[package]]
