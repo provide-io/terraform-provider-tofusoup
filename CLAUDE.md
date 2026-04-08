@@ -252,4 +252,4 @@ Reference implementations and documentation:
 - `plating` - Documentation generation usage
 - `flavorpack` - Binary packaging documentation
 
-All located in `/REDACTED_ABS_PATH`
+All located as siblings in the provide-io workspace.
