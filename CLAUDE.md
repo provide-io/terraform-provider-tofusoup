@@ -25,7 +25,7 @@ source .venv/bin/activate
 ### Building and Testing
 
 ```bash
-# Build the provider binary (FlavorPack)
+# Build the provider binary (Flavorpack)
 we build
 
 # Install to local Terraform plugin directory
@@ -203,7 +203,7 @@ Examples are used by Plating for documentation generation.
 
 ## Build System
 
-### FlavorPack Configuration
+### Flavorpack Configuration
 
 Configured in `soup.toml`:
 - Entry point: `pyvider.cli:main`
@@ -233,7 +233,7 @@ terraform {
 ## Configuration Files
 
 - `pyproject.toml` - Python project configuration, dependencies, tool settings
-- `soup.toml` - Pyvider provider configuration, FlavorPack settings, wrknv tasks
+- `soup.toml` - Pyvider provider configuration, Flavorpack settings, wrknv tasks
 - `mkdocs.yml` - MkDocs documentation site configuration
 
 ## Code Quality Standards

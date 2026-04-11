@@ -83,7 +83,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Code quality checks (ruff, mypy)
 
 ### Build System
-- FlavorPack packaging (PSPF/2025 format, 109.4 MB)
+- Flavorpack packaging (PSPF/2025 format, 109.4 MB)
 - Multi-platform support (darwin arm64/amd64, linux amd64/arm64, windows amd64)
 - Makefile with common development targets
 - Local installation support
