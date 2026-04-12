@@ -269,7 +269,7 @@ we docs serve
 
 Built using the [Pyvider](https://github.com/provide-io/pyvider) framework for Python-based Terraform providers:
 
-- **Package Format**: [FlavorPack](https://github.com/provide-io/flavorpack) (PSPF/2025)
+- **Package Format**: [Flavorpack](https://github.com/provide-io/flavorpack) (PSPF/2025)
 - **Documentation**: [Plating](https://github.com/provide-io/plating) (automated from code)
 - **Registry Client**: [TofuSoup](https://github.com/provide-io/tofusoup) (async registry API)
 - **Testing**: pytest + pytest-asyncio
@@ -324,7 +324,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 - Built with [Pyvider](https://github.com/provide-io/pyvider) framework
 - Uses [TofuSoup](https://github.com/provide-io/tofusoup) for registry queries
-- Packaged with [FlavorPack](https://github.com/provide-io/flavorpack)
+- Packaged with [Flavorpack](https://github.com/provide-io/flavorpack)
 - Documentation by [Plating](https://github.com/provide-io/plating)
 
 ## Support
