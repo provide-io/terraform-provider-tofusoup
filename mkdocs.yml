@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 INHERIT: .provide/foundry/base-mkdocs.yml
 site_name: !ENV [TOFUSOUP_PROVIDER_SITE_NAME, 'Terraform Provider TofuSoup']
 site_url: https://foundry.provide.io/providers/provide-io/tofusoup/latest/docs
