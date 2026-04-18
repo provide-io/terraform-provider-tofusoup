@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 """Tests for tofusoup_provider_versions data source."""
 
 from unittest.mock import AsyncMock, patch
