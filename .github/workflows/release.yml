@@ -211,6 +211,9 @@ jobs:
           # Install project dependencies and dev tools (includes plating)
           uv sync --group dev
 
+          # Extract provide-foundry scripts into .provide/foundry/ (docs build depends on them)
+          we docs setup
+
           # Generate documentation
           we docs build
 
