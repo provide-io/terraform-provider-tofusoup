@@ -29,6 +29,7 @@ make test-conformance  # TofuSoup registry / state fixtures (runs against real b
 ```
 
 Requirements:
+
 - **100% branch coverage** (enforced).
 - **mypy strict**. No `type: ignore` without an inline justification.
 - Files ≤ 500 lines.
@@ -44,5 +45,5 @@ Requirements:
 ## Pull Requests
 
 1. Run `make quality` (must pass).
-2. For schema / data-source changes, bump `VERSION` and update docs under `docs/`.
-3. PR description notes any breaking schema changes.
+1. For schema / data-source changes, bump `VERSION` and update docs under `docs/`.
+1. PR description notes any breaking schema changes.

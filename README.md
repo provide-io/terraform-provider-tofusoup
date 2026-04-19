@@ -1,8 +1,6 @@
 # Terraform Provider for TofuSoup
 
-[![Tests](https://img.shields.io/badge/tests-280%2F280%20passing-brightgreen)](tests/)
-[![Version](https://img.shields.io/badge/version-0.0.1109-blue)](CHANGELOG.md)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
+[![Tests](https://img.shields.io/badge/tests-280%2F280%20passing-brightgreen)](tests/) [![Version](https://img.shields.io/badge/version-0.0.1109-blue)](CHANGELOG.md) [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 
 A Terraform provider for querying Terraform/OpenTofu registries and inspecting Terraform state files, powered by [TofuSoup](https://github.com/provide-io/tofusoup).
 
@@ -308,13 +306,13 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for det
 ### Development Workflow
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Run tests (`we test`)
-5. Run code quality checks (`ruff format && ruff check`)
-6. Commit your changes (`git commit -m 'Add amazing feature'`)
-7. Push to the branch (`git push origin feature/amazing-feature`)
-8. Open a Pull Request
+1. Create a feature branch (`git checkout -b feature/amazing-feature`)
+1. Make your changes
+1. Run tests (`we test`)
+1. Run code quality checks (`ruff format && ruff check`)
+1. Commit your changes (`git commit -m 'Add amazing feature'`)
+1. Push to the branch (`git push origin feature/amazing-feature`)
+1. Open a Pull Request
 
 ## License
 
@@ -340,18 +338,20 @@ See [CHANGELOG.md](CHANGELOG.md) for release history.
 ## Roadmap
 
 ### Current Version: v0.0.1109
+
 - ✅ All 9 data sources implemented
 - ✅ 280 comprehensive tests
 - ✅ Complete documentation
 - ✅ Working examples
 
 ### Future Enhancements
+
 - Integration testing suite
 - Remote state backend support
 - Enhanced caching mechanisms
 - Additional data sources (dependencies, platform details)
 - CI/CD pipeline with GitHub Actions
 
----
+______________________________________________________________________
 
 **Status**: Production Ready | **Version**: 0.0.1109 | **Tests**: 280/280 Passing ✅
