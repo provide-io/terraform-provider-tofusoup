@@ -9,6 +9,7 @@ Terraform provider for TofuSoup registry queries and state inspection. Built usi
 **Provider name:** `tofusoup`
 
 **Data sources:**
+
 - Registry: `tofusoup_provider_info`, `tofusoup_provider_versions`, `tofusoup_module_info`, `tofusoup_module_versions`, `tofusoup_module_search`, `tofusoup_registry_search`
 - State inspection: `tofusoup_state_info`, `tofusoup_state_resources`, `tofusoup_state_outputs`
 
@@ -109,6 +110,7 @@ src/tofusoup/tf/components/
 All TofuSoup registry clients are fully async using standard Python asyncio. Pyvider data sources support async `read()` methods.
 
 Example pattern:
+
 ```python
 async def read(self, config: ProviderInfoConfig) -> ProviderInfoData:
     async with TerraformRegistry() as registry:
@@ -128,7 +130,7 @@ All components (provider and data sources) must include comprehensive docstrings
 
 ### Provider Docstring Format
 
-```python
+````python
 """
 Short description of the provider.
 
@@ -138,15 +140,14 @@ Short description of the provider.
 provider "tofusoup" {
   cache_dir = "/tmp/tofusoup-cache"
 }
-```
+````
 
 ## Configuration
 
 - `cache_dir` - (Optional) Cache directory path
-- `cache_ttl_hours` - (Optional) Cache TTL in hours, default: 24
-...
-"""
-```
+- `cache_ttl_hours` - (Optional) Cache TTL in hours, default: 24 ... """
+
+````
 
 ### Data Source Docstring Format
 
@@ -165,7 +166,7 @@ data "tofusoup_provider_info" "aws" {
 output "version" {
   value = data.tofusoup_provider_info.aws.latest_version
 }
-```
+````
 
 ## Argument Reference
 
@@ -176,9 +177,8 @@ output "version" {
 ## Attribute Reference
 
 - `latest_version` - Latest version string
-- `description` - Provider description
-...
-"""
+- `description` - Provider description ... """
+
 ```
 
 ## Examples Structure
@@ -186,10 +186,9 @@ output "version" {
 Each data source must have a corresponding example in `examples/data-sources/<datasource_name>/`:
 
 ```
-examples/data-sources/tofusoup_provider_info/
-├── main.tf       # Terraform configuration with provider and data source
-├── outputs.tf    # Output definitions
-└── README.md     # Example explanation
+
+examples/data-sources/tofusoup_provider_info/ ├── main.tf # Terraform configuration with provider and data source ├── outputs.tf # Output definitions └── README.md # Example explanation
+
 ```
 
 Examples are used by Plating for documentation generation.
@@ -214,9 +213,10 @@ Configured in `soup.toml`:
 
 Provider installs to:
 ```
-~/.terraform.d/plugins/local/providers/tofusoup/{version}/{platform}/
-└── terraform-provider-tofusoup
-```
+
+~/.terraform.d/plugins/local/providers/tofusoup/{version}/{platform}/ └── terraform-provider-tofusoup
+
+````
 
 Use in Terraform with:
 ```hcl
@@ -228,7 +228,7 @@ terraform {
     }
   }
 }
-```
+````
 
 ## Configuration Files
 
@@ -246,6 +246,7 @@ terraform {
 ## Related Projects
 
 Reference implementations and documentation:
+
 - `terraform-provider-pyvider` - Reference provider implementation
 - `pyvider` - Provider framework documentation
 - `tofusoup` - Registry client API documentation
