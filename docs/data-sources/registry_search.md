@@ -61,20 +61,20 @@ output "verified_modules" {
 
 ### Required
 
-- `query` (String) - 
+- `query` (String) -
 
 ### Optional
 
-- `registry` (String) - 
-- `limit` (String) - 
-- `resource_type` (String) - 
+- `registry` (String) -
+- `limit` (String) -
+- `resource_type` (String) -
 
 ### Read-Only
 
-- `result_count` (String) - 
-- `provider_count` (String) - 
-- `module_count` (String) - 
-- `results` (Dynamic) - 
+- `result_count` (String) -
+- `provider_count` (String) -
+- `module_count` (String) -
+- `results` (Dynamic) -
 
 
 ## Related Components
