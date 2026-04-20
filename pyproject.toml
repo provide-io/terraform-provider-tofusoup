@@ -46,6 +46,8 @@ terraform-provider-tofusoup = "tofusoup.tf.components"
 dev = [
     "provide-testkit[standard,advanced-testing,build]",
     "plating",
+    # provide-foundry isn't on PyPI; docs.setup needs it for extract_base_mkdocs
+    "provide-foundry @ git+https://github.com/provide-io/provide-foundry.git@main",
 ]
 docs = [
     "provide-testkit[docs]",
