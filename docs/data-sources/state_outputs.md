@@ -52,16 +52,16 @@ output "sensitive_outputs" {
 
 ### Required
 
-- `state_path` (String) - 
+- `state_path` (String) -
 
 ### Optional
 
-- `filter_name` (String) - 
+- `filter_name` (String) -
 
 ### Read-Only
 
-- `output_count` (String) - 
-- `outputs` (Dynamic) - 
+- `output_count` (String) -
+- `outputs` (Dynamic) -
 
 
 ## Related Components

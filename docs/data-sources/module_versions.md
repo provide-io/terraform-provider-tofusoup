@@ -73,18 +73,18 @@ output "compute_latest_version" {
 
 ### Required
 
-- `namespace` (String) - 
-- `name` (String) - 
-- `target_provider` (String) - 
+- `namespace` (String) -
+- `name` (String) -
+- `target_provider` (String) -
 
 ### Optional
 
-- `registry` (String) - 
+- `registry` (String) -
 
 ### Read-Only
 
-- `version_count` (String) - 
-- `versions` (Dynamic) - 
+- `version_count` (String) -
+- `versions` (Dynamic) -
 
 
 ## Related Components

@@ -63,17 +63,17 @@ output "opentofu_latest_version" {
 
 ### Required
 
-- `namespace` (String) - 
-- `name` (String) - 
+- `namespace` (String) -
+- `name` (String) -
 
 ### Optional
 
-- `registry` (String) - 
+- `registry` (String) -
 
 ### Read-Only
 
-- `version_count` (String) - 
-- `versions` (Dynamic) - 
+- `version_count` (String) -
+- `versions` (Dynamic) -
 
 
 ## Related Components

@@ -61,17 +61,17 @@ output "database_modules_summary" {
 
 ### Required
 
-- `query` (String) - 
+- `query` (String) -
 
 ### Optional
 
-- `registry` (String) - 
-- `limit` (String) - 
+- `registry` (String) -
+- `limit` (String) -
 
 ### Read-Only
 
-- `result_count` (String) - 
-- `results` (Dynamic) - 
+- `result_count` (String) -
+- `results` (Dynamic) -
 
 
 ## Related Components

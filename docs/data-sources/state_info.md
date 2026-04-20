@@ -55,21 +55,21 @@ output "file_metadata" {
 
 ### Required
 
-- `state_path` (String) - 
+- `state_path` (String) -
 
 ### Read-Only
 
-- `version` (String) - 
-- `terraform_version` (String) - 
-- `serial` (String) - 
-- `lineage` (String) - 
-- `resources_count` (String) - 
-- `outputs_count` (String) - 
-- `managed_resources_count` (String) - 
-- `data_resources_count` (String) - 
-- `modules_count` (String) - 
-- `state_file_size` (String) - 
-- `state_file_modified` (String) - 
+- `version` (String) -
+- `terraform_version` (String) -
+- `serial` (String) -
+- `lineage` (String) -
+- `resources_count` (String) -
+- `outputs_count` (String) -
+- `managed_resources_count` (String) -
+- `data_resources_count` (String) -
+- `modules_count` (String) -
+- `state_file_size` (String) -
+- `state_file_modified` (String) -
 
 
 ## Related Components

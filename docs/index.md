@@ -31,4 +31,3 @@ No provider configuration required.
 - [`tofusoup_state_info`](./data-sources/state_info/)
 - [`tofusoup_state_outputs`](./data-sources/state_outputs/)
 - [`tofusoup_state_resources`](./data-sources/state_resources/)
-

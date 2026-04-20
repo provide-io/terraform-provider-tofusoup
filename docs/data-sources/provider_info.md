@@ -55,20 +55,20 @@ output "opentofu_source" {
 
 ### Required
 
-- `namespace` (String) - 
-- `name` (String) - 
+- `namespace` (String) -
+- `name` (String) -
 
 ### Optional
 
-- `registry` (String) - 
+- `registry` (String) -
 
 ### Read-Only
 
-- `latest_version` (String) - 
-- `description` (String) - 
-- `source_url` (String) - 
-- `downloads` (String) - 
-- `published_at` (String) - 
+- `latest_version` (String) -
+- `description` (String) -
+- `source_url` (String) -
+- `downloads` (String) -
+- `published_at` (String) -
 
 
 ## Related Components

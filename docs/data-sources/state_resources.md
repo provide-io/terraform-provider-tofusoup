@@ -67,18 +67,18 @@ output "instance_ids" {
 
 ### Required
 
-- `state_path` (String) - 
+- `state_path` (String) -
 
 ### Optional
 
-- `filter_mode` (String) - 
-- `filter_type` (String) - 
-- `filter_module` (String) - 
+- `filter_mode` (String) -
+- `filter_type` (String) -
+- `filter_module` (String) -
 
 ### Read-Only
 
-- `resource_count` (String) - 
-- `resources` (Dynamic) - 
+- `resource_count` (String) -
+- `resources` (Dynamic) -
 
 
 ## Related Components
