@@ -214,7 +214,7 @@ Configured in `soup.toml`:
 Provider installs to:
 ```
 
-~/.terraform.d/plugins/local/providers/tofusoup/{version}/{platform}/ └── terraform-provider-tofusoup
+~/.terraform.d/plugins/local/providers/tofusoup/0.1.0/{platform}/ └── terraform-provider-tofusoup
 
 ````
 
@@ -224,7 +224,7 @@ terraform {
   required_providers {
     tofusoup = {
       source  = "local/providers/tofusoup"
-      # Pin to whatever is in VERSION when building locally (e.g. "0.3.22").
+      version = "0.1.0"
     }
   }
 }

@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-
 name: 🚀 Release Provider
 
 on:
@@ -210,9 +207,6 @@ jobs:
 
           # Install project dependencies and dev tools (includes plating)
           uv sync --group dev
-
-          # Extract provide-foundry scripts into .provide/foundry/ (docs build depends on them)
-          we docs setup
 
           # Generate documentation
           we docs build
