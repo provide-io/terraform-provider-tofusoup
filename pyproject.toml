@@ -22,19 +22,19 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "pyvider>=0.3.22",
-    "tofusoup>=0.3.22",
-    "flavorpack",
-    "provide-foundation[all]>=0.3.29",
+    "pyvider>=0.4.0",
+    "tofusoup>=0.4.0",
+    "flavorpack>=0.4.0",
+    "provide-foundation[all]>=0.4.0",
     "jq>=1.9.1,<1.11.0; sys_platform != 'win32' or platform_machine != 'ARM64'",
     "cryptography>=46.0.0,<=46.0.3; sys_platform == 'win32' and platform_machine == 'ARM64'",
 ]
 
 [project.urls]
-Homepage = "https://foundry.provide.io/terraform-provider-tofusoup/"
-Documentation = "https://foundry.provide.io/terraform-provider-tofusoup/"
+Homepage = "https://foundry.provide.io/terraform-provider-tofusoup"
+Documentation = "https://foundry.provide.io/terraform-provider-tofusoup"
 Repository = "https://github.com/provide-io/terraform-provider-tofusoup"
-Issues = "https://github.com/provide-io/terraform-provider-tofusoup/issues"
+Issues = "https://github.com/provide-io/terraform-provider-tofusoup"
 
 [project.scripts]
 terraform-provider-tofusoup = "pyvider.cli:main"
@@ -44,13 +44,13 @@ terraform-provider-tofusoup = "tofusoup.tf.components"
 
 [dependency-groups]
 dev = [
-    "provide-testkit[standard,advanced-testing,build]",
-    "plating",
-    # provide-foundry isn't on PyPI; docs.setup needs it for extract_base_mkdocs
-    "provide-foundry @ git+https://github.com/provide-io/provide-foundry.git@main",
+    "provide-testkit[standard,advanced-testing,build]>=0.4.0",
+    "plating>=0.4.0",
+    # provide-foundry>=0.4.0 isn't on PyPI; docs.setup needs it for extract_base_mkdocs
+    "provide-foundry>=0.4.0",
 ]
 docs = [
-    "provide-testkit[docs]",
+    "provide-testkit[docs]>=0.4.0",
 ]
 
 [build-system]
@@ -85,7 +85,7 @@ pythonpath = ["src"]
 addopts = ""
 # Parallel execution: pytest -n <workers> (range: 2-16, recommend: CPU cores or 8, max: 16 to avoid xdist hang)
 
-[pyvider]
+[tool.pyvider]
 component_packages = ["tofusoup.tf.components"]
 
 [tool.plating]
