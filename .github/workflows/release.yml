@@ -209,7 +209,7 @@ jobs:
           uv sync --group dev
 
           # Generate documentation
-          we docs build
+          uvx wrknv docs build
 
           echo "✅ Documentation generated"
           ls -la docs/
