@@ -8,11 +8,6 @@ on:
         required: false
         type: boolean
         default: false
-      generate_docs:
-        description: 'Generate and commit documentation'
-        required: false
-        type: boolean
-        default: true
       build_run_id:
         description: 'Build workflow run ID (leave empty for last successful build or to trigger new build)'
         required: false
@@ -200,40 +195,6 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: 📚 Generate Documentation
-        if: inputs.generate_docs == true
-        run: |
-          echo "📝 Generating documentation with plating..."
-
-          # Install project dependencies and dev tools (includes plating)
-          uv sync --group dev
-
-          # Generate documentation
-          uvx wrknv docs build
-
-          echo "✅ Documentation generated"
-          ls -la docs/
-
-      - name: 💾 Commit Documentation
-        if: inputs.generate_docs == true
-        continue-on-error: true
-        run: |
-          # Configure git with providebot[bot] identity
-          git config user.name "providebot[bot]"
-          git config user.email "178697328+providebot[bot]@users.noreply.github.com"
-
-          # Add generated documentation
-          git add docs/
-
-          # Commit if there are changes
-          if git diff --staged --quiet; then
-            echo "📝 No documentation changes to commit"
-          else
-            git commit -m "Generate documentation for v${{ steps.version.outputs.VERSION }}"
-            git push origin main
-            echo "✅ Documentation committed and pushed"
-          fi
-
       - name: 📥 Download all build artifacts
         uses: actions/download-artifact@v4
         with:
@@ -322,75 +283,12 @@ jobs:
 
           echo -e "\n✅ All release artifacts verified!"
 
-      - name: 📝 Generate release notes
-        run: |
-          cat > release-notes.md << EOF
-          # Terraform Provider TofuSoup v${{ steps.version.outputs.VERSION }}
-
-          ## 📦 Installation
-
-          ### Terraform Registry (Coming Soon)
-          \`\`\`hcl
-          terraform {
-            required_providers {
-              tofusoup = {
-                source  = "provide-io/tofusoup"
-                version = "${{ steps.version.outputs.VERSION }}"
-              }
-            }
-          }
-          \`\`\`
-
-          ### Manual Installation
-          1. Download the appropriate package for your platform from the assets below
-          2. Extract the archive to get the provider binary
-          3. Place it in your Terraform plugins directory
-
-          ## 🔒 Verification
-
-          Verify your download with:
-          \`\`\`bash
-          # Download the SHA256SUMS and signature files
-          curl -LO https://github.com/provide-io/terraform-provider-tofusoup/releases/download/v${{ steps.version.outputs.VERSION }}/terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_SHA256SUMS
-          curl -LO https://github.com/provide-io/terraform-provider-tofusoup/releases/download/v${{ steps.version.outputs.VERSION }}/terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_SHA256SUMS.sig
-
-          # Verify the signature
-          gpg --verify terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_SHA256SUMS.sig terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_SHA256SUMS
-
-          # Verify the checksum
-          sha256sum -c terraform-provider-tofusoup_${{ steps.version.outputs.VERSION }}_SHA256SUMS 2>&1 | grep OK
-          \`\`\`
-
-          ## 📋 Supported Platforms
-
-          - Linux AMD64
-          - Linux ARM64
-          - macOS ARM64 (Apple Silicon)
-          - macOS AMD64 (Intel)
-
-          ## 🚀 What's New
-
-          TofuSoup Terraform Provider - Query Terraform/OpenTofu registries and inspect state files.
-          EOF
-
       - name: 🏷️ Create Git tag
-        continue-on-error: true
         run: |
           # Configure git with providebot[bot] identity
           git config user.name "providebot[bot]"
           git config user.email "178697328+providebot[bot]@users.noreply.github.com"
 
-          # Create and push tag (ensure it exists before release)
+          # Create and push tag for the verified build artifacts.
           git tag -a "v${{ steps.version.outputs.VERSION }}" -m "Release v${{ steps.version.outputs.VERSION }}" || echo "Tag might already exist"
           git push origin "v${{ steps.version.outputs.VERSION }}" || echo "Tag already exists on remote"
-
-      - name: 🚀 Create GitHub Release
-        continue-on-error: true
-        uses: ncipollo/release-action@v1
-        with:
-          tag: "v${{ steps.version.outputs.VERSION }}"
-          name: "v${{ steps.version.outputs.VERSION }}"
-          bodyFile: "release-notes.md"
-          artifacts: "release/*"
-          prerelease: ${{ inputs.prerelease }}
-          token: ${{ secrets.GITHUB_TOKEN }}
