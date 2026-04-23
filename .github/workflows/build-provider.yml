@@ -51,6 +51,22 @@ jobs:
         shell: bash
         run: uv sync --group dev
 
+      - name: 📥 Checkout Flavorpack Helpers
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          repository: provide-io/flavorpack
+          ref: v0.4.0
+          path: .deps/flavorpack
+
+      - name: 🔨 Build Flavor Helpers
+        shell: bash
+        run: |
+          cd .deps/flavorpack
+          uv sync --group dev
+          uv run flavor helpers build --lang go
+          echo "FLAVOR_BUILDER_BIN=$PWD/dist/bin/flavor-go-builder-${{ matrix.target }}" >> "$GITHUB_ENV"
+          echo "FLAVOR_LAUNCHER_BIN=$PWD/dist/bin/flavor-go-launcher-${{ matrix.target }}" >> "$GITHUB_ENV"
+
       - name: 🔑 Generate temporary signing keys
         shell: bash
         run: |
