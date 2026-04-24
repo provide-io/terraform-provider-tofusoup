@@ -66,3 +66,9 @@ Thumbs.db
 
 # Local act CI config (machine-specific)
 .actrc
+
+# Built release artifacts (out of scope for git)
+release/
+
+# Built release artifacts (out of scope for git)
+terraform-provider-*_v*
