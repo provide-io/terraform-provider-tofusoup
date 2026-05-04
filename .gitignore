@@ -59,7 +59,8 @@ site/
 # OS
 .DS_Store
 Thumbs.db
-.soup/logs/*
+.soup/
+.soup/**
 *.log
 .mypy_cache/
 .ruff_cache/
