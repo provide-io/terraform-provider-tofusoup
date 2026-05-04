@@ -69,8 +69,12 @@ jobs:
           cd .deps/flavorpack
           uv sync --group dev
           uv run flavor helpers build --lang go
-          echo "FLAVOR_BUILDER_BIN=$PWD/dist/bin/flavor-go-builder-${{ matrix.target }}" >> "$GITHUB_ENV"
-          echo "FLAVOR_LAUNCHER_BIN=$PWD/dist/bin/flavor-go-launcher-${{ matrix.target }}" >> "$GITHUB_ENV"
+          # Windows: external Go builder produces an invalid PSPF; leave the env
+          # vars unset so flavorpack falls back to its in-process Python builder.
+          if [[ "${{ matrix.platform }}" != "windows" ]]; then
+            echo "FLAVOR_BUILDER_BIN=$PWD/dist/bin/flavor-go-builder-${{ matrix.target }}" >> "$GITHUB_ENV"
+            echo "FLAVOR_LAUNCHER_BIN=$PWD/dist/bin/flavor-go-launcher-${{ matrix.target }}" >> "$GITHUB_ENV"
+          fi
 
       - name: 🔑 Generate temporary signing keys
         shell: bash
