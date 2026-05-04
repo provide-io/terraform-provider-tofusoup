@@ -685,7 +685,7 @@ wheels = [
 
 [[package]]
 name = "flavorpack"
-version = "0.4.0"
+version = "0.4.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pip" },
@@ -696,9 +696,13 @@ dependencies = [
     { name = "uv" },
     { name = "wheel" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b2/24/18dc5c0c6d7192b622b5d301a78659f093cf09da9216c558b06d9f8e4339/flavorpack-0.4.0.tar.gz", hash = "sha256:8cf677dac517624819c767c1b07597b697e5bc83b9dada06c62516c549fec49d", size = 255977, upload-time = "2026-04-22T02:42:21.655Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/af/5c/8a29105774a2f09341fe5d256969d85226ffbefddd78807962f599c3dbe0/flavorpack-0.4.0-py3-none-any.whl", hash = "sha256:91099e7e9b03f18664e2bf805214727f3517a07e3cdd658ef99024d3fc88e873", size = 248483, upload-time = "2026-04-22T02:42:20.049Z" },
+    { url = "https://files.pythonhosted.org/packages/23/33/b0cc14c8f67db04370d1f3256181b5b3ce4a21f26468158a1d947debaeb6/flavorpack-0.4.1-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:d66669a6942b1b0200c1a6ed4e800161ebd463f4fec33b6084d631e2554e8581", size = 8850714, upload-time = "2026-04-25T02:55:18.657Z" },
+    { url = "https://files.pythonhosted.org/packages/6e/60/9e05a561ecc0de56aef97cdd896a4859dc3c9393ca424395b9ce3c866554/flavorpack-0.4.1-py3-none-macosx_11_0_arm64.whl", hash = "sha256:33a79dca85f8455accbea60d58301d0f2d2d62158f02c38cd3cc9d0d64f47b23", size = 8243216, upload-time = "2026-04-25T02:55:21.628Z" },
+    { url = "https://files.pythonhosted.org/packages/04/f6/efc22266c981896f9c6059bc8e14cd30a634b1f091d56a948c5a4623745d/flavorpack-0.4.1-py3-none-manylinux2014_aarch64.whl", hash = "sha256:d515988cea555e323e8b78d54a2feb004cf9d4b39fa8f4efc6d10239aee7a1d1", size = 8132327, upload-time = "2026-04-25T02:55:23.879Z" },
+    { url = "https://files.pythonhosted.org/packages/db/8f/df4189c02b0eac446d788e89ccf48d05c6fb3d8fbec23ed738ee0ff6adf8/flavorpack-0.4.1-py3-none-manylinux2014_x86_64.whl", hash = "sha256:7b929471b915ee15fbadb35c7710b483df10cd4cabf4d01f9a9ad79c270b81c3", size = 8878127, upload-time = "2026-04-25T02:55:26.784Z" },
+    { url = "https://files.pythonhosted.org/packages/6f/5a/90f9abf741ae6d500285a4f4bc642d64171cd1f034393a1c75e4e60bc81e/flavorpack-0.4.1-py3-none-win_amd64.whl", hash = "sha256:7e6f3bf4b19c471aa96e24518cecc1415986c4d4b7071efde2f56587c72add8b", size = 9414226, upload-time = "2026-04-25T02:55:29.428Z" },
+    { url = "https://files.pythonhosted.org/packages/29/1c/74d89645b3eb98acba9fb99b9b5dfdf05dd785b421661daff74e7bc421af/flavorpack-0.4.1-py3-none-win_arm64.whl", hash = "sha256:5a2fa3948f384394fa46884feea4b1763b71df74e23e15f7bb7d2847224b2b38", size = 8600657, upload-time = "2026-04-25T02:55:32.329Z" },
 ]
 
 [[package]]
@@ -2352,16 +2356,16 @@ wheels = [
 
 [[package]]
 name = "provide-foundation"
-version = "0.4.0"
+version = "0.4.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "structlog" },
     { name = "tomli-w" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/18/97/8e33408dae18859774748f6bf2bc80c476bccd32318d409c88378ee14042/provide_foundation-0.4.0.tar.gz", hash = "sha256:7fea7dede7df9f5d482b15fe52dea5455f507de586c2da8e130fbcc4a4ff2993", size = 417899, upload-time = "2026-04-21T02:24:26.135Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/57/9e/36e5076f1103565ab9b5623452ed826bcd467be786c75c6ead901f84da96/provide_foundation-0.4.1.tar.gz", hash = "sha256:294255d6754bf4aad0dde9fe775a296f5da09510142eee4efc9e12fc7074ca5d", size = 417992, upload-time = "2026-05-04T20:09:05.388Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/95/43/31c60ed135ab55626fd62fb737aa618dcf9167a68b3d3ffc02e4e71e3ae6/provide_foundation-0.4.0-py3-none-any.whl", hash = "sha256:9a64b9a7c54723682255551e869a148bc30691c37240170afbd4675c691d46a9", size = 615880, upload-time = "2026-04-21T02:24:24.005Z" },
+    { url = "https://files.pythonhosted.org/packages/13/37/515c0489ee3048dcad5204bae38619a0b6380166c37a99e9862a71bb5d71/provide_foundation-0.4.1-py3-none-any.whl", hash = "sha256:cdc1bf2aa5e7c132f3259bd0eb28bb997a80dcce6b2f3d42a9ec16e48ecf2b25", size = 616102, upload-time = "2026-05-04T20:09:03.761Z" },
 ]
 
 [package.optional-dependencies]
