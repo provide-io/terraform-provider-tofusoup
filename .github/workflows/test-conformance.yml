@@ -335,6 +335,25 @@ jobs:
           chmod +x .github/scripts/run-conformance-suite.sh
           .github/scripts/run-conformance-suite.sh "${{ matrix.target }}"
 
+      - name: 🎬 Record conformance cast
+        if: matrix.platform == 'linux'
+        shell: bash
+        env:
+          TF_LOG: DEBUG
+          PYVIDER_LOG_LEVEL: debug
+        run: |
+          chmod +x ci/record-conformance.sh
+          ci/record-conformance.sh
+
+      - name: 📤 Upload conformance cast
+        if: matrix.platform == 'linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: conformance-cast
+          path: conformance.cast
+          retention-days: 90
+          if-no-files-found: error
+
       - name: 📤 Upload test logs and artifacts
         if: always()
         uses: actions/upload-artifact@v4
