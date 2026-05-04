@@ -69,8 +69,12 @@ jobs:
           cd .deps/flavorpack
           uv sync --group dev
           uv run flavor helpers build --lang go
-          echo "FLAVOR_BUILDER_BIN=$PWD/dist/bin/flavor-go-builder-${{ matrix.target }}" >> "$GITHUB_ENV"
-          echo "FLAVOR_LAUNCHER_BIN=$PWD/dist/bin/flavor-go-launcher-${{ matrix.target }}" >> "$GITHUB_ENV"
+          ext=""
+          if [[ "${{ matrix.platform }}" == "windows" ]]; then
+            ext=".exe"
+          fi
+          echo "FLAVOR_BUILDER_BIN=$PWD/dist/bin/flavor-go-builder-${{ matrix.target }}${ext}" >> "$GITHUB_ENV"
+          echo "FLAVOR_LAUNCHER_BIN=$PWD/dist/bin/flavor-go-launcher-${{ matrix.target }}${ext}" >> "$GITHUB_ENV"
 
       - name: 🔑 Generate temporary signing keys
         shell: bash
