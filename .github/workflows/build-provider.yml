@@ -60,7 +60,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           repository: provide-io/flavorpack
-          ref: v0.4.0
+          ref: v0.4.4
           path: .deps/flavorpack
 
       - name: 🔨 Build Flavor Helpers
