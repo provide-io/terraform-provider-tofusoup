@@ -1,0 +1,34 @@
+# Python source quality gate (format/lint/typecheck) for this repo, run via wrknv
+# so CI matches local `we run <task>` commands exactly. Runs independently of the
+# provider packaging/release pipeline (build-provider.yml / test-conformance.yml /
+# release.yml) — does not build, sign, or touch the Terraform provider binary.
+# There is no repo-local pytest suite (the built binary is verified separately in
+# test-conformance.yml), so run-tests is disabled.
+name: ⚙️ Continuous Integration
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    uses: provide-io/ci-tooling/.github/workflows/python-ci.yml@v0
+    with:
+      python-version: '3.11'
+      use-wrknv: true
+      run-tests: false
+      coverage-threshold: 0
+      run-security: true
+      run-secret-scan: true
+    secrets: inherit
