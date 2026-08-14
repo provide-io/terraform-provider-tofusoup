@@ -2,16 +2,17 @@
 
 import json
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 from attrs import define
 from provide.foundation import logger
 from provide.foundation.errors import resilient
-from pyvider.data_sources.base import BaseDataSource  # type: ignore
-from pyvider.data_sources.decorators import register_data_source  # type: ignore
-from pyvider.exceptions import DataSourceError  # type: ignore
-from pyvider.resources.context import ResourceContext  # type: ignore
-from pyvider.schema import PvsSchema, a_bool, a_list, a_num, a_obj, a_str, s_data_source  # type: ignore
+from pyvider.data_sources.base import BaseDataSource
+from pyvider.data_sources.decorators import register_data_source
+from pyvider.exceptions import DataSourceError
+from pyvider.resources.context import ResourceContext
+from pyvider.resources.private_state import PrivateState
+from pyvider.schema import PvsSchema, a_bool, a_list, a_num, a_obj, a_str, s_data_source
 
 
 @define(frozen=True)
@@ -33,7 +34,7 @@ class StateOutputsState:
 
 
 @register_data_source("tofusoup_state_outputs")
-class StateOutputsDataSource(BaseDataSource[str, StateOutputsState, StateOutputsConfig]):  # type: ignore[misc]
+class StateOutputsDataSource(BaseDataSource[str, StateOutputsState, StateOutputsConfig]):
     """
     Read and inspect outputs from a Terraform state file.
 
@@ -147,12 +148,14 @@ class StateOutputsDataSource(BaseDataSource[str, StateOutputsState, StateOutputs
         return errors
 
     @resilient()
-    async def read(self, ctx: ResourceContext) -> StateOutputsState:
+    async def read(
+        self, ctx: ResourceContext[StateOutputsConfig, StateOutputsState, PrivateState]
+    ) -> StateOutputsState:
         """Read outputs from state file."""
         if not ctx.config:
             raise DataSourceError("Configuration is required.")
 
-        config = cast(StateOutputsConfig, ctx.config)
+        config = ctx.config
 
         logger.info(
             "Reading state outputs",

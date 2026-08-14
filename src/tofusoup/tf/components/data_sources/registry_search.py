@@ -1,22 +1,23 @@
 """TofuSoup registry_search data source implementation."""
 
-from typing import Any, cast
+from typing import Any
 
 from attrs import define
 from provide.foundation import logger
 from provide.foundation.errors import resilient
-from pyvider.data_sources.base import BaseDataSource  # type: ignore
-from pyvider.data_sources.decorators import register_data_source  # type: ignore
-from pyvider.exceptions import DataSourceError  # type: ignore
-from pyvider.resources.context import ResourceContext  # type: ignore
-from pyvider.schema import PvsSchema, a_bool, a_list, a_num, a_obj, a_str, s_data_source  # type: ignore
+from pyvider.data_sources.base import BaseDataSource
+from pyvider.data_sources.decorators import register_data_source
+from pyvider.exceptions import DataSourceError
+from pyvider.resources.context import ResourceContext
+from pyvider.resources.private_state import PrivateState
+from pyvider.schema import PvsSchema, a_bool, a_list, a_num, a_obj, a_str, s_data_source
 
-from tofusoup.config.defaults import OPENTOFU_REGISTRY_URL, TERRAFORM_REGISTRY_URL  # type: ignore
-from tofusoup.registry.base import RegistryConfig  # type: ignore
-from tofusoup.registry.models.module import Module  # type: ignore
-from tofusoup.registry.models.provider import Provider  # type: ignore
-from tofusoup.registry.opentofu import OpenTofuRegistry  # type: ignore
-from tofusoup.registry.terraform import IBMTerraformRegistry  # type: ignore
+from tofusoup.config.defaults import OPENTOFU_REGISTRY_URL, TERRAFORM_REGISTRY_URL
+from tofusoup.registry.base import RegistryConfig
+from tofusoup.registry.models.module import Module
+from tofusoup.registry.models.provider import Provider
+from tofusoup.registry.opentofu import OpenTofuRegistry
+from tofusoup.registry.terraform import IBMTerraformRegistry
 
 
 @define(frozen=True)
@@ -44,7 +45,7 @@ class RegistrySearchState:
 
 
 @register_data_source("tofusoup_registry_search")
-class RegistrySearchDataSource(BaseDataSource[str, RegistrySearchState, RegistrySearchConfig]):  # type: ignore[misc]
+class RegistrySearchDataSource(BaseDataSource[str, RegistrySearchState, RegistrySearchConfig]):
     """
     Search for providers and modules in Terraform or OpenTofu registry.
 
@@ -214,12 +215,14 @@ class RegistrySearchDataSource(BaseDataSource[str, RegistrySearchState, Registry
         }
 
     @resilient()
-    async def read(self, ctx: ResourceContext) -> RegistrySearchState:
+    async def read(
+        self, ctx: ResourceContext[RegistrySearchConfig, RegistrySearchState, PrivateState]
+    ) -> RegistrySearchState:
         """Search for providers and/or modules in the registry."""
         if not ctx.config:
             raise DataSourceError("Configuration is required.")
 
-        config = cast(RegistrySearchConfig, ctx.config)
+        config = ctx.config
 
         logger.info(
             "Searching registry",
