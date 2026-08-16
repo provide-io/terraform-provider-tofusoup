@@ -96,3 +96,10 @@ output_dir = "docs"
 entry_point = "pyvider.cli:main"
 output_path = "dist/terraform-provider-tofusoup"
 platforms = ["darwin_arm64", "linux_amd64", "linux_arm64", "windows_amd64"]
+
+# TEMPORARY: validates the unreleased provide-foundation main (0.4.2
+# candidate, includes the console-renderer locals-leak fix) actually builds
+# before cutting the release. Not meant to land on main -- revert once
+# validated.
+[tool.uv.sources]
+provide-foundation = { git = "https://github.com/provide-io/provide-foundation", rev = "9a16351c01ca2a109281afe63e02ca1c89022cdd" }

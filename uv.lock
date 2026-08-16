@@ -2357,15 +2357,11 @@ wheels = [
 [[package]]
 name = "provide-foundation"
 version = "0.4.1"
-source = { registry = "https://pypi.org/simple" }
+source = { git = "https://github.com/provide-io/provide-foundation?rev=9a16351c01ca2a109281afe63e02ca1c89022cdd#9a16351c01ca2a109281afe63e02ca1c89022cdd" }
 dependencies = [
     { name = "attrs" },
     { name = "structlog" },
     { name = "tomli-w" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/57/9e/36e5076f1103565ab9b5623452ed826bcd467be786c75c6ead901f84da96/provide_foundation-0.4.1.tar.gz", hash = "sha256:294255d6754bf4aad0dde9fe775a296f5da09510142eee4efc9e12fc7074ca5d", size = 417992, upload-time = "2026-05-04T20:09:05.388Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/13/37/515c0489ee3048dcad5204bae38619a0b6380166c37a99e9862a71bb5d71/provide_foundation-0.4.1-py3-none-any.whl", hash = "sha256:cdc1bf2aa5e7c132f3259bd0eb28bb997a80dcce6b2f3d42a9ec16e48ecf2b25", size = 616102, upload-time = "2026-05-04T20:09:03.761Z" },
 ]
 
 [package.optional-dependencies]
@@ -3408,7 +3404,7 @@ requires-dist = [
     { name = "cryptography", marker = "platform_machine == 'ARM64' and sys_platform == 'win32'", specifier = ">=46.0.0,<=46.0.3" },
     { name = "flavorpack", specifier = ">=0.4.0" },
     { name = "jq", marker = "platform_machine != 'ARM64' or sys_platform != 'win32'", specifier = ">=1.9.1,<1.11.0" },
-    { name = "provide-foundation", extras = ["all"], specifier = ">=0.4.0" },
+    { name = "provide-foundation", extras = ["all"], git = "https://github.com/provide-io/provide-foundation?rev=9a16351c01ca2a109281afe63e02ca1c89022cdd" },
     { name = "pyvider", specifier = ">=0.4.0" },
     { name = "tofusoup", specifier = ">=0.4.0" },
 ]
