@@ -104,6 +104,20 @@ platforms = ["darwin_arm64", "linux_amd64", "linux_arm64", "windows_amd64"]
 # does not propagate a dependency's sources into published metadata, so this is
 # invisible to consumers of the built wheel. CI passes --no-sources to verify the
 # published story instead.
+[tool.flavor.build]
+# Build these from the local checkouts and bundle the resulting wheels, rather
+# than resolving them from PyPI. Without this the packaged .psp starts and then
+# dies with `ModuleNotFoundError: No module named 'pyvider'`, because the suite
+# packages are path dependencies that no index can serve.
+dependencies = [
+    "../pyvider",
+    "../pyvider-cty",
+    "../pyvider-rpcplugin",
+    "../provide-foundation",
+    "../plating",
+    "../tofusoup",
+]
+
 [tool.uv.sources]
 flavorpack = { path = "../flavorpack", editable = true }
 plating = { path = "../plating", editable = true }
