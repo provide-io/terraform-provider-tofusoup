@@ -3,13 +3,13 @@ revision = 3
 requires-python = ">=3.11"
 resolution-markers = [
     "(python_full_version >= '3.15' and platform_machine != 'ARM64') or (python_full_version >= '3.15' and sys_platform != 'win32')",
+    "python_full_version >= '3.15' and platform_machine == 'ARM64' and sys_platform == 'win32'",
     "(python_full_version == '3.14.*' and platform_machine != 'ARM64') or (python_full_version == '3.14.*' and sys_platform != 'win32')",
+    "python_full_version == '3.14.*' and platform_machine == 'ARM64' and sys_platform == 'win32'",
     "(python_full_version == '3.13.*' and platform_machine != 'ARM64') or (python_full_version == '3.13.*' and sys_platform != 'win32')",
+    "python_full_version == '3.13.*' and platform_machine == 'ARM64' and sys_platform == 'win32'",
     "python_full_version == '3.12.*' and sys_platform == 'emscripten'",
     "(python_full_version < '3.13' and platform_machine != 'ARM64' and sys_platform == 'win32') or (python_full_version < '3.12' and sys_platform == 'emscripten') or (python_full_version < '3.13' and sys_platform != 'emscripten' and sys_platform != 'win32')",
-    "python_full_version >= '3.15' and platform_machine == 'ARM64' and sys_platform == 'win32'",
-    "python_full_version == '3.14.*' and platform_machine == 'ARM64' and sys_platform == 'win32'",
-    "python_full_version == '3.13.*' and platform_machine == 'ARM64' and sys_platform == 'win32'",
     "python_full_version < '3.13' and platform_machine == 'ARM64' and sys_platform == 'win32'",
 ]
 
@@ -3273,7 +3273,7 @@ wheels = [
 
 [[package]]
 name = "pyvider"
-version = "0.5.0"
+version = "0.5.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -3287,9 +3287,9 @@ dependencies = [
     { name = "pyvider-cty" },
     { name = "pyvider-rpcplugin" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/67/aa/ecb04820bfe6a9c5ff1491b2b748f6e551844748c5fec24ceb007c1502a1/pyvider-0.5.0.tar.gz", hash = "sha256:90cdeba9e37db9f20f1747e8a86d4e015a1c16a00fa3ac5eb94ed3a19abef58c", size = 177332, upload-time = "2026-08-20T21:22:42.733Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d2/fa/194b30fdc1f71e07da7066b73133963e427e82abf5566c8c9c52873d2b9b/pyvider-0.5.2.tar.gz", hash = "sha256:f53d27753bc16d61b2203f8293dfb5dec0c206827d94a34233525fc6504cd1b9", size = 178535, upload-time = "2026-08-21T07:59:09.331Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d4/ff/795daa7b5ef4f3ddafa11a63b865c2fabc8ce23c06877b4211fd9387e5c2/pyvider-0.5.0-py3-none-any.whl", hash = "sha256:8ecddca6fa0d6eb4d1f1a0efc86d15fd46b27a918541a55b43b5e86e36b2494e", size = 245780, upload-time = "2026-08-20T21:22:41.357Z" },
+    { url = "https://files.pythonhosted.org/packages/56/ef/c6c69e556562796f8c233633dd980e37b41dadcc4d28e184b0ca92b64b9b/pyvider-0.5.2-py3-none-any.whl", hash = "sha256:adfe653241093fc5e05bd8fb8c0ea3ce9d4c032e1008d9d516c85f5d1f4b4c89", size = 247023, upload-time = "2026-08-21T07:59:07.93Z" },
 ]
 
 [[package]]
