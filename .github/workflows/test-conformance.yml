@@ -189,7 +189,13 @@ jobs:
       - name: 📝 Install OpenTofu
         uses: opentofu/setup-opentofu@v1
         with:
-          tofu_version: 1.10.6
+          # `latest` is this action's own default; 1.10.6 was an undated pin that
+          # simply rotted. It predates write-only attributes, so it failed
+          # pyvider_secret_note with "Provider produced invalid plan" for a
+          # provider behaving exactly as write-only requires. Examples that need a
+          # particular version now say so themselves, in their requirements
+          # sidecar, which is a better place for it than a runner-wide pin.
+          tofu_version: latest
           tofu_wrapper: false
 
       - name: 🐍 Setup Python
