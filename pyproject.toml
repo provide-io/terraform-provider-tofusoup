@@ -64,6 +64,13 @@ where = ["src"]
 version = {file = "VERSION"}
 
 [tool.ruff]
+# `.ci-tooling` is another repository, checked out into the workspace by CI. Its
+# files are not ours to restyle, and the wrknv `format.check` task runs
+# `ruff format .` across the whole tree -- unlike the scoped invocation used
+# locally -- so it walks in and fails Code Quality on files this repository does
+# not own. Locally that directory does not exist, which is why the check passes
+# here and fails there.
+exclude = [".ci-tooling"]
 line-length = 111
 target-version = "py311"
 
