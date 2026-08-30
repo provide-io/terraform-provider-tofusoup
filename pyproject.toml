@@ -22,12 +22,21 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "pyvider>=0.4.0",
-    "tofusoup>=0.4.0",
-    "flavorpack>=0.4.0",
-    "provide-foundation[all]>=0.4.0",
-    "jq>=1.9.1,<1.11.0; sys_platform != 'win32' or platform_machine != 'ARM64'",
-    "cryptography>=46.0.0,<=46.0.3; sys_platform == 'win32' and platform_machine == 'ARM64'",
+    # Floors track the suite releases this provider is actually built and tested
+    # against. They sat at >=0.4.0 while the lock resolved 0.6.x, so the published
+    # metadata promised a combination nothing had ever run.
+    "pyvider>=0.6.0",
+    "tofusoup>=0.6.1",
+    "flavorpack>=0.4.6",
+    "provide-foundation[all]>=0.4.3",
+    "jq>=1.9.1; sys_platform != 'win32' or platform_machine != 'ARM64'",
+    # Floor only. The previous <=46.0.3 cap applied to win32/ARM64, where neither
+    # cryptography nor grpcio publishes a wheel (re-checked 2026-08-30: grpcio
+    # 1.83.1 ships win32/win_amd64 only, grpc/grpc#39064; cryptography 50.0.1
+    # ships win_amd64 only). Since pyvider requires grpcio, that platform cannot
+    # install the suite at all, so the cap constrained a resolution that never
+    # happens. windows_arm64 is unsupported suite-wide for the same reason.
+    "cryptography>=46.0.0; sys_platform == 'win32' and platform_machine == 'ARM64'",
 ]
 
 [project.urls]
