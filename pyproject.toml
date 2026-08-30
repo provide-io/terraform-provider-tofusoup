@@ -93,6 +93,15 @@ addopts = ""
 # Parallel execution: pytest -n <workers> (range: 2-16, recommend: CPU cores or 8, max: 16 to avoid xdist hang)
 
 [tool.pyvider]
+# The provider name selects the plugin directory Terraform searches,
+# local/providers/<name>/. Unset, it falls back to "pyvider", and this provider
+# installs as terraform-provider-pyvider where nothing asks for it: the examples
+# here request local/providers/tofusoup, so they resolve whatever else happens to
+# sit in the plugin directory -- for a long while, a stale prebuilt binary.
+#
+# `provider_name` is the spelling pyvider 0.6.0 reads. Later versions accept
+# `name` as well and prefer it; switch once the pin moves.
+provider_name = "tofusoup"
 component_packages = ["tofusoup.tf.components"]
 
 [tool.plating]
