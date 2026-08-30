@@ -93,6 +93,13 @@ addopts = ""
 # Parallel execution: pytest -n <workers> (range: 2-16, recommend: CPU cores or 8, max: 16 to avoid xdist hang)
 
 [tool.pyvider]
+# The key is `provider_name`; `name` is not read. Without this, `pyvider install`
+# falls back to the default hint and installs
+# the provider as "pyvider": into local/providers/pyvider/ as a binary named
+# terraform-provider-pyvider. The examples in this repository ask for
+# local/providers/tofusoup, so they never resolve the checkout -- they pick up
+# whatever stale prebuilt binary happens to be in the plugin directory instead.
+provider_name = "tofusoup"
 component_packages = ["tofusoup.tf.components"]
 
 [tool.plating]
