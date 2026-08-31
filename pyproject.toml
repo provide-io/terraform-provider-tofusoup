@@ -25,7 +25,7 @@ dependencies = [
     # Floors track the suite releases this provider is actually built and tested
     # against. They sat at >=0.4.0 while the lock resolved 0.6.x, so the published
     # metadata promised a combination nothing had ever run.
-    "pyvider>=0.6.0",
+    "pyvider>=0.6.1",
     "tofusoup>=0.6.1",
     "flavorpack>=0.4.6",
     "provide-foundation[all]>=0.4.3",
@@ -54,7 +54,7 @@ terraform-provider-tofusoup = "tofusoup.tf.components"
 [dependency-groups]
 dev = [
     "provide-testkit[standard,advanced-testing,build]>=0.4.0",
-    "plating>=0.4.0",
+    "plating>=0.6.1",
     # provide-foundry>=0.4.0 isn't on PyPI; docs.setup needs it for extract_base_mkdocs
     "provide-foundry>=0.4.0",
 ]
@@ -108,9 +108,10 @@ addopts = ""
 # here request local/providers/tofusoup, so they resolve whatever else happens to
 # sit in the plugin directory -- for a long while, a stale prebuilt binary.
 #
-# `provider_name` is the spelling pyvider 0.6.0 reads. Later versions accept
-# `name` as well and prefer it; switch once the pin moves.
-provider_name = "tofusoup"
+# `name` is the documented key as of pyvider 0.6.1, which the floor above
+# requires; 0.6.0 read only `provider_name`, so a resolution at that version
+# would find no name here and fall back to the default.
+name = "tofusoup"
 component_packages = ["tofusoup.tf.components"]
 
 [tool.plating]
