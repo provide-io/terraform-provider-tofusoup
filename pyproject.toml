@@ -24,8 +24,13 @@ classifiers = [
 dependencies = [
     # Floors track the suite releases this provider is actually built and tested
     # against. They sat at >=0.4.0 while the lock resolved 0.6.x, so the published
-    # metadata promised a combination nothing had ever run.
-    "pyvider>=0.6.1",
+    # metadata promised a combination nothing had ever run. The pyvider floor
+    # sits at 0.6.2 because that is where the generated dev-mode wrapper stopped
+    # cd'ing into the install directory: under 0.6.1 and earlier the examples
+    # here ran with their working directory silently moved to this checkout, so
+    # relative paths and the filesystem state store's default root landed in the
+    # provider tree instead of beside the example.
+    "pyvider>=0.6.2",
     "tofusoup>=0.6.1",
     "flavorpack>=0.4.6",
     "provide-foundation[all]>=0.4.3",
@@ -109,7 +114,7 @@ addopts = ""
 # sit in the plugin directory -- for a long while, a stale prebuilt binary.
 #
 # `name` is the documented key as of pyvider 0.6.1, which the floor above
-# requires; 0.6.0 read only `provider_name`, so a resolution at that version
+# clears; 0.6.0 read only `provider_name`, so a resolution at that version
 # would find no name here and fall back to the default.
 name = "tofusoup"
 component_packages = ["tofusoup.tf.components"]
