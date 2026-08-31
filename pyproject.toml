@@ -153,3 +153,23 @@ output_dir = "docs"
 entry_point = "pyvider.cli:main"
 output_path = "dist/terraform-provider-tofusoup"
 platforms = ["darwin_arm64", "linux_amd64", "linux_arm64", "windows_amd64"]
+
+[tool.flavor.build]
+# The oldest Linux this provider is built to run on, stated rather than
+# implied. `pip download --platform TAG` replaces the set of tags pip will
+# consider and expands each one downward only, so this is both the floor the
+# artifact promises (glibc 2.17: CentOS 7, Amazon Linux 2) and the ceiling on
+# what a bundled wheel may require.
+#
+# Listing manylinux2014 alone is deliberate. flavorpack's default also offers
+# manylinux_2_28 as a fallback, which lets a package that has stopped
+# publishing 2_17 wheels resolve anyway -- convenient, but it silently raises
+# the artifact's real floor to whatever that package needs. jq is exactly that
+# case: from 1.11 it ships manylinux_2_26/2_28 only, so accepting the fallback
+# would produce a provider whose jq extension cannot load on CentOS 7 while
+# the build still went green.
+#
+# With the floor declared here, that combination fails at build time instead,
+# naming the tags it asked for. Widen this list only as a deliberate decision
+# to stop supporting the older distributions.
+manylinux = ["manylinux2014"]
