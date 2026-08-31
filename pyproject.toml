@@ -34,7 +34,14 @@ dependencies = [
     "tofusoup>=0.6.1",
     "flavorpack>=0.4.6",
     "provide-foundation[all]>=0.4.3",
-    "jq>=1.9.1; sys_platform != 'win32' or platform_machine != 'ARM64'",
+    # Capped below 1.11 for the packaged build, not for this package's own use.
+    # flavorpack downloads wheels with --platform manylinux2014_<arch> (its
+    # MANYLINUX_TAG is hardcoded), and jq stopped publishing manylinux2014
+    # wheels after 1.10.0 -- 1.11 and 1.12 ship manylinux_2_26/2_28 only. The
+    # lock happens to sit at 1.10.0 today, so this pins the luck: a refresh
+    # that picked 1.12.0 would fail the Linux PSP build the way it did in
+    # terraform-provider-pyvider. Lift once flavorpack asks for a newer tag.
+    "jq>=1.9.1,<1.11; sys_platform != 'win32' or platform_machine != 'ARM64'",
     # Floor only. The previous <=46.0.3 cap applied to win32/ARM64, where neither
     # cryptography nor grpcio publishes a wheel (re-checked 2026-08-30: grpcio
     # 1.83.1 ships win32/win_amd64 only, grpc/grpc#39064; cryptography 50.0.1
