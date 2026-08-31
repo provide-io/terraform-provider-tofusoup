@@ -3793,7 +3793,7 @@ docs = [
 requires-dist = [
     { name = "cryptography", marker = "platform_machine == 'ARM64' and sys_platform == 'win32'", specifier = ">=46.0.0" },
     { name = "flavorpack", specifier = ">=0.4.6" },
-    { name = "jq", marker = "platform_machine != 'ARM64' or sys_platform != 'win32'", specifier = ">=1.9.1" },
+    { name = "jq", marker = "platform_machine != 'ARM64' or sys_platform != 'win32'", specifier = ">=1.9.1,<1.11" },
     { name = "provide-foundation", extras = ["all"], specifier = ">=0.4.3" },
     { name = "pyvider", specifier = ">=0.6.2" },
     { name = "tofusoup", specifier = ">=0.6.1" },
