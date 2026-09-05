@@ -2,8 +2,12 @@
 # so CI matches local `we run <task>` commands exactly. Runs independently of the
 # provider packaging/release pipeline (build-provider.yml / test-conformance.yml /
 # release.yml) — does not build, sign, or touch the Terraform provider binary.
-# There is no repo-local pytest suite (the built binary is verified separately in
-# test-conformance.yml), so run-tests is disabled.
+#
+# The pytest suite runs here. It used to be disabled with `run-tests: false` and
+# the note "there is no repo-local pytest suite", which was copied from the
+# pyvider provider and was never true of this repo: tests/ holds 280 tests that
+# import the provider classes directly and need neither a built binary nor an
+# engine.
 name: ⚙️ Continuous Integration
 
 on:
@@ -27,7 +31,7 @@ jobs:
     with:
       python-version: '3.11'
       use-wrknv: true
-      run-tests: false
+      # Coverage is not enforced yet; the tests running at all is the change.
       coverage-threshold: 0
       run-security: true
       run-secret-scan: true
