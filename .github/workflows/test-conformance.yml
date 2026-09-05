@@ -93,15 +93,58 @@ jobs:
           echo "skip_bot=${SKIP_BOT}" >> $GITHUB_OUTPUT
 
   conformance:
-    name: 🧪 Test ${{ matrix.target }}
+    name: 🧪 Test ${{ matrix.target }} (${{ matrix.engine }})
     needs: check
     if: needs.check.outputs.should_run == 'true'
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson((github.actor == 'nektos/act') && '{"include":[{"os":"ubuntu-24.04","platform":"linux","arch":"amd64","target":"linux_amd64"}]}' || '{"include":[{"os":"ubuntu-24.04","platform":"linux","arch":"amd64","target":"linux_amd64"},{"os":"macos-15","platform":"darwin","arch":"arm64","target":"darwin_arm64"},{"os":"windows-2025","platform":"windows","arch":"amd64","target":"windows_amd64"}]}') }}
+      matrix:
+        # Both engines, every platform the build produces.
+        #
+        # The suite ran OpenTofu alone, so nothing verified this provider
+        # against the engine most of its users run. linux_arm64 and
+        # darwin_amd64 were built, zipped and released without ever being
+        # tested; they are here now.
+        #
+        # windows_arm64 stays out, correctly: grpcio publishes no win_arm64
+        # wheel (grpc/grpc#39064, still true at 1.83.1), so the provider cannot
+        # be built for it.
+        #
+        # Written out rather than assembled by `fromJson`, which also carried a
+        # one-combination branch for act. act can narrow a matrix itself with
+        # `--matrix target:linux_amd64`, and a readable matrix is worth more
+        # than a hardcoded shortcut for one runner.
+        engine: [tofu, terraform]
+        target: [linux_amd64, linux_arm64, darwin_arm64, darwin_amd64, windows_amd64]
+        include:
+          - target: linux_amd64
+            os: ubuntu-24.04
+            platform: linux
+            arch: amd64
+          - target: linux_arm64
+            os: ubuntu-24.04-arm
+            platform: linux
+            arch: arm64
+          - target: darwin_arm64
+            os: macos-15
+            platform: darwin
+            arch: arm64
+          - target: darwin_amd64
+            os: macos-15-intel
+            platform: darwin
+            arch: amd64
+          - target: windows_amd64
+            os: windows-2025
+            platform: windows
+            arch: amd64
 
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.platform == 'windows' }}
+    # No continue-on-error. Windows ran non-gating, so a Windows-only
+    # regression reported success and shipped. It passes today -- every step of
+    # the last Windows run, checked individually rather than by the job's own
+    # conclusion, which continue-on-error makes meaningless.
+    env:
+      TF_BIN: ${{ matrix.engine }}
 
     steps:
       - name: 📥 Checkout
@@ -186,17 +229,26 @@ jobs:
             "${{ matrix.target }}" \
             "$SOURCE"
 
+      # `latest` for both, deliberately. An undated pin rots: 1.10.6 predated
+      # write-only attributes and failed for a provider behaving exactly as
+      # write-only requires. Examples that need a particular version say so in
+      # their requirements sidecar, which is where a version floor belongs.
+      #
+      # The wrapper is off in both cases: it intercepts stdout, which stir
+      # parses.
       - name: 📝 Install OpenTofu
+        if: matrix.engine == 'tofu'
         uses: opentofu/setup-opentofu@v2
         with:
-          # `latest` is this action's own default; 1.10.6 was an undated pin that
-          # simply rotted. It predates write-only attributes, so it failed
-          # pyvider_secret_note with "Provider produced invalid plan" for a
-          # provider behaving exactly as write-only requires. Examples that need a
-          # particular version now say so themselves, in their requirements
-          # sidecar, which is a better place for it than a runner-wide pin.
           tofu_version: latest
           tofu_wrapper: false
+
+      - name: 📝 Install Terraform
+        if: matrix.engine == 'terraform'
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: latest
+          terraform_wrapper: false
 
       - name: 🐍 Setup Python
         if: env.ACT != 'true' && github.actor != 'nektos/act'
@@ -214,110 +266,17 @@ jobs:
           echo "✅ Tofusoup installed"
           soup --version
 
+      # These two were 100 lines of inline bash with `tofu` hard coded
+      # throughout. They live in ci/conformance.sh now, which takes the engine
+      # from TF_BIN -- one subcommand per step, so the CI UI still shows which
+      # one failed.
       - name: "🔥 Smoke Test 1: Provider Initialization"
         shell: bash
-        run: |
-          echo "════════════════════════════════════════════════════════════════"
-          echo "🔥 SMOKE TEST 1: Provider Initialization"
-          echo "════════════════════════════════════════════════════════════════"
-          echo ""
-          echo "This test validates that the provider loads and responds with"
-          echo "a minimal Terraform configuration."
-          echo ""
-
-          mkdir -p /tmp/smoke-test-init
-          cd /tmp/smoke-test-init
-
-          cat > main.tf << 'EOF'
-          terraform {
-            required_providers {
-              tofusoup = {
-                source  = "local/providers/tofusoup"
-                version = ">= 0.0.1"
-              }
-            }
-          }
-
-          provider "tofusoup" {}
-
-          output "test" {
-            value = "smoke test - provider initialized"
-          }
-          EOF
-
-          echo "📋 Terraform configuration:"
-          cat main.tf
-          echo ""
-
-          echo "🔧 Running: tofu init"
-          tofu init
-          echo ""
-
-          echo "📊 Running: tofu plan"
-          tofu plan
-          echo ""
-
-          echo "✅ PASS: Smoke test 1 completed successfully"
-          echo "════════════════════════════════════════════════════════════════"
+        run: ci/conformance.sh smoke-init
 
       - name: "🔥 Smoke Test 2: Registry Query"
         shell: bash
-        run: |
-          echo "════════════════════════════════════════════════════════════════"
-          echo "🔥 SMOKE TEST 2: Registry Query (Data Source)"
-          echo "════════════════════════════════════════════════════════════════"
-          echo ""
-          echo "This test validates that the provider can query the Terraform"
-          echo "registry for provider information."
-          echo ""
-
-          mkdir -p /tmp/smoke-test-registry
-          cd /tmp/smoke-test-registry
-
-          cat > main.tf << 'EOF'
-          terraform {
-            required_providers {
-              tofusoup = {
-                source  = "local/providers/tofusoup"
-                version = ">= 0.0.1"
-              }
-            }
-          }
-
-          provider "tofusoup" {}
-
-          data "tofusoup_provider_info" "aws" {
-            namespace = "hashicorp"
-            name      = "aws"
-          }
-
-          output "latest_version" {
-            value = data.tofusoup_provider_info.aws.latest_version
-          }
-          EOF
-
-          echo "📋 Terraform configuration:"
-          cat main.tf
-          echo ""
-
-          echo "🔧 Running: tofu init"
-          tofu init
-          echo ""
-
-          echo "📊 Running: tofu plan"
-          tofu plan
-          echo ""
-
-          echo "🚀 Running: tofu apply -auto-approve"
-          tofu apply -auto-approve
-          echo ""
-
-          echo "📤 Running: tofu output"
-          tofu output
-          echo ""
-
-          echo "✅ PASS: Smoke test 2 completed successfully"
-          echo "════════════════════════════════════════════════════════════════"
+        run: ci/conformance.sh smoke-registry
 
       - name: "🔬 Single Test Verification: provider_versions"
         id: single_test
@@ -329,10 +288,15 @@ jobs:
           chmod +x .github/scripts/single-test-verification.sh
           .github/scripts/single-test-verification.sh provider_versions "${{ matrix.target }}"
 
+      # No continue-on-error. It made this step -- the one that runs every
+      # example -- incapable of failing the build, and it also defeated the
+      # summary job below: that reads `needs.conformance.result`, and a step
+      # marked continue-on-error leaves the job's conclusion at "success", so
+      # the summary's failure branch was unreachable. The stated intent,
+      # "platforms run independently", is what `fail-fast: false` already does.
       - name: 🧪 Run Full Conformance Tests
         id: full_conformance
         if: success()
-        continue-on-error: true
         shell: bash
         env:
           TF_LOG: DEBUG
@@ -341,8 +305,10 @@ jobs:
           chmod +x .github/scripts/run-conformance-suite.sh
           .github/scripts/run-conformance-suite.sh "${{ matrix.target }}"
 
+      # One leg records it: the artifact name is fixed, and four linux legs
+      # (two targets x two engines) would race for it.
       - name: 🎬 Record conformance cast
-        if: matrix.platform == 'linux'
+        if: matrix.target == 'linux_amd64' && matrix.engine == 'tofu'
         shell: bash
         env:
           TF_LOG: DEBUG
@@ -352,7 +318,7 @@ jobs:
           ci/record-conformance.sh
 
       - name: 📤 Upload conformance cast
-        if: matrix.platform == 'linux'
+        if: matrix.target == 'linux_amd64' && matrix.engine == 'tofu'
         uses: actions/upload-artifact@v4
         with:
           name: conformance-cast
@@ -364,7 +330,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: conformance-test-logs-${{ matrix.target }}
+          name: conformance-test-logs-${{ matrix.target }}-${{ matrix.engine }}
           path: |
             /tmp/conformance_output.txt
             examples/**/.soup/logs/*.log
@@ -381,6 +347,11 @@ jobs:
             /tmp/smoke-test-registry/.terraform/
             /tmp/smoke-test-registry/terraform.tfstate*
             /tmp/smoke-test-registry/.terraform.lock.hcl
+          # Most paths above are dot-paths -- .soup, .terraform,
+          # .terraform.lock.hcl -- and upload-artifact skips hidden files
+          # unless told otherwise, so this artifact has been missing the logs
+          # it exists to carry.
+          include-hidden-files: true
           retention-days: 7
           if-no-files-found: warn
 
@@ -411,8 +382,7 @@ jobs:
           CONFORMANCE_RESULT="${{ needs.conformance.result }}"
 
           if [[ "$CONFORMANCE_RESULT" == "success" ]]; then
-            echo "| linux_amd64 | ✅ PASSED | All tests successful |" >> $GITHUB_STEP_SUMMARY
-            echo "| darwin_arm64 | ✅ PASSED | All tests successful |" >> $GITHUB_STEP_SUMMARY
+            echo "| all targets x both engines | ✅ PASSED | All tests successful |" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "### Test Coverage" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
@@ -424,8 +394,7 @@ jobs:
             echo "🎉 All conformance tests passed successfully!" >> $GITHUB_STEP_SUMMARY
             exit 0
           else
-            echo "| linux_amd64 | ❌ FAILED | See job logs for details |" >> $GITHUB_STEP_SUMMARY
-            echo "| darwin_arm64 | ⚠️ SKIPPED/FAILED | See job logs for details |" >> $GITHUB_STEP_SUMMARY
+            echo "| one or more legs | ❌ FAILED | See the per-leg job logs |" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "### Failure Details" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
@@ -433,13 +402,12 @@ jobs:
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "- **Platforms run independently** (fail-fast: false)" >> $GITHUB_STEP_SUMMARY
             echo "- **Single test acts as circuit breaker** - full suite skipped if it fails" >> $GITHUB_STEP_SUMMARY
-            echo "- **Full suite collects all failures** (continue-on-error: true)" >> $GITHUB_STEP_SUMMARY
+            echo "- **Full suite failures fail the leg** (it used to be continue-on-error, which also made this summary's failure branch unreachable)" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "#### Artifacts Available" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "Download test artifacts for detailed logs:" >> $GITHUB_STEP_SUMMARY
-            echo "- \`conformance-test-logs-linux_amd64\` - Linux test logs and state files" >> $GITHUB_STEP_SUMMARY
-            echo "- \`conformance-test-logs-darwin_arm64\` - macOS test logs and state files" >> $GITHUB_STEP_SUMMARY
+            echo "- \`conformance-test-logs-<target>-<engine>\` - per-leg test logs and state files" >> $GITHUB_STEP_SUMMARY
             echo "- \`/tmp/conformance_output.txt\` - Soup stir full output with error details" >> $GITHUB_STEP_SUMMARY
             echo "- \`.soup/logs/\` - Individual test logs for each example" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY

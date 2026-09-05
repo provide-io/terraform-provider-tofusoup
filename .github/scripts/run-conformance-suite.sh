@@ -19,12 +19,18 @@ set -euo pipefail
 PLATFORM="${1:-unknown}"
 OUTPUT_FILE="/tmp/conformance_output.txt"
 
+# stir prefers OpenTofu wherever both engines are installed, so the one under
+# test is named rather than inferred.
+TF_BIN="${TF_BIN:?TF_BIN must name the engine binary (tofu or terraform)}"
+export TOFUSOUP_TF_COMMAND="${TF_BIN}"
+
 echo "════════════════════════════════════════════════════════════════"
 echo "🧪 FULL CONFORMANCE TEST SUITE"
 echo "════════════════════════════════════════════════════════════════"
 echo ""
 echo "🔍 Running conformance tests on all data source examples..."
 echo "   Platform: ${PLATFORM}"
+echo "   Engine:   ${TF_BIN}"
 echo ""
 
 # Navigate to examples directory
