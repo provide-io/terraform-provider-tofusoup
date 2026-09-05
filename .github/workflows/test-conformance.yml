@@ -187,7 +187,7 @@ jobs:
             "$SOURCE"
 
       - name: 📝 Install OpenTofu
-        uses: opentofu/setup-opentofu@v1
+        uses: opentofu/setup-opentofu@v2
         with:
           # `latest` is this action's own default; 1.10.6 was an undated pin that
           # simply rotted. It predates write-only attributes, so it failed
