@@ -71,6 +71,26 @@ dependencies = [
     # marker or floor routes around it: every other blocker could be fixed and
     # windows_arm64 would still be unsupported suite-wide.
     "cryptography>=46.0.0; sys_platform == 'win32' and platform_machine == 'ARM64'",
+    # Capped so the packaged darwin_amd64 build has a wheel to download.
+    # cryptography shipped macosx_10_9_universal2 -- which covers x86_64 --
+    # through 48.0.1, and from 49.0.0 publishes macosx_11_0_arm64 only.
+    # flavorpack fetches wheels for the target platform, so above the cap there
+    # is nothing to fetch: the PSP is assembled without the provider's own
+    # packages in it and the binary dies with ModuleNotFoundError the first time
+    # an engine launches it, while the build still reports success.
+    #
+    # Unmarked, because a marker-scoped cap forks the resolution and a lock
+    # holding two versions of a package exports two requirement lines for it,
+    # which pip-audit refuses outright -- the vulnerability gate would stop
+    # running rather than report. 48.0.1 has a wheel for every platform this
+    # provider builds.
+    #
+    # The cost is three advisories fixed only in the releases that drop the
+    # wheel: PYSEC-2026-3553 and -3554 in 49.0.0, PYSEC-2026-3552 in 50.0.0.
+    # They are waived by ID in ci.yml because nothing in the packaged closure
+    # reaches them -- -3552 needs pkcs7_decrypt_*, and -3553 and -3554 need the
+    # X.509 path verifier, none of which appears here or in any dependency.
+    "cryptography<49",
 ]
 
 [project.urls]

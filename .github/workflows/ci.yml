@@ -36,5 +36,10 @@ jobs:
       # than filing a report nobody reads. The lock is clean: 197
       # packages, no advisories.
       fail-on-vulnerability: true
+      # cryptography is capped below 49 so the darwin_amd64 package can be
+      # built at all -- see the note on the requirement in pyproject.toml, which
+      # records why these three are unreachable from this closure. Only these
+      # are waived; a fourth advisory still fails the build.
+      ignore-vulnerabilities: 'PYSEC-2026-3552,PYSEC-2026-3553,PYSEC-2026-3554'
       run-secret-scan: true
     secrets: inherit
