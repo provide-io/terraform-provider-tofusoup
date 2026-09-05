@@ -3,11 +3,9 @@
 # provider packaging/release pipeline (build-provider.yml / test-conformance.yml /
 # release.yml) — does not build, sign, or touch the Terraform provider binary.
 #
-# The pytest suite runs here. It used to be disabled with `run-tests: false` and
-# the note "there is no repo-local pytest suite", which was copied from the
-# pyvider provider and was never true of this repo: tests/ holds 280 tests that
-# import the provider classes directly and need neither a built binary nor an
-# engine.
+# The pytest suite runs here. tests/ holds 280 tests that import the provider
+# classes directly and need neither a built binary nor an engine, so nothing in
+# this workflow depends on the packaging pipeline.
 name: ⚙️ Continuous Integration
 
 on:
@@ -34,5 +32,9 @@ jobs:
       # Coverage is not enforced yet; the tests running at all is the change.
       coverage-threshold: 0
       run-security: true
+      # A known vulnerability in the lock reddens this build rather
+      # than filing a report nobody reads. The lock is clean: 197
+      # packages, no advisories.
+      fail-on-vulnerability: true
       run-secret-scan: true
     secrets: inherit
