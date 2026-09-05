@@ -21,7 +21,11 @@ jobs:
       matrix: ${{ fromJson((github.actor == 'nektos/act') && '{"include":[{"os":"ubuntu-24.04","platform":"linux","arch":"amd64","target":"linux_amd64"}]}' || '{"include":[{"os":"ubuntu-24.04","platform":"linux","arch":"amd64","target":"linux_amd64"},{"os":"ubuntu-24.04-arm","platform":"linux","arch":"arm64","target":"linux_arm64"},{"os":"macos-15","platform":"darwin","arch":"arm64","target":"darwin_arm64"},{"os":"macos-15-intel","platform":"darwin","arch":"amd64","target":"darwin_amd64"},{"os":"windows-2025","platform":"windows","arch":"amd64","target":"windows_amd64"}]}') }}
 
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.platform == 'windows' }}
+    # No continue-on-error. A non-gating Windows build means a Windows-only
+    # break produces a zip nobody looks at and a green run; the artifact is
+    # still uploaded and still released. It builds cleanly today, checked step
+    # by step rather than by the job's own conclusion, which continue-on-error
+    # makes meaningless.
 
     steps:
       - name: 📥 Checkout

@@ -12,6 +12,10 @@
 
 set -euo pipefail
 
+# The engine to drive. Named rather than assumed: this suite used to run
+# OpenTofu only, which cannot reach several of the features under test.
+TF_BIN="${TF_BIN:?TF_BIN must name the engine binary (tofu or terraform)}"
+
 EXAMPLE_NAME="${1:-}"
 PLATFORM="${2:-unknown}"
 
@@ -42,24 +46,24 @@ echo ""
 
 cd "$EXAMPLE_DIR"
 
-echo "🔧 Step 1: tofu init"
-tofu init
+echo "🔧 Step 1: ${TF_BIN} init"
+"${TF_BIN}" init
 echo ""
 
-echo "📊 Step 2: tofu plan"
-tofu plan
+echo "📊 Step 2: ${TF_BIN} plan"
+"${TF_BIN}" plan
 echo ""
 
-echo "🚀 Step 3: tofu apply -auto-approve"
-tofu apply -auto-approve
+echo "🚀 Step 3: ${TF_BIN} apply -auto-approve"
+"${TF_BIN}" apply -auto-approve
 echo ""
 
-echo "📤 Step 4: tofu output"
-tofu output
+echo "📤 Step 4: ${TF_BIN} output"
+"${TF_BIN}" output
 echo ""
 
-echo "🧹 Step 5: tofu destroy -auto-approve"
-tofu destroy -auto-approve
+echo "🧹 Step 5: ${TF_BIN} destroy -auto-approve"
+"${TF_BIN}" destroy -auto-approve
 echo ""
 
 echo "✅ PASS: Single test verification completed successfully"
