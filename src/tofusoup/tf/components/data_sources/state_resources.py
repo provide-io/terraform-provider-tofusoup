@@ -145,15 +145,15 @@ class StateResourcesDataSource(BaseDataSource[str, StateResourcesState, StateRes
                 "resources": a_list(
                     element_type_def=a_obj(
                         attributes={
-                            "mode": a_str(computed=True),
-                            "type": a_str(computed=True),
-                            "name": a_str(computed=True),
-                            "provider": a_str(computed=True),
-                            "module": a_str(computed=True),
-                            "instance_count": a_num(computed=True),
-                            "has_multiple_instances": a_bool(computed=True),
-                            "resource_id": a_str(computed=True),
-                            "id": a_str(computed=True),
+                            "mode": a_str(),
+                            "type": a_str(),
+                            "name": a_str(),
+                            "provider": a_str(),
+                            "module": a_str(),
+                            "instance_count": a_num(),
+                            "has_multiple_instances": a_bool(),
+                            "resource_id": a_str(),
+                            "id": a_str(),
                         }
                     ),
                     computed=True,
