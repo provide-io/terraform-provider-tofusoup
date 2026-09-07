@@ -2709,7 +2709,7 @@ wheels = [
 
 [[package]]
 name = "provide-foundation"
-version = "0.4.3"
+version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -2717,9 +2717,9 @@ dependencies = [
     { name = "tomli-w" },
     { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/32/71/28beb60f9968d6c079c2d469ab6db5833fd5a3f00b70618d3f70a7bd7d72/provide_foundation-0.4.3.tar.gz", hash = "sha256:bb534fceaa2676f6d8ad1cb40a705c58c16e5ab6a5ce077144ddd992688697da", size = 421093, upload-time = "2026-08-27T07:22:14.027Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ba/05/11d6d99c9347a94f02f04baccd78fd0fb901810d7cf5507e90b7bcfb14f8/provide_foundation-0.4.6.tar.gz", hash = "sha256:ce56bf056dc0e6e195e60ad4957654555efcb83d922dca35b5985f14236328dd", size = 423363, upload-time = "2026-09-07T03:50:58.382Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/be/bb/3634bef841f8cd8b43b9081fdb342b535a0b30e827f08b4061d083cd577c/provide_foundation-0.4.3-py3-none-any.whl", hash = "sha256:1ecf21251a1b219affb1feb2606f1302af571c684bc92d0c59db5f1017b45261", size = 618335, upload-time = "2026-08-27T07:22:11.902Z" },
+    { url = "https://files.pythonhosted.org/packages/f1/0c/e75e6983407a7d33626006416167f414154d5f4f6653583a5ac7cd97e250/provide_foundation-0.4.6-py3-none-any.whl", hash = "sha256:86605ed1cc16799122ec925289e1cd62e98b3e820739d8591ef5a1b4d7ccbc26", size = 620210, upload-time = "2026-09-07T03:50:56.754Z" },
 ]
 
 [package.optional-dependencies]
@@ -3296,13 +3296,12 @@ wheels = [
 
 [[package]]
 name = "pyvider"
-version = "0.6.2"
+version = "0.7.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "click" },
     { name = "cryptography" },
-    { name = "google" },
     { name = "grpcio" },
     { name = "msgpack" },
     { name = "protobuf" },
@@ -3310,28 +3309,28 @@ dependencies = [
     { name = "pyvider-cty" },
     { name = "pyvider-rpcplugin" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2e/60/ce9c4074452f39ab59bae1491a70b4b94c73ea4de1a9679ff279b764de3a/pyvider-0.6.2.tar.gz", hash = "sha256:a9cf80b5664b04f6c057ecd5bbf408662b0e6ad8ef6cfd982865a038d7e52c39", size = 207731, upload-time = "2026-08-31T03:33:39.876Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/22/3c/eb2effb74754bda8612a4219b24a6feb511d1ec1b4cb866539d34e3959a2/pyvider-0.7.0.tar.gz", hash = "sha256:945208a467038fcc439e48555750e33682f401866252cbaacf086cfe44d9ee0d", size = 230026, upload-time = "2026-09-05T17:50:58.158Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/90/31/5407345b20f30bc3067bf3cba044c9afc6eb04df3d807eaf0e5a69aee31c/pyvider-0.6.2-py3-none-any.whl", hash = "sha256:245c2d6f18c3037a912de4cb5e4fe1a9d7e648fd5c4f5826049af48e69187e1b", size = 275518, upload-time = "2026-08-31T03:33:38.5Z" },
+    { url = "https://files.pythonhosted.org/packages/df/c7/ebda0b20968e41966bddd83ef9230effdfba6d5a259636dff795c5d29513/pyvider-0.7.0-py3-none-any.whl", hash = "sha256:d7f024441307310a4d121b90b424fed91e6af657a51b160612bc7b245034856c", size = 299880, upload-time = "2026-09-05T17:50:56.785Z" },
 ]
 
 [[package]]
 name = "pyvider-cty"
-version = "0.5.2"
+version = "0.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "msgpack" },
     { name = "provide-foundation" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/62/4f/e5a6a0303481fe1b5c1de22ad928a5982d918368fc7a6da9d3bf7eb2b826/pyvider_cty-0.5.2.tar.gz", hash = "sha256:25eac04c4b27def301ac6df05e44ec521c71c125b16714e686db900d631de1ca", size = 253785, upload-time = "2026-08-29T22:49:45.837Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/14/b9/9f62641d7686e2972a7cfd67ae781e25f224b99d02a377a4cb1bcbcd0d69/pyvider_cty-0.6.0.tar.gz", hash = "sha256:08f0e6bbb4e0549dda7fa39f1e51e7e7afa599c91863adb9bdce98b329b80212", size = 255129, upload-time = "2026-09-04T23:09:00.696Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e7/0f/0c4e72bbeb56ea0ad95a6692fe72fd8f120467e546a8a9d17194429c7f53/pyvider_cty-0.5.2-py3-none-any.whl", hash = "sha256:755443f33b0c2ddd273bab993931d3be584bcdbb4f1c7334166671ebca64f63a", size = 296857, upload-time = "2026-08-29T22:49:44.084Z" },
+    { url = "https://files.pythonhosted.org/packages/24/7d/25e35d98ea74893f8e0828c07e4ad9f13bad47c049155d63e275e89aee97/pyvider_cty-0.6.0-py3-none-any.whl", hash = "sha256:50e52274100586bbf702a25b7538ecccb32e6065bb12410524a4f5a1bf56286f", size = 298266, upload-time = "2026-09-04T23:08:59.199Z" },
 ]
 
 [[package]]
 name = "pyvider-rpcplugin"
-version = "0.4.2"
+version = "0.5.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -3342,9 +3341,9 @@ dependencies = [
     { name = "protobuf" },
     { name = "provide-foundation" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/01/3d/dbddd353050c5e1dbf5ba283703925c1fb0e6e8431abbeeaf855cc6e7aaf/pyvider_rpcplugin-0.4.2.tar.gz", hash = "sha256:0dfe86e63ebe7140d1d01ec03ddd42c82a7523e35bcdf06494fa1bb40397345b", size = 78748, upload-time = "2026-08-22T16:44:52.549Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/42/d1/368ac712f4d616dc04e526479218240cc30272fb90349cc3117132845d8f/pyvider_rpcplugin-0.5.4.tar.gz", hash = "sha256:cb0b998927a4f87723843aee2312ba2498305e8d9a95d5bf35ce8fe366b0efa2", size = 85917, upload-time = "2026-09-07T06:24:33.247Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/39/3e/dc5e95c4a137fb084ed8ca07ce481228864ae1c82245a0d6df1514733d30/pyvider_rpcplugin-0.4.2-py3-none-any.whl", hash = "sha256:3162e8b34d74a83d1b80039969605195e1fc50d1cb4a13e9b285b4cc00271da1", size = 100207, upload-time = "2026-08-22T16:44:51.353Z" },
+    { url = "https://files.pythonhosted.org/packages/07/f4/00954b3cda959afece3f470568454551043fa1204e6a15df187cd3f752f4/pyvider_rpcplugin-0.5.4-py3-none-any.whl", hash = "sha256:764a248d26b35eecd2aa3d45f67af1dcfa07fdb14c512204eb8ce496f61c8feb", size = 107670, upload-time = "2026-09-07T06:24:31.964Z" },
 ]
 
 [[package]]
@@ -3773,6 +3772,7 @@ dependencies = [
     { name = "jq", marker = "platform_machine != 'ARM64' or sys_platform != 'win32'" },
     { name = "provide-foundation", extra = ["all"] },
     { name = "pyvider" },
+    { name = "pyvider-rpcplugin" },
     { name = "tofusoup" },
 ]
 
@@ -3792,9 +3792,10 @@ requires-dist = [
     { name = "cryptography", marker = "platform_machine == 'ARM64' and sys_platform == 'win32'", specifier = ">=46.0.0" },
     { name = "flavorpack", specifier = ">=0.5.2" },
     { name = "jq", marker = "platform_machine != 'ARM64' or sys_platform != 'win32'", specifier = ">=1.9.1,<1.11" },
-    { name = "provide-foundation", extras = ["all"], specifier = ">=0.4.3" },
-    { name = "pyvider", specifier = ">=0.6.2" },
-    { name = "tofusoup", specifier = ">=0.6.1" },
+    { name = "provide-foundation", extras = ["all"], specifier = ">=0.4.6" },
+    { name = "pyvider", specifier = ">=0.7.0" },
+    { name = "pyvider-rpcplugin", specifier = ">=0.5.4" },
+    { name = "tofusoup", specifier = ">=0.7.6" },
 ]
 
 [package.metadata.requires-dev]
@@ -3833,7 +3834,7 @@ wheels = [
 
 [[package]]
 name = "tofusoup"
-version = "0.6.1"
+version = "0.7.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiosqlite" },
@@ -3849,9 +3850,9 @@ dependencies = [
     { name = "semver" },
     { name = "textual" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/eb/41/1aabc02c0383a051505deda735e28b6d4f523929685215b0c5be2e2260f7/tofusoup-0.6.1.tar.gz", hash = "sha256:a9efdc1801e2b011e84f7d80872e7b57c7e779a8f29851165543ea927a18dc82", size = 113113, upload-time = "2026-08-25T15:13:11.407Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/35/7d/c9a09fe333cfb44e1c46e6d360b4537a1831ca3272a881bdba6291e0f512/tofusoup-0.7.6.tar.gz", hash = "sha256:2f3e8d8d000f54052b616e3bf0f34281c33d3996e2e2eed29e58768aa3c21b8c", size = 118458, upload-time = "2026-09-07T07:33:06.187Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/48/80/4debed99a3a6ebfcb39c6fdc9f0612f5e8cf7d10e8630a420458dc372e84/tofusoup-0.6.1-py3-none-any.whl", hash = "sha256:ff1a512e392cf807826a9b3cdaa49ff941ed73036b69c8e571bd0984b09fdb63", size = 141501, upload-time = "2026-08-25T15:13:09.998Z" },
+    { url = "https://files.pythonhosted.org/packages/75/e4/e82803d465f99901fbba5f3d8cecd18a69cd58d739392c09723f37ade345/tofusoup-0.7.6-py3-none-any.whl", hash = "sha256:198f763505c2412550c5621d583103b3b427757d59797854cd1a7a20dbb67fb0", size = 147077, upload-time = "2026-09-07T07:33:04.616Z" },
 ]
 
 [[package]]
