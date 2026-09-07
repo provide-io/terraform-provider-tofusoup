@@ -114,13 +114,13 @@ terraform-provider-tofusoup = "tofusoup.tf.components"
 
 [dependency-groups]
 dev = [
-    "provide-testkit[standard,advanced-testing,build]>=0.4.0",
+    "provide-testkit[standard,advanced-testing,build]>=0.5.1",
     "plating>=0.6.1",
     # provide-foundry>=0.4.0 isn't on PyPI; docs.setup needs it for extract_base_mkdocs
     "provide-foundry>=0.4.0",
 ]
 docs = [
-    "provide-testkit[docs]>=0.4.0",
+    "provide-testkit[docs]>=0.5.1",
 ]
 
 [build-system]
