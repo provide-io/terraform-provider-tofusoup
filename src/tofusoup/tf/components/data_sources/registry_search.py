@@ -151,16 +151,16 @@ class RegistrySearchDataSource(BaseDataSource[str, RegistrySearchState, Registry
                 "results": a_list(
                     element_type_def=a_obj(
                         attributes={
-                            "type": a_str(computed=True),
-                            "id": a_str(computed=True),
-                            "namespace": a_str(computed=True),
-                            "name": a_str(computed=True),
-                            "provider_name": a_str(computed=True),
-                            "description": a_str(computed=True),
-                            "source_url": a_str(computed=True),
-                            "downloads": a_num(computed=True),
-                            "verified": a_bool(computed=True),
-                            "tier": a_str(computed=True),
+                            "type": a_str(),
+                            "id": a_str(),
+                            "namespace": a_str(),
+                            "name": a_str(),
+                            "provider_name": a_str(),
+                            "description": a_str(),
+                            "source_url": a_str(),
+                            "downloads": a_num(),
+                            "verified": a_bool(),
+                            "tier": a_str(),
                         }
                     ),
                     computed=True,

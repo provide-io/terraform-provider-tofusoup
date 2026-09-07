@@ -128,10 +128,10 @@ class StateOutputsDataSource(BaseDataSource[str, StateOutputsState, StateOutputs
                 "outputs": a_list(
                     element_type_def=a_obj(
                         attributes={
-                            "name": a_str(computed=True),
-                            "value": a_str(computed=True),
-                            "type": a_str(computed=True),
-                            "sensitive": a_bool(computed=True),
+                            "name": a_str(),
+                            "value": a_str(),
+                            "type": a_str(),
+                            "sensitive": a_bool(),
                         }
                     ),
                     computed=True,

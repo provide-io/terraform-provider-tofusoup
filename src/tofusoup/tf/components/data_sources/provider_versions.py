@@ -123,16 +123,15 @@ class ProviderVersionsDataSource(BaseDataSource[str, ProviderVersionsState, Prov
                 "versions": a_list(
                     element_type_def=a_obj(
                         attributes={
-                            "version": a_str(computed=True),
-                            "protocols": a_list(element_type_def=a_str(), computed=True),
+                            "version": a_str(),
+                            "protocols": a_list(element_type_def=a_str()),
                             "platforms": a_list(
                                 element_type_def=a_obj(
                                     attributes={
-                                        "os": a_str(computed=True),
-                                        "arch": a_str(computed=True),
+                                        "os": a_str(),
+                                        "arch": a_str(),
                                     }
                                 ),
-                                computed=True,
                             ),
                         }
                     ),

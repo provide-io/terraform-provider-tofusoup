@@ -136,12 +136,12 @@ class ModuleVersionsDataSource(BaseDataSource[str, ModuleVersionsState, ModuleVe
                 "versions": a_list(
                     element_type_def=a_obj(
                         attributes={
-                            "version": a_str(computed=True),
-                            "published_at": a_str(computed=True),
-                            "readme_content": a_str(computed=True),
-                            "inputs": a_list(element_type_def=a_obj(attributes={}), computed=True),
-                            "outputs": a_list(element_type_def=a_obj(attributes={}), computed=True),
-                            "resources": a_list(element_type_def=a_obj(attributes={}), computed=True),
+                            "version": a_str(),
+                            "published_at": a_str(),
+                            "readme_content": a_str(),
+                            "inputs": a_list(element_type_def=a_obj(attributes={})),
+                            "outputs": a_list(element_type_def=a_obj(attributes={})),
+                            "resources": a_list(element_type_def=a_obj(attributes={})),
                         }
                     ),
                     computed=True,
