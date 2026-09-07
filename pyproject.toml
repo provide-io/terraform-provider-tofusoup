@@ -43,7 +43,7 @@ dependencies = [
     # requires setuptools at an exact version, so its floor is the lock's
     # setuptools floor: 0.4.6 forces 82.0.1, which carries PYSEC-2026-3447.
     "flavorpack>=0.5.2",
-    "provide-foundation[all]>=0.4.7",
+    "provide-foundation[all]>=0.4.8",
     # Capped below 1.11 for the packaged build, not for this package's own use.
     # flavorpack downloads wheels with --platform manylinux2014_<arch> (its
     # MANYLINUX_TAG is hardcoded), and jq stopped publishing manylinux2014
