@@ -161,8 +161,11 @@ class TestStateInfoRead:
         state_file = test_home / "terraform.tfstate"
         state_file.write_text(sample_empty_state.read_text())
 
-        # Mock home directory
+        # Both names: `ntpath.expanduser` reads USERPROFILE and ignores HOME
+        # entirely, so setting HOME alone expands `~` to the real home and the
+        # state file written above is never found.
         monkeypatch.setenv("HOME", str(test_home))
+        monkeypatch.setenv("USERPROFILE", str(test_home))
 
         ds = StateInfoDataSource()
         config = StateInfoConfig(state_path="~/terraform.tfstate")

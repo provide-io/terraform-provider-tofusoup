@@ -1,5 +1,7 @@
 """Tests for the state_info data source error handling."""
 
+import sys
+
 import pytest
 from pyvider.exceptions import DataSourceError
 from pyvider.resources.context import ResourceContext
@@ -65,9 +67,18 @@ class TestStateInfoErrorHandling:
         with pytest.raises(DataSourceError, match="/custom/path/terraform.tfstate"):
             await ds.read(ctx)
 
+    @pytest.mark.skipif(
+        sys.platform == "win32",
+        reason="chmod(0o000) does not deny reads here: Windows has no POSIX mode bits",
+    )
     @pytest.mark.asyncio
     async def test_read_permission_error(self, sample_empty_state):
-        """Test error handling for permission denied."""
+        """Test error handling for permission denied.
+
+        POSIX only. `os.chmod` on Windows toggles the read-only attribute and
+        nothing else, so a file set to 0o000 stays readable and the read this
+        expects to fail succeeds instead.
+        """
         # Make file unreadable
         sample_empty_state.chmod(0o000)
 
