@@ -17,6 +17,7 @@ from tofusoup.registry.base import RegistryConfig
 from tofusoup.registry.models.module import ModuleVersion
 from tofusoup.registry.opentofu import OpenTofuRegistry
 from tofusoup.registry.terraform import IBMTerraformRegistry
+from tofusoup.tf.components.data_sources._ordering import newest_first
 
 
 @define(frozen=True)
@@ -117,7 +118,7 @@ class ModuleVersionsDataSource(BaseDataSource[str, ModuleVersionsState, ModuleVe
       - `outputs` - List of output variable objects (may be empty)
       - `resources` - List of resource objects (may be empty)
 
-    **Note**: Versions are returned in reverse chronological order (newest first) as provided by the registry.
+    **Note**: Versions are sorted by semantic version, newest first; the registries' own order is not a version order.
     """
 
     config_class = ModuleVersionsConfig
@@ -205,7 +206,9 @@ class ModuleVersionsDataSource(BaseDataSource[str, ModuleVersionsState, ModuleVe
                     versions = await registry.list_module_versions(module_id)
 
             # Convert ModuleVersion objects to dicts
-            versions_data = [self._convert_version_to_dict(v) for v in versions]
+            versions_data = [
+                self._convert_version_to_dict(v) for v in newest_first(versions, lambda v: v.version)
+            ]
 
             logger.info(
                 "Retrieved module versions",

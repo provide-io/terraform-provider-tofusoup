@@ -451,3 +451,42 @@ class TestProviderVersionsEdgeCases:
             state = await ds.read(ctx)
 
         assert state.versions[0]["protocols"] == ["4.0", "5.0", "6"]
+
+
+class TestProviderVersionsOrdering:
+    """The registry's order is not a version order; the data source sorts."""
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        ("registry", "registry_class"),
+        [("terraform", "IBMTerraformRegistry"), ("opentofu", "OpenTofuRegistry")],
+    )
+    async def test_read_returns_versions_newest_first(self, registry: str, registry_class: str) -> None:
+        """versions[0] is the newest release whatever order the registry used."""
+        # The Terraform registry's order is neither ascending nor stable across
+        # reads (2.46.0 once came first for hashicorp/aws, 5.39.0 later).
+        unsorted = [
+            ProviderVersion(version=v, protocols=["5.0"], platforms=[])
+            for v in ["5.39.0", "6.48.0", "1.43.1", "6.48.0-beta1", "10.0.0", "not-a-version"]
+        ]
+        config = ProviderVersionsConfig(namespace="hashicorp", name="aws", registry=registry)
+        ds = ProviderVersionsDataSource()
+        ctx = ResourceContext(config=config, state=None)
+
+        mock_registry = AsyncMock()
+        mock_registry.list_provider_versions = AsyncMock(return_value=unsorted)
+        mock_registry.__aenter__ = AsyncMock(return_value=mock_registry)
+        mock_registry.__aexit__ = AsyncMock(return_value=None)
+
+        with patch(f"tofusoup.tf.components.data_sources.provider_versions.{registry_class}") as mock_class:
+            mock_class.return_value = mock_registry
+            state = await ds.read(ctx)
+
+        assert [v["version"] for v in state.versions] == [
+            "10.0.0",
+            "6.48.0",
+            "6.48.0-beta1",
+            "5.39.0",
+            "1.43.1",
+            "not-a-version",
+        ]

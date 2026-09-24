@@ -3773,6 +3773,7 @@ dependencies = [
     { name = "provide-foundation", extra = ["all"] },
     { name = "pyvider" },
     { name = "pyvider-rpcplugin" },
+    { name = "semver" },
     { name = "tofusoup" },
 ]
 
@@ -3795,6 +3796,7 @@ requires-dist = [
     { name = "provide-foundation", extras = ["all"], specifier = ">=0.4.8" },
     { name = "pyvider", specifier = ">=0.7.0" },
     { name = "pyvider-rpcplugin", specifier = ">=0.5.4" },
+    { name = "semver", specifier = ">=3.0.0" },
     { name = "tofusoup", specifier = ">=0.7.6" },
 ]
 

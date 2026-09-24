@@ -145,6 +145,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- **`tofusoup_provider_versions` and `tofusoup_module_versions` return versions newest first.** Their documentation promised the registry's own newest-first order, but the Terraform registry lists module versions oldest first and provider versions in an order that is neither sorted nor stable between reads, so `versions[0]` was not the latest release and could change between a plan and the next one. Both now sort by semantic version, newest first; a version that does not parse sorts last in registry order. The provider now declares `semver>=3.0.0`, which it imports directly.
+
 ### Planned
 
 - Integration testing suite across multiple data sources

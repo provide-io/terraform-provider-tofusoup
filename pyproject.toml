@@ -44,6 +44,9 @@ dependencies = [
     # setuptools floor: 0.4.6 forces 82.0.1, which carries PYSEC-2026-3447.
     "flavorpack>=0.5.2",
     "provide-foundation[all]>=0.4.8",
+    # The version data sources sort registry results newest first themselves.
+    # 3.0.0 is the first release with Version.parse(optional_minor_and_patch=).
+    "semver>=3.0.0",
     # Capped below 1.11 for the packaged build, not for this package's own use.
     # flavorpack downloads wheels with --platform manylinux2014_<arch> (its
     # MANYLINUX_TAG is hardcoded), and jq stopped publishing manylinux2014

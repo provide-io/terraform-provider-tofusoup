@@ -17,6 +17,7 @@ from tofusoup.registry.base import RegistryConfig
 from tofusoup.registry.models.provider import ProviderVersion
 from tofusoup.registry.opentofu import OpenTofuRegistry
 from tofusoup.registry.terraform import IBMTerraformRegistry
+from tofusoup.tf.components.data_sources._ordering import newest_first
 
 
 @define(frozen=True)
@@ -105,7 +106,7 @@ class ProviderVersionsDataSource(BaseDataSource[str, ProviderVersionsState, Prov
         - `os` - Operating system (e.g., "linux", "darwin", "windows")
         - `arch` - Architecture (e.g., "amd64", "arm64")
 
-    **Note**: Versions are returned in reverse chronological order (newest first) as provided by the registry.
+    **Note**: Versions are sorted by semantic version, newest first; the registries' own order is not a version order.
     """
 
     config_class = ProviderVersionsConfig
@@ -192,7 +193,9 @@ class ProviderVersionsDataSource(BaseDataSource[str, ProviderVersionsState, Prov
                     versions = await registry.list_provider_versions(provider_id)
 
             # Convert ProviderVersion objects to dicts
-            versions_data = [self._convert_version_to_dict(v) for v in versions]
+            versions_data = [
+                self._convert_version_to_dict(v) for v in newest_first(versions, lambda v: v.version)
+            ]
 
             logger.info(
                 "Retrieved provider versions",

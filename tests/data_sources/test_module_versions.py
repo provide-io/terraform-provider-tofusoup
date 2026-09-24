@@ -496,3 +496,42 @@ class TestModuleVersionsEdgeCases:
         assert result["inputs"] == []
         assert result["outputs"] == []
         assert result["resources"] == []
+
+
+class TestModuleVersionsOrdering:
+    """The registry's order is not a version order; the data source sorts."""
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        ("registry", "registry_class"),
+        [("terraform", "IBMTerraformRegistry"), ("opentofu", "OpenTofuRegistry")],
+    )
+    async def test_read_returns_versions_newest_first(self, registry: str, registry_class: str) -> None:
+        """versions[0] is the newest release whatever order the registry used."""
+        # The Terraform registry lists module versions oldest first.
+        unsorted = [
+            ModuleVersion(version=v) for v in ["1.0.0", "1.0.1", "6.7.3", "2.0.0-rc1", "2.0.0", "6.10.0"]
+        ]
+        config = ModuleVersionsConfig(
+            namespace="terraform-aws-modules", name="vpc", target_provider="aws", registry=registry
+        )
+        ds = ModuleVersionsDataSource()
+        ctx = ResourceContext(config=config, state=None)
+
+        mock_registry = AsyncMock()
+        mock_registry.list_module_versions = AsyncMock(return_value=unsorted)
+        mock_registry.__aenter__ = AsyncMock(return_value=mock_registry)
+        mock_registry.__aexit__ = AsyncMock(return_value=None)
+
+        with patch(f"tofusoup.tf.components.data_sources.module_versions.{registry_class}") as mock_class:
+            mock_class.return_value = mock_registry
+            state = await ds.read(ctx)
+
+        assert [v["version"] for v in state.versions] == [
+            "6.10.0",
+            "6.7.3",
+            "2.0.0",
+            "2.0.0-rc1",
+            "1.0.1",
+            "1.0.0",
+        ]
